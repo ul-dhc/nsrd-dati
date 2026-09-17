@@ -244,6 +244,7 @@ body {
 .dark .network-edge-flow { opacity: .62; }
 .dark .network-edges g.is-active .network-edge-flow { opacity: .96; }
 .graph-node text { fill: var(--foreground); font-size: .5rem; font-weight: 500; paint-order: stroke; stroke: var(--background); stroke-width: 2px; stroke-linejoin: round; }
+.network-canvas.is-bipartite .graph-node text { font-size: .3125rem; stroke-width: .75px; }
 @media (prefers-reduced-motion: reduce) { .network-edge-flow, .network-canvas.is-rain .network-edge-flow { animation: none; stroke-dasharray: 100; stroke-dashoffset: 0; } }
 .network-hint { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: .6875rem; }
 .network-hint > div { display: flex; align-items: center; gap: 14px; min-width: 0; }

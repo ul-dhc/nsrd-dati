@@ -246,7 +246,7 @@ function buildBipartiteGraph(sourceEvents: EventRecord[], leftType: NodeType, ri
       x,
       y: column.length === 1 ? 285 : 35 + index * (500 / (column.length - 1)),
     }));
-  return { nodes: [...positionColumn(leftType, 115), ...positionColumn(rightType, 785)], edges, types: [leftType, rightType] };
+  return { nodes: [...positionColumn(leftType, 230), ...positionColumn(rightType, 670)], edges, types: [leftType, rightType] };
 }
 
 function eventIdsForNode(node: GraphNode): Set<string> {
@@ -458,19 +458,13 @@ export default function Home() {
         ? a.y - b.y || a.label.localeCompare(b.label, 'lv')
         : a.x - b.x || a.label.localeCompare(b.label, 'lv'));
       const laneEnds: number[] = [];
-      const laneLastY: number[] = [];
       sameType.forEach((node) => {
         const radius = nodeRadius(node, layoutMode);
         if (layoutMode === 'bipartite') {
           const leftColumn = node.x < 450;
-          let lane = laneLastY.findIndex((lastY) => node.y - lastY >= 11);
-          if (lane === -1) lane = laneLastY.length;
-          laneLastY[lane] = node.y;
-          const outside = lane % 2 === 0;
-          const direction = leftColumn === outside ? -1 : 1;
-          const distance = radius + 8 + Math.floor(lane / 2) * 66;
+          const direction = leftColumn ? -1 : 1;
           placements.set(node.id, {
-            x: direction * distance,
+            x: direction * (radius + 8),
             y: 3,
             textAnchor: direction < 0 ? 'end' : 'start',
           });
@@ -681,7 +675,7 @@ export default function Home() {
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>
           </div>
           {graph.nodes.length ? <div className="network-stage">
-            <svg ref={svgRef} className={`network-canvas ${layoutMode !== 'force' ? 'is-structured' : ''} ${rainAnimation ? 'is-rain' : ''} ${motionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} viewBox="0 0 900 570" role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
+            <svg ref={svgRef} className={`network-canvas ${layoutMode !== 'force' ? 'is-structured' : ''} ${layoutMode === 'bipartite' ? 'is-bipartite' : ''} ${rainAnimation ? 'is-rain' : ''} ${motionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} viewBox="0 0 900 570" role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
               <rect className="network-hit-area" x="0" y="0" width="900" height="570" onPointerDown={startPanning} />
               <g>
                 <g className="network-edges">{graph.edges.map((edge, edgeIndex) => { const source = positionById.get(edge.source)!; const target = positionById.get(edge.target)!; const sourceSelected = selectedIds.includes(edge.source); const targetSelected = selectedIds.includes(edge.target); const active = selectedIds.length > 0 && (sourceSelected || targetSelected); const reverseFlow = sourceSelected !== targetSelected ? targetSelected : layoutMode === 'hierarchical' && source.y > target.y; const start = reverseFlow ? target : source; const end = reverseFlow ? source : target; const baseWidth = active ? Math.min(1.65, .45 + Math.sqrt(edge.weight) * .32) : .48; const showFlow = rainAnimation || selectedIds.length === 0 || active; const flowStyle = { strokeWidth: active ? Math.min(1.9, baseWidth + .25) : .72, '--arrival-duration': `${active ? 1.05 + (edgeIndex % 3) * .08 : 1.4 + (edgeIndex % 5) * .08}s`, '--flow-delay': `${(edgeIndex % 9) * .035}s`, '--rain-duration': `${4.4 + (edgeIndex % 5) * .32}s`, '--rain-delay': `${-(edgeIndex % 9) * .43}s` } as CSSProperties; const flowKey = `${layoutMode}-${rainAnimation ? 'rain' : selectedIds.join('|') || 'intro'}`; return <g key={`${edge.source}-${edge.target}`} className={active ? 'is-active' : ''}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={{ strokeWidth: baseWidth }} />{layoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>; })}</g>
