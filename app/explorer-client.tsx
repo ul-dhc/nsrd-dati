@@ -31,7 +31,7 @@ import dataset from '@/data/nsrd-seque.json';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 
 type EventRecord = (typeof dataset.events)[number];
@@ -676,7 +676,7 @@ export default function Home() {
             {paletteOptions.map((option) => <button type="button" className="palette-option" key={option.id} aria-pressed={palette === option.id} onClick={() => setPalette(option.id)}><span className="palette-swatches" aria-hidden="true">{option.colors.map((color) => <i key={color} style={{ backgroundColor: color }} />)}</span><span><strong>{option[locale]}</strong><small>{option[locale === 'lv' ? 'en' : 'lv']}</small></span>{palette === option.id && <Check aria-hidden="true" />}</button>)}
           </div></fieldset>
           <fieldset className="settings-section"><legend>{t.graphMotion}</legend><div className="motion-options"><button type="button" aria-pressed={!motionFrozen} onClick={() => setMotionFrozen(false)}><Play />{t.dynamic}</button><button type="button" aria-pressed={motionFrozen} onClick={() => setMotionFrozen(true)}><Pause />{t.static}</button></div><p>{t.motionHelp}</p></fieldset>
-          <fieldset className="settings-section"><legend>{t.animationStyle}</legend><label className="animation-style-field"><span className="sr-only">{t.animationStyle}</span><NativeSelect value={animationStyle} onChange={(event) => setAnimationStyle(event.target.value as AnimationStyle)}>{animationStyleOptions.map((option) => <NativeSelectOption key={option.id} value={option.id}>{option[locale]}</NativeSelectOption>)}</NativeSelect></label><p>{animationHelp}</p></fieldset>
+          <fieldset className="settings-section"><legend>{t.animationStyle}</legend><div className="animation-style-field"><Select value={animationStyle} onValueChange={(value) => setAnimationStyle(value as AnimationStyle)}><SelectTrigger aria-label={t.animationStyle}><SelectValue>{animationStyleOptions.find((option) => option.id === animationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{animationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{animationHelp}</p></fieldset>
         </section>
       </>}
       <div className={`workspace ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
@@ -691,7 +691,7 @@ export default function Home() {
           <label className="field-label search-label">{t.searchArtifact}<span className="input-with-icon"><Search aria-hidden="true" /><Input list="artifact-suggestions" value={artifactQuery} onChange={(event) => chooseArtifactSuggestion(event.target.value)} placeholder={t.artifactPlaceholder} />{artifactQuery && <button aria-label={t.clearArtifact} onClick={() => { setArtifactQuery(''); setSelectedIds([]); }}><X /></button>}</span></label>
           <datalist id="artifact-suggestions">{artifactSuggestions.map((item) => <option key={item.id} value={item.value} />)}</datalist>
           <label className="field-label">{t.years} <b>{yearRange[0]}–{yearRange[1]}</b><Slider min={dataset.meta.yearStart} max={dataset.meta.yearEnd} value={yearRange} onValueChange={(value) => setYearRange(value as number[])} /></label>
-          <label className="field-label format-label">{t.format}<NativeSelect className="w-full" value={format} onChange={(event) => setFormat(event.target.value)}><NativeSelectOption value="all">{t.allFormats}</NativeSelectOption>{formats.map((item) => <NativeSelectOption key={item} value={item}>{item}</NativeSelectOption>)}</NativeSelect></label>
+          <div className="field-label format-label"><span>{t.format}</span><Select value={format} onValueChange={(value) => setFormat(value ?? 'all')}><SelectTrigger aria-label={t.format}><SelectValue>{format === 'all' ? t.allFormats : format}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start"><SelectItem value="all">{t.allFormats}</SelectItem>{formats.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div>
           <label className="selection-toggle"><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong><small>{t.multiHelp}</small></span></label>
           <Button variant="outline" className="w-full" onClick={clearFilters}><RotateCcw aria-hidden="true" /> {t.clearFilters}</Button>
         </aside>
@@ -701,10 +701,10 @@ export default function Home() {
             <button type="button" className="panel-visibility-toggle" onClick={() => setControlsPanelOpen((current) => !current)} aria-label={controlsPanelOpen ? t.hideFilters : t.showFilters} aria-controls="network-layers-panel" aria-expanded={controlsPanelOpen} title={controlsPanelOpen ? t.hideFilters : t.showFilters}>{controlsPanelOpen ? <PanelLeftClose /> : <PanelLeftOpen />}</button>
             <div className="toolbar-tools">
               <div className="network-view-options">
-                <label><span>{t.view}</span><NativeSelect value={layoutMode} onChange={(event) => changeLayoutMode(event.target.value as LayoutMode)}>{(Object.keys(layoutLabels[locale]) as LayoutMode[]).map((mode) => <NativeSelectOption key={mode} value={mode}>{layoutLabels[locale][mode]}</NativeSelectOption>)}</NativeSelect></label>
+                <div className="network-select"><span>{t.view}</span><Select value={layoutMode} onValueChange={(value) => changeLayoutMode(value as LayoutMode)}><SelectTrigger aria-label={t.view}><SelectValue>{layoutLabels[locale][layoutMode]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{(Object.keys(layoutLabels[locale]) as LayoutMode[]).map((mode) => <SelectItem key={mode} value={mode}>{layoutLabels[locale][mode]}</SelectItem>)}</SelectContent></Select></div>
                 {layoutMode === 'bipartite' && <div className="bipartite-options" aria-label={layoutLabels[locale].bipartite}>
-                  <label><span>{t.left}</span><NativeSelect value={leftType} onChange={(event) => setLeftType(event.target.value as NodeType)}>{nodeTypeOrder.map((type) => <NativeSelectOption key={type} value={type} disabled={type === rightType}>{currentTypeLabels[type]}</NativeSelectOption>)}</NativeSelect></label>
-                  <label><span>{t.right}</span><NativeSelect value={rightType} onChange={(event) => setRightType(event.target.value as NodeType)}>{nodeTypeOrder.map((type) => <NativeSelectOption key={type} value={type} disabled={type === leftType}>{currentTypeLabels[type]}</NativeSelectOption>)}</NativeSelect></label>
+                  <div className="network-select"><span>{t.left}</span><Select value={leftType} onValueChange={(value) => setLeftType(value as NodeType)}><SelectTrigger aria-label={t.left}><SelectValue>{currentTypeLabels[leftType]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{nodeTypeOrder.map((type) => <SelectItem key={type} value={type} disabled={type === rightType}>{currentTypeLabels[type]}</SelectItem>)}</SelectContent></Select></div>
+                  <div className="network-select"><span>{t.right}</span><Select value={rightType} onValueChange={(value) => setRightType(value as NodeType)}><SelectTrigger aria-label={t.right}><SelectValue>{currentTypeLabels[rightType]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{nodeTypeOrder.map((type) => <SelectItem key={type} value={type} disabled={type === leftType}>{currentTypeLabels[type]}</SelectItem>)}</SelectContent></Select></div>
                 </div>}
               </div>
               <div className="network-controls" aria-label={t.distance}>
