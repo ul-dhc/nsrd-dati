@@ -293,6 +293,7 @@ export default function Home() {
   const [pan, setPan] = useState<Point>({ x: 0, y: 0 });
   const [manualPositions, setManualPositions] = useState<Record<string, Point>>({});
   const svgRef = useRef<SVGSVGElement>(null);
+  const hierarchicalInitialized = useRef(false);
   const animationFrame = useRef<number | null>(null);
   const lastFrame = useRef<number | null>(null);
   const panStart = useRef<{ clientX: number; clientY: number; x: number; y: number; moved: boolean } | null>(null);
@@ -561,6 +562,13 @@ export default function Home() {
   };
   const cancelInteraction = () => { setDraggingId(null); setPanning(false); panStart.current = null; nodePointerStart.current = null; dragCluster.current = null; elasticTargets.current = {}; elasticVelocities.current = {}; };
   const changeZoom = (next: number) => setZoom(Math.max(.35, Math.min(8, next)));
+  const changeLayoutMode = (mode: LayoutMode) => {
+    setLayoutMode(mode);
+    if (mode === 'hierarchical' && !hierarchicalInitialized.current) {
+      hierarchicalInitialized.current = true;
+      setVisibleTypes(new Set(nodeTypeOrder));
+    }
+  };
   const zoomWithWheel = (event: ReactWheelEvent<SVGSVGElement>) => {
     event.preventDefault();
     changeZoom(zoom * (event.deltaY > 0 ? .86 : 1.16));
@@ -612,7 +620,7 @@ export default function Home() {
           <div className="network-toolbar">
             <div className="toolbar-tools">
               <div className="network-view-options">
-                <label><span>{t.view}</span><NativeSelect value={layoutMode} onChange={(event) => setLayoutMode(event.target.value as LayoutMode)}>{(Object.keys(layoutLabels[locale]) as LayoutMode[]).map((mode) => <NativeSelectOption key={mode} value={mode}>{layoutLabels[locale][mode]}</NativeSelectOption>)}</NativeSelect></label>
+                <label><span>{t.view}</span><NativeSelect value={layoutMode} onChange={(event) => changeLayoutMode(event.target.value as LayoutMode)}>{(Object.keys(layoutLabels[locale]) as LayoutMode[]).map((mode) => <NativeSelectOption key={mode} value={mode}>{layoutLabels[locale][mode]}</NativeSelectOption>)}</NativeSelect></label>
                 {layoutMode === 'bipartite' && <div className="bipartite-options" aria-label={layoutLabels[locale].bipartite}>
                   <label><span>{t.left}</span><NativeSelect value={leftType} onChange={(event) => setLeftType(event.target.value as NodeType)}>{nodeTypeOrder.map((type) => <NativeSelectOption key={type} value={type} disabled={type === rightType}>{currentTypeLabels[type]}</NativeSelectOption>)}</NativeSelect></label>
                   <label><span>{t.right}</span><NativeSelect value={rightType} onChange={(event) => setRightType(event.target.value as NodeType)}>{nodeTypeOrder.map((type) => <NativeSelectOption key={type} value={type} disabled={type === leftType}>{currentTypeLabels[type]}</NativeSelectOption>)}</NativeSelect></label>
