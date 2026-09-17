@@ -40,6 +40,7 @@ type TextSize = 16 | 18 | 20;
 type PaletteId = 'archive' | 'neon' | 'autumn' | 'pastel' | 'vivid';
 type SelectionLogic = 'any' | 'all';
 type LabelMode = 'active' | 'all' | 'none';
+type GraphLabelScale = 1 | 1.25 | 1.5;
 type GraphNode = { id: string; payloadId: string; label: string; type: NodeType; degree: number; x: number; y: number };
 type GraphEdge = { source: string; target: string; weight: number; contexts: string[] };
 type Graph = { nodes: GraphNode[]; edges: GraphEdge[]; types: NodeType[] };
@@ -61,6 +62,7 @@ const layoutLabels: Record<Locale, Record<LayoutMode, string>> = {
 };
 const nextLabelMode: Record<LabelMode, LabelMode> = { none: 'active', active: 'all', all: 'none' };
 const nextTextSize: Record<TextSize, TextSize> = { 16: 18, 18: 20, 20: 16 };
+const nextGraphLabelScale: Record<GraphLabelScale, GraphLabelScale> = { 1: 1.25, 1.25: 1.5, 1.5: 1 };
 const paletteOptions: Array<{ id: PaletteId; lv: string; en: string; colors: string[] }> = [
   { id: 'archive', lv: 'Arhīva spektrs', en: 'Archive Spectrum', colors: ['#c83f00', '#f4a000', '#cf0060', '#114b94', '#02a49f'] },
   { id: 'neon', lv: 'Neona nakts', en: 'Neon Night', colors: ['#0D0D0D', '#00FF85', '#1E90FF', '#FF0099', '#FFFFFF'] },
@@ -78,7 +80,7 @@ const ui = {
     searchPerson: 'Meklēt personu', personPlaceholder: 'Sāc rakstīt vārdu…', clearPerson: 'Notīrīt personas meklējumu', searchArtifact: 'Meklēt artefaktu', artifactPlaceholder: 'Sāc rakstīt nosaukumu…', clearArtifact: 'Notīrīt artefakta meklējumu',
     years: 'Gadu diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', multiHelp: 'Klikšķini, lai pievienotu vai noņemtu', clearFilters: 'Notīrīt filtrus',
     view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Kustināt', freeze: 'Fiksēt', compact: 'Sablīvēt tīklu', spread: 'Izretināt tīklu', distance: 'Attālums starp mezgliem', legend: 'Leģenda',
-    labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
+    labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', graphTextSize: 'Tīkla nosaukumu izmērs', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
@@ -89,7 +91,7 @@ const ui = {
     searchPerson: 'Search for a person', personPlaceholder: 'Start typing a name…', clearPerson: 'Clear person search', searchArtifact: 'Search for an artifact', artifactPlaceholder: 'Start typing a title…', clearArtifact: 'Clear artifact search',
     years: 'Year range', format: 'Format', allFormats: 'All formats', multi: 'Select multiple nodes', multiHelp: 'Click to add or remove', clearFilters: 'Clear filters',
     view: 'View', left: 'Left column', right: 'Right column', move: 'Animate', freeze: 'Freeze', compact: 'Compact network', spread: 'Spread network', distance: 'Distance between nodes', legend: 'Legend',
-    labels: 'Labels', labelClick: 'Click to change mode.', networkAria: 'NSRD and Seque multilayer network', links: 'links', nodes: 'nodes', artifacts: 'artifacts',
+    labels: 'Labels', labelClick: 'Click to change mode.', graphTextSize: 'Network label size', networkAria: 'NSRD and Seque multilayer network', links: 'links', nodes: 'nodes', artifacts: 'artifacts',
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
@@ -290,6 +292,7 @@ export default function Home() {
   const [motionFrozen, setMotionFrozen] = useState(false);
   const [rainAnimation, setRainAnimation] = useState(false);
   const [labelMode, setLabelMode] = useState<LabelMode>('active');
+  const [graphLabelScale, setGraphLabelScale] = useState<GraphLabelScale>(1);
   const [driftClock, setDriftClock] = useState(0);
   const [zoom, setZoom] = useState(1.8);
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -667,6 +670,7 @@ export default function Home() {
               <div className="network-controls" aria-label={t.distance}>
                 {layoutMode === 'force' && <button type="button" onClick={() => setMotionFrozen((current) => !current)} aria-pressed={motionFrozen}>{motionFrozen ? <Play /> : <Pause />}<span>{motionFrozen ? t.move : t.freeze}</span></button>}
                 <button type="button" className={`label-mode-button is-${labelMode}`} onClick={() => setLabelMode((current) => nextLabelMode[current])} aria-label={`${t.labels}: ${labelModeNames[locale][labelMode]}. ${t.labelClick}`} title={`${t.labels}: ${labelModeNames[locale][labelMode]}`}>{labelMode === 'none' ? <EyeOff /> : <Eye />}</button>
+                <button type="button" className="graph-text-size-button" onClick={() => setGraphLabelScale((current) => nextGraphLabelScale[current])} aria-label={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`} aria-pressed={graphLabelScale !== 1} title={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`}>A+</button>
                 <button type="button" onClick={() => changeZoom(zoom / 1.35)} aria-label={t.compact}><ZoomOut /></button>
                 <output aria-label={t.distance}>{Math.round(zoom * 100)}%</output>
                 <button type="button" onClick={() => changeZoom(zoom * 1.35)} aria-label={t.spread}><ZoomIn /></button>
@@ -675,7 +679,7 @@ export default function Home() {
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>
           </div>
           {graph.nodes.length ? <div className="network-stage">
-            <svg ref={svgRef} className={`network-canvas ${layoutMode !== 'force' ? 'is-structured' : ''} ${layoutMode === 'bipartite' ? 'is-bipartite' : ''} ${rainAnimation ? 'is-rain' : ''} ${motionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} viewBox="0 0 900 570" role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
+            <svg ref={svgRef} className={`network-canvas ${layoutMode !== 'force' ? 'is-structured' : ''} ${layoutMode === 'bipartite' ? 'is-bipartite' : ''} ${rainAnimation ? 'is-rain' : ''} ${motionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
               <rect className="network-hit-area" x="0" y="0" width="900" height="570" onPointerDown={startPanning} />
               <g>
                 <g className="network-edges">{graph.edges.map((edge, edgeIndex) => { const source = positionById.get(edge.source)!; const target = positionById.get(edge.target)!; const sourceSelected = selectedIds.includes(edge.source); const targetSelected = selectedIds.includes(edge.target); const active = selectedIds.length > 0 && (sourceSelected || targetSelected); const reverseFlow = sourceSelected !== targetSelected ? targetSelected : layoutMode === 'hierarchical' && source.y > target.y; const start = reverseFlow ? target : source; const end = reverseFlow ? source : target; const baseWidth = active ? Math.min(1.65, .45 + Math.sqrt(edge.weight) * .32) : .48; const showFlow = rainAnimation || selectedIds.length === 0 || active; const flowStyle = { strokeWidth: active ? Math.min(1.9, baseWidth + .25) : .72, '--arrival-duration': `${active ? 1.05 + (edgeIndex % 3) * .08 : 1.4 + (edgeIndex % 5) * .08}s`, '--flow-delay': `${(edgeIndex % 9) * .035}s`, '--rain-duration': `${4.4 + (edgeIndex % 5) * .32}s`, '--rain-delay': `${-(edgeIndex % 9) * .43}s` } as CSSProperties; const flowKey = `${layoutMode}-${rainAnimation ? 'rain' : selectedIds.join('|') || 'intro'}`; return <g key={`${edge.source}-${edge.target}`} className={active ? 'is-active' : ''}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={{ strokeWidth: baseWidth }} />{layoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>; })}</g>
