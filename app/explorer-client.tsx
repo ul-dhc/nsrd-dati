@@ -706,7 +706,6 @@ export default function Home() {
     <main className="prototype-shell">
       <header className="topbar">
         <a className="brand" href="#network" aria-label={`${t.brand} — ${t.product}`}><span className="brand-symbol" aria-hidden="true"><i /><i /><i /></span><span><strong>{t.brand}</strong><small>{t.product}</small></span></a>
-        <nav className="topnav" aria-label={t.explore}><a href="#network" aria-current="page">{t.explore}</a><span className="development-badge">{t.inDevelopment}</span></nav>
         <div className="header-utilities">
           <button type="button" className="language-switch" onClick={() => setLocale((current) => current === 'lv' ? 'en' : 'lv')} aria-label={t.language}>{locale === 'lv' ? 'EN' : 'LV'}</button>
           <button type="button" className="text-size-switch" onClick={() => setTextSize((current) => nextTextSize[current])} aria-label={t.textSize} aria-pressed={textSize !== 16} title={`${t.textSize}: ${textSize}px`}>A+</button>
