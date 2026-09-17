@@ -78,7 +78,7 @@ const animationStyleOptions: Array<{ id: AnimationStyle; lv: string; en: string 
 ];
 const appViewOptions: Array<{ id: AppView; lv: string; en: string }> = [
   { id: 'network', lv: 'Tīkls', en: 'Network' },
-  { id: 'dashboard', lv: 'Datu pārskats', en: 'Data overview' },
+  { id: 'dashboard', lv: 'Pārskats', en: 'Data overview' },
 ];
 const paletteOptions: Array<{ id: PaletteId; lv: string; en: string; colors: string[] }> = [
   { id: 'archive', lv: 'Arhīva spektrs', en: 'Archive Spectrum', colors: ['#c83f00', '#f4a000', '#cf0060', '#114b94', '#02a49f'] },
