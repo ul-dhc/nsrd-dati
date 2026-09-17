@@ -542,7 +542,7 @@ export default function Home() {
     return () => { if (animationFrame.current !== null) cancelAnimationFrame(animationFrame.current); lastFrame.current = null; };
   }, [layoutMode, motionFrozen]);
   const positionedNodes = useMemo(() => graph.nodes.map((node) => {
-    const base = layoutMode === 'force' ? manualPositions[node.id] ?? node : node;
+    const base = manualPositions[node.id] ?? node;
     if (layoutMode !== 'force' || draggingId === node.id) return { ...node, x: base.x, y: base.y };
     const phase = Math.abs(hash(node.id)) % 628 / 100;
     const amplitude = 6 + (Math.abs(hash(`${node.id}:drift`)) % 35) / 10;
