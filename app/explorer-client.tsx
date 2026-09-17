@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from 'react';
 import {
+  BarChart3,
   Check,
   ChevronRight,
   CircleHelp,
@@ -46,6 +47,7 @@ type SelectionLogic = 'any' | 'all';
 type LabelMode = 'active' | 'all' | 'none';
 type GraphLabelScale = 1 | 1.25 | 1.5;
 type AnimationStyle = 'none' | 'rain' | 'echo' | 'wave';
+type AppView = 'network' | 'dashboard';
 type GraphNode = { id: string; payloadId: string; label: string; type: NodeType; degree: number; x: number; y: number };
 type GraphEdge = { source: string; target: string; weight: number; contexts: string[] };
 type Graph = { nodes: GraphNode[]; edges: GraphEdge[]; types: NodeType[] };
@@ -74,6 +76,10 @@ const animationStyleOptions: Array<{ id: AnimationStyle; lv: string; en: string 
   { id: 'echo', lv: 'Atbalss', en: 'Echo' },
   { id: 'wave', lv: 'Vilnis', en: 'Wave' },
 ];
+const appViewOptions: Array<{ id: AppView; lv: string; en: string }> = [
+  { id: 'network', lv: 'Tīkls', en: 'Network' },
+  { id: 'dashboard', lv: 'Datu pārskats', en: 'Data overview' },
+];
 const paletteOptions: Array<{ id: PaletteId; lv: string; en: string; colors: string[] }> = [
   { id: 'archive', lv: 'Arhīva spektrs', en: 'Archive Spectrum', colors: ['#c83f00', '#f4a000', '#cf0060', '#114b94', '#02a49f'] },
   { id: 'neon', lv: 'Neona nakts', en: 'Neon Night', colors: ['#0D0D0D', '#00FF85', '#1E90FF', '#FF0099', '#FFFFFF'] },
@@ -95,7 +101,9 @@ const ui = {
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
-    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini tīklā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt tīkla slāņu paneli', showFilters: 'Parādīt tīkla slāņu paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Tīkla kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur mezglu kustību un saišu animāciju.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Nepārtraukta saišu plūsma hierarhiskajā un divdaļīgajā skatā.', animationHelpEcho: 'Izvēloties mezglu, impulss izplatās pa tā saitēm.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri visam tīklam.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
+    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
+    filters: 'Filtri', filterViews: 'Filtrēt skatus', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
+    records: 'Ieraksti', documentedPeople: 'Personas', relatedPeople: 'Līdzdalībnieki', visibleFormats: 'Formāti', formatChart: 'Ieraksti pēc formāta', peopleChart: 'Personas pēc ierakstu skaita', artifactChart: 'Ieraksti pēc dalībnieku skaita', collaborationMatrix: 'Kopīgo ierakstu matrica', collaborationHelp: 'Klikšķini šūnā, lai atlasītu personu pāri un apskatītu kopīgos ierakstus.', sharedRecords: 'kopīgi ieraksti', noCollaborations: 'Šai atlasei nav pietiekami daudz personu sadarbību.',
   },
   en: {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
@@ -106,7 +114,9 @@ const ui = {
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
-    choose: 'Choose a node or set', chooseHelp: 'Click in the network to highlight links and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide network layers panel', showFilters: 'Show network layers panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Network motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses node motion and link animation.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'Continuous link flow in hierarchical and bipartite views.', animationHelpEcho: 'Selecting a node sends a pulse through its connections.', animationHelpWave: 'A light wave periodically travels across the network.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
+    choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
+    filters: 'Filters', filterViews: 'Filter views', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
+    records: 'Recordings', documentedPeople: 'People', relatedPeople: 'Collaborators', visibleFormats: 'Formats', formatChart: 'Recordings by format', peopleChart: 'People by number of recordings', artifactChart: 'Recordings by number of participants', collaborationMatrix: 'Shared-recording matrix', collaborationHelp: 'Click a cell to select a pair of people and inspect their shared recordings.', sharedRecords: 'shared recordings', noCollaborations: 'There are not enough person collaborations in this selection.',
   },
 } as const;
 const displayPersonName = (value: string) => {
@@ -304,6 +314,7 @@ export default function Home() {
   const [rightType, setRightType] = useState<NodeType>('artifact');
   const [motionFrozen, setMotionFrozen] = useState(false);
   const [animationStyle, setAnimationStyle] = useState<AnimationStyle>('none');
+  const [appView, setAppView] = useState<AppView>('network');
   const [labelMode, setLabelMode] = useState<LabelMode>('active');
   const [graphLabelScale, setGraphLabelScale] = useState<GraphLabelScale>(1);
   const [driftClock, setDriftClock] = useState(0);
@@ -681,25 +692,32 @@ export default function Home() {
         </section>
       </>}
       <div className={`workspace ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
-        <aside id="network-layers-panel" className="controls-panel" aria-label={t.networkLayers} hidden={!controlsPanelOpen}>
-          <div className="panel-title"><Network aria-hidden="true" /><div><span>{t.networkLayers}</span><strong>{t.showInNetwork}</strong></div></div>
-          <fieldset className="node-type-options"><legend className="sr-only">{t.showInNetwork}</legend>
+        <aside id="network-layers-panel" className="controls-panel" aria-label={appView === 'network' ? t.networkLayers : t.filters} hidden={!controlsPanelOpen}>
+          <div className="panel-title">{appView === 'network' ? <Network aria-hidden="true" /> : <BarChart3 aria-hidden="true" />}<div><span>{appView === 'network' ? t.networkLayers : t.filters}</span><strong>{appView === 'network' ? t.showInNetwork : t.filterViews}</strong></div></div>
+          {appView === 'network' && <fieldset className="node-type-options"><legend className="sr-only">{t.showInNetwork}</legend>
             <span className="layer-chip is-fixed"><i className="node-swatch artifact" />{currentTypeLabels.artifact}</span>
             {optionalTypes.map((type) => <button type="button" className="layer-chip" aria-pressed={visibleTypes.has(type)} key={type} onClick={() => toggleType(type, !visibleTypes.has(type))}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</button>)}
-          </fieldset>
+          </fieldset>}
           <label className="field-label search-label">{t.searchPerson}<span className="input-with-icon"><Search aria-hidden="true" /><Input list="person-suggestions" value={personQuery} onChange={(event) => choosePersonSuggestion(event.target.value)} placeholder={t.personPlaceholder} />{personQuery && <button aria-label={t.clearPerson} onClick={() => { setPersonQuery(''); setSelectedIds([]); }}><X /></button>}</span></label>
           <datalist id="person-suggestions">{personSuggestions.map((item) => <option key={item.id} value={item.value} />)}</datalist>
           <label className="field-label search-label">{t.searchArtifact}<span className="input-with-icon"><Search aria-hidden="true" /><Input list="artifact-suggestions" value={artifactQuery} onChange={(event) => chooseArtifactSuggestion(event.target.value)} placeholder={t.artifactPlaceholder} />{artifactQuery && <button aria-label={t.clearArtifact} onClick={() => { setArtifactQuery(''); setSelectedIds([]); }}><X /></button>}</span></label>
           <datalist id="artifact-suggestions">{artifactSuggestions.map((item) => <option key={item.id} value={item.value} />)}</datalist>
           <label className="field-label">{t.years} <b>{yearRange[0]}–{yearRange[1]}</b><Slider min={dataset.meta.yearStart} max={dataset.meta.yearEnd} value={yearRange} onValueChange={(value) => setYearRange(value as number[])} /></label>
           <div className="field-label format-label"><span>{t.format}</span><Select value={format} onValueChange={(value) => setFormat(value ?? 'all')}><SelectTrigger aria-label={t.format}><SelectValue>{format === 'all' ? t.allFormats : format}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start"><SelectItem value="all">{t.allFormats}</SelectItem>{formats.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div>
-          <label className="selection-toggle"><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong><small>{t.multiHelp}</small></span></label>
+          {appView === 'network' && <label className="selection-toggle"><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong><small>{t.multiHelp}</small></span></label>}
           <Button variant="outline" className="w-full" onClick={clearFilters}><RotateCcw aria-hidden="true" /> {t.clearFilters}</Button>
         </aside>
 
-        <section id="network" className="network-panel" aria-label={t.networkAria}>
-          <div className="network-toolbar">
+        <section id="network" className="network-panel" aria-label={appView === 'network' ? t.networkAria : t.overviewAria}>
+          <div className="view-mode-bar">
             <button type="button" className="panel-visibility-toggle" onClick={() => setControlsPanelOpen((current) => !current)} aria-label={controlsPanelOpen ? t.hideFilters : t.showFilters} aria-controls="network-layers-panel" aria-expanded={controlsPanelOpen} title={controlsPanelOpen ? t.hideFilters : t.showFilters}>{controlsPanelOpen ? <PanelLeftClose /> : <PanelLeftOpen />}</button>
+            <div className="app-view-switcher" role="tablist" aria-label={t.visualization}>
+              {appViewOptions.map((option) => <button type="button" role="tab" aria-selected={appView === option.id} key={option.id} onClick={() => setAppView(option.id)}>{option.id === 'network' ? <Network aria-hidden="true" /> : <BarChart3 aria-hidden="true" />}<span>{option[locale]}</span></button>)}
+            </div>
+            <button type="button" className="panel-visibility-toggle" onClick={() => setInspectorPanelOpen((current) => !current)} aria-label={inspectorPanelOpen ? t.hideDetails : t.showDetails} aria-controls="selection-details-panel" aria-expanded={inspectorPanelOpen} title={inspectorPanelOpen ? t.hideDetails : t.showDetails}>{inspectorPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}</button>
+          </div>
+          {appView === 'network' && <>
+          <div className="network-toolbar network-toolbar-secondary">
             <div className="toolbar-tools">
               <div className="network-view-options">
                 <div className="network-select"><span>{t.view}</span><Select value={layoutMode} onValueChange={(value) => changeLayoutMode(value as LayoutMode)}><SelectTrigger aria-label={t.view}><SelectValue>{layoutLabels[locale][layoutMode]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{(Object.keys(layoutLabels[locale]) as LayoutMode[]).map((mode) => <SelectItem key={mode} value={mode}>{layoutLabels[locale][mode]}</SelectItem>)}</SelectContent></Select></div>
@@ -718,7 +736,6 @@ export default function Home() {
               </div>
             </div>
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>
-            <button type="button" className="panel-visibility-toggle" onClick={() => setInspectorPanelOpen((current) => !current)} aria-label={inspectorPanelOpen ? t.hideDetails : t.showDetails} aria-controls="selection-details-panel" aria-expanded={inspectorPanelOpen} title={inspectorPanelOpen ? t.hideDetails : t.showDetails}>{inspectorPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}</button>
           </div>
           {graph.nodes.length ? <div className="network-stage">
             <svg ref={svgRef} className={`network-canvas ${layoutMode !== 'force' ? 'is-structured' : ''} ${layoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} animation-${animationStyle} ${motionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
@@ -769,6 +786,8 @@ export default function Home() {
           </div> : <div className="graph-empty"><FilterX /><h3>{t.noData}</h3><p>{t.noDataHelp}</p><Button variant="outline" onClick={clearFilters}>{t.clearFilters}</Button></div>}
           <div className="network-hint"><div><strong>{graph.nodes.length} {t.nodes} · {graph.edges.length} {t.links} · {filteredEvents.length} {t.artifacts}</strong><span>{t.dragHelp}</span></div>{selectedIds.length > 0 && <button onClick={() => setSelectedIds([])}>{t.clearSelection}</button>}</div>
           <ResultList locale={locale} resultEvents={resultEvents} selectedCount={selectedIds.length} onSelect={(event) => setSelectedIds([`artifact:${event.id}`])} />
+          </>}
+          {appView === 'dashboard' && <OverviewDashboard locale={locale} resultEvents={resultEvents} selectedIds={selectedIds} animationStyle={animationStyle} motionFrozen={motionFrozen} onSelectPerson={(name) => { setSelectionLogic('any'); setSelectedIds([`person:${name}`]); }} onSelectPair={(left, right) => { setSelectionLogic('all'); setSelectedIds([`person:${left}`, `person:${right}`]); }} onSelectArtifact={(id) => setSelectedIds([`artifact:${id}`])} onSelectFormat={(name) => { setFormat(name); setSelectedIds([]); }} onClearSelection={() => setSelectedIds([])} />}
         </section>
 
         <aside id="selection-details-panel" className="inspector-panel" aria-label={t.selection} hidden={!inspectorPanelOpen}>
@@ -777,6 +796,124 @@ export default function Home() {
       </div>
     </main>
   );
+}
+
+function OverviewDashboard({ locale, resultEvents, selectedIds, animationStyle, motionFrozen, onSelectPerson, onSelectPair, onSelectArtifact, onSelectFormat, onClearSelection }: {
+  locale: Locale;
+  resultEvents: EventRecord[];
+  selectedIds: string[];
+  animationStyle: AnimationStyle;
+  motionFrozen: boolean;
+  onSelectPerson: (name: string) => void;
+  onSelectPair: (left: string, right: string) => void;
+  onSelectArtifact: (id: string) => void;
+  onSelectFormat: (name: string) => void;
+  onClearSelection: () => void;
+}) {
+  const t = ui[locale];
+  const selectedPeople = selectedIds.filter((id) => id.startsWith('person:')).map((id) => id.slice('person:'.length));
+  const focusPerson = selectedPeople.length === 1 ? selectedPeople[0] : null;
+  const formatCounts = Array.from(resultEvents.reduce((map, event) => map.set(event.format, (map.get(event.format) ?? 0) + 1), new Map<string, number>())).sort((a, b) => b[1] - a[1]);
+  const personCounts = Array.from(resultEvents.reduce((map, event) => {
+    new Set(event.credits.map((credit) => credit.person)).forEach((name) => map.set(name, (map.get(name) ?? 0) + 1));
+    return map;
+  }, new Map<string, number>())).filter(([name]) => name !== focusPerson).sort((a, b) => b[1] - a[1] || displayPersonName(a[0]).localeCompare(displayPersonName(b[0]), 'lv')).slice(0, 8);
+  const artifactCounts = resultEvents.map((event) => ({ event, count: new Set(event.credits.map((credit) => credit.person)).size })).sort((a, b) => b.count - a.count || a.event.title.localeCompare(b.event.title, 'lv')).slice(0, 8);
+  const peopleCount = new Set(resultEvents.flatMap((event) => event.credits.map((credit) => credit.person)).filter((name) => name !== focusPerson)).size;
+  const maxPerson = Math.max(1, ...personCounts.map(([, count]) => count));
+  const maxArtifact = Math.max(1, ...artifactCounts.map(({ count }) => count));
+  const totalFormats = Math.max(1, formatCounts.reduce((sum, [, count]) => sum + count, 0));
+  const chartColors = ['var(--palette-green)', 'var(--palette-amber)', 'var(--palette-teal)', 'var(--palette-blue)', 'var(--palette-magenta)', 'var(--palette-orange)'];
+  let donutOffset = 0;
+  const surfaceClass = `analytics-surface animation-${animationStyle} ${motionFrozen ? 'is-motion-paused' : ''} ${selectedIds.length ? 'has-selection' : ''}`;
+
+  return <div className={surfaceClass}>
+    <div className="analytics-summary" aria-label={t.overviewAria}>
+      <div><strong>{resultEvents.length}</strong><span>{t.records}</span></div>
+      <div><strong>{peopleCount}</strong><span>{focusPerson ? t.relatedPeople : t.documentedPeople}</span></div>
+      <div><strong>{formatCounts.length}</strong><span>{t.visibleFormats}</span></div>
+    </div>
+    <div className="analytics-grid">
+      <section className="analytics-chart format-chart">
+        <h2>{t.formatChart}</h2>
+        <div className="format-donut-layout">
+          <div className="format-donut" role="img" aria-label={`${t.formatChart}: ${resultEvents.length} ${t.records.toLocaleLowerCase()}`}>
+            <svg viewBox="0 0 120 120" aria-hidden="true"><circle className="donut-track" cx="60" cy="60" r="46" pathLength="100" />{formatCounts.map(([name, count], index) => {
+              const segment = count / totalFormats * 100;
+              const offset = donutOffset;
+              donutOffset += segment;
+              return <circle key={name} className="donut-segment" cx="60" cy="60" r="46" pathLength="100" style={{ stroke: chartColors[index % chartColors.length], strokeDasharray: `${segment} ${100 - segment}`, strokeDashoffset: -offset, '--animation-index': index } as CSSProperties} />;
+            })}</svg>
+            <div><strong>{resultEvents.length}</strong><span>{t.records}</span></div>
+          </div>
+          <div className="format-legend">{formatCounts.map(([name, count], index) => <button type="button" key={name} onClick={() => onSelectFormat(name)} style={{ '--chart-color': chartColors[index % chartColors.length], '--animation-index': index } as CSSProperties}><i aria-hidden="true" /><span>{name}</span><strong>{count}</strong></button>)}</div>
+        </div>
+      </section>
+      <section className="analytics-chart people-chart">
+        <h2>{focusPerson ? t.frequent : t.peopleChart}</h2>
+        <div className="analytics-bars">{personCounts.map(([name, count], index) => {
+          const active = selectedIds.includes(`person:${name}`);
+          return <button type="button" key={name} className={`analytics-bar person-bar ${active ? 'is-active' : ''}`} aria-pressed={active} onClick={() => onSelectPerson(name)} style={{ '--bar-size': `${count / maxPerson * 100}%`, '--animation-index': index } as CSSProperties}><span className="bar-label">{displayPersonName(name)}</span><i aria-hidden="true"><b /></i><strong>{count}</strong></button>;
+        })}</div>
+      </section>
+      <section className="analytics-chart artifact-chart">
+        <h2>{t.artifactChart}</h2>
+        <div className="artifact-columns">{artifactCounts.map(({ event, count }, index) => {
+          const active = selectedIds.includes(`artifact:${event.id}`);
+          return <button type="button" key={event.id} className={`artifact-column ${active ? 'is-active' : ''}`} aria-pressed={active} onClick={() => onSelectArtifact(event.id)} style={{ '--bar-size': `${count / maxArtifact * 100}%`, '--animation-index': index } as CSSProperties}><strong>{count}</strong><i aria-hidden="true"><b /></i><span>{event.title}</span></button>;
+        })}</div>
+      </section>
+      <CollaborationMatrixChart locale={locale} resultEvents={resultEvents} selectedIds={selectedIds} onSelectPerson={onSelectPerson} onSelectPair={onSelectPair} />
+    </div>
+    <AnalyticsFooter locale={locale} count={resultEvents.length} selected={selectedIds.length > 0} onClearSelection={onClearSelection} />
+  </div>;
+}
+
+function CollaborationMatrixChart({ locale, resultEvents, selectedIds, onSelectPerson, onSelectPair }: {
+  locale: Locale;
+  resultEvents: EventRecord[];
+  selectedIds: string[];
+  onSelectPerson: (name: string) => void;
+  onSelectPair: (left: string, right: string) => void;
+}) {
+  const t = ui[locale];
+  const peopleCounts = resultEvents.reduce((map, event) => {
+    new Set(event.credits.map((credit) => credit.person)).forEach((name) => map.set(name, (map.get(name) ?? 0) + 1));
+    return map;
+  }, new Map<string, number>());
+  const rankedPeople = Array.from(peopleCounts).sort((a, b) => b[1] - a[1] || displayPersonName(a[0]).localeCompare(displayPersonName(b[0]), 'lv')).slice(0, 12).map(([name]) => name);
+  const pairCounts = new Map<string, number>();
+  resultEvents.forEach((event) => {
+    const names = Array.from(new Set(event.credits.map((credit) => credit.person))).filter((name) => rankedPeople.includes(name));
+    names.forEach((left, leftIndex) => names.slice(leftIndex + 1).forEach((right) => {
+      const key = [left, right].sort().join('|');
+      pairCounts.set(key, (pairCounts.get(key) ?? 0) + 1);
+    }));
+  });
+  const maxPair = Math.max(1, ...pairCounts.values());
+  const hasCollaborations = pairCounts.size > 0;
+  const isSelected = (name: string) => selectedIds.includes(`person:${name}`);
+
+  return <section className="analytics-chart matrix-section">
+      <div className="matrix-heading"><div><h2>{t.collaborationMatrix}</h2><p>{t.collaborationHelp}</p></div><span>{rankedPeople.length} {t.documentedPeople.toLocaleLowerCase()}</span></div>
+      {hasCollaborations ? <div className="matrix-scroll"><div className="collaboration-matrix" style={{ '--matrix-size': rankedPeople.length } as CSSProperties}>
+        <span className="matrix-corner" />
+        {rankedPeople.map((name) => <button type="button" key={`column-${name}`} className={`matrix-column-label ${isSelected(name) ? 'is-active' : ''}`} onClick={() => onSelectPerson(name)} aria-pressed={isSelected(name)}><span>{displayPersonName(name)}</span></button>)}
+        {rankedPeople.map((rowName, rowIndex) => <div className="matrix-row" key={rowName}>
+          <button type="button" className={`matrix-row-label ${isSelected(rowName) ? 'is-active' : ''}`} onClick={() => onSelectPerson(rowName)} aria-pressed={isSelected(rowName)}>{displayPersonName(rowName)}</button>
+          {rankedPeople.map((columnName, columnIndex) => {
+            const count = rowName === columnName ? peopleCounts.get(rowName) ?? 0 : pairCounts.get([rowName, columnName].sort().join('|')) ?? 0;
+            const active = rowName !== columnName && isSelected(rowName) && isSelected(columnName);
+            return <button type="button" key={`${rowName}-${columnName}`} disabled={rowName === columnName || count === 0} className={`matrix-cell ${rowName === columnName ? 'is-diagonal' : ''} ${active ? 'is-active' : ''}`} style={{ '--cell-strength': rowName === columnName ? .12 : .12 + count / maxPair * .78, '--animation-index': rowIndex + columnIndex } as CSSProperties} onClick={() => onSelectPair(rowName, columnName)} aria-label={`${displayPersonName(rowName)} + ${displayPersonName(columnName)}: ${count} ${t.sharedRecords}`} aria-pressed={active}><span>{rowName !== columnName && count > 0 ? count : ''}</span></button>;
+          })}
+        </div>)}
+      </div></div> : <div className="graph-empty compact-empty"><Network /><h3>{t.noCollaborations}</h3></div>}
+    </section>;
+}
+
+function AnalyticsFooter({ locale, count, selected, onClearSelection }: { locale: Locale; count: number; selected: boolean; onClearSelection: () => void }) {
+  const t = ui[locale];
+  return <div className="analytics-footer"><strong>{t.currently}: {count} {t.artifacts}</strong>{selected && <button type="button" onClick={onClearSelection}>{t.clearSelection}</button>}</div>;
 }
 
 function SelectionInspector({ locale, nodes, resultEvents, logic, setLogic, removeNode }: { locale: Locale; nodes: GraphNode[]; resultEvents: EventRecord[]; logic: SelectionLogic; setLogic: (value: SelectionLogic) => void; removeNode: (id: string) => void }) {
