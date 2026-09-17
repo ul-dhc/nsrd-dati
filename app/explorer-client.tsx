@@ -192,7 +192,7 @@ function layoutNodes(rawNodes: Array<Omit<GraphNode, 'x' | 'y'>>, edges: GraphEd
 
 function layoutHierarchically(graph: Graph): Graph {
   const orderedTypes = nodeTypeOrder.filter((type) => graph.types.includes(type));
-  const top = 58; const bottom = 512; const left = 58; const right = 842;
+  const top = 110; const bottom = 510; const left = 58; const right = 842;
   const nodes = graph.nodes.map((node) => {
     const typeIndex = orderedTypes.indexOf(node.type);
     const sameType = graph.nodes
@@ -452,7 +452,7 @@ export default function Home() {
     y: 285 + (node.y - 285) * zoom + pan.y,
   })), [pan, positionedNodes, zoom]);
   const labelPlacementById = useMemo(() => {
-    const placements = new Map<string, { x: number; y: number; textAnchor: 'start' | 'middle' | 'end' }>();
+    const placements = new Map<string, { x: number; y: number; textAnchor: 'start' | 'middle' | 'end'; rotation?: number }>();
     if (layoutMode === 'force') return placements;
 
     const orderedTypes = nodeTypeOrder.filter((type) => displayNodes.some((node) => node.type === type));
@@ -460,7 +460,6 @@ export default function Home() {
       const sameType = displayNodes.filter((node) => node.type === type).sort((a, b) => layoutMode === 'bipartite'
         ? a.y - b.y || a.label.localeCompare(b.label, 'lv')
         : a.x - b.x || a.label.localeCompare(b.label, 'lv'));
-      const laneEnds: number[] = [];
       sameType.forEach((node) => {
         const radius = nodeRadius(node, layoutMode);
         if (layoutMode === 'bipartite') {
@@ -474,16 +473,13 @@ export default function Home() {
           return;
         }
 
-        const labelWidth = Math.min(170, Math.max(24, node.label.length * 4.35));
-        const center = Math.max(labelWidth / 2 + 7, Math.min(893 - labelWidth / 2, node.x));
-        const leftEdge = center - labelWidth / 2;
-        let lane = laneEnds.findIndex((rightEdge) => leftEdge - rightEdge >= 5);
-        if (lane === -1) lane = laneEnds.length;
-        laneEnds[lane] = center + labelWidth / 2;
+        const diagonal = sameType.length > 10;
+        const leanLeft = diagonal && node.x > 765;
         placements.set(node.id, {
-          x: center - node.x,
-          y: 27 + lane * 10,
-          textAnchor: 'middle',
+          x: diagonal ? (leanLeft ? -radius - 6 : radius + 6) : 0,
+          y: -radius - 8,
+          textAnchor: diagonal ? (leanLeft ? 'end' : 'start') : 'middle',
+          rotation: diagonal ? (leanLeft ? 45 : -45) : undefined,
         });
       });
     });
@@ -683,7 +679,7 @@ export default function Home() {
               <rect className="network-hit-area" x="0" y="0" width="900" height="570" onPointerDown={startPanning} />
               <g>
                 <g className="network-edges">{graph.edges.map((edge, edgeIndex) => { const source = positionById.get(edge.source)!; const target = positionById.get(edge.target)!; const sourceSelected = selectedIds.includes(edge.source); const targetSelected = selectedIds.includes(edge.target); const active = selectedIds.length > 0 && (sourceSelected || targetSelected); const reverseFlow = sourceSelected !== targetSelected ? targetSelected : layoutMode === 'hierarchical' && source.y > target.y; const start = reverseFlow ? target : source; const end = reverseFlow ? source : target; const baseWidth = active ? Math.min(1.65, .45 + Math.sqrt(edge.weight) * .32) : .48; const showFlow = rainAnimation || selectedIds.length === 0 || active; const flowStyle = { strokeWidth: active ? Math.min(1.9, baseWidth + .25) : .72, '--arrival-duration': `${active ? 1.05 + (edgeIndex % 3) * .08 : 1.4 + (edgeIndex % 5) * .08}s`, '--flow-delay': `${(edgeIndex % 9) * .035}s`, '--rain-duration': `${4.4 + (edgeIndex % 5) * .32}s`, '--rain-delay': `${-(edgeIndex % 9) * .43}s` } as CSSProperties; const flowKey = `${layoutMode}-${rainAnimation ? 'rain' : selectedIds.join('|') || 'intro'}`; return <g key={`${edge.source}-${edge.target}`} className={active ? 'is-active' : ''}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={{ strokeWidth: baseWidth }} />{layoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>; })}</g>
-                <g className="network-nodes">{displayNodes.map((node) => { const selected = selectedIds.includes(node.id); const active = !selectedIds.length || activeIds.has(node.id); const radius = nodeRadius(node, layoutMode); const showLabel = labelMode === 'all' || (labelMode === 'active' && selectedIds.length > 0 && active); const emphasisClass = selectedIds.length ? (active ? 'is-active' : 'is-dimmed') : 'is-ambient'; const structuredLabel = labelPlacementById.get(node.id); const labelX = structuredLabel?.x ?? (node.x < 450 ? radius + 7 : -radius - 7); const labelY = structuredLabel?.y ?? 4; const labelAnchor = structuredLabel?.textAnchor ?? (node.x < 450 ? 'start' : 'end'); return <g key={node.id} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass}`} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><NodeShape type={node.type} radius={radius} />{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined}>{node.label}</text>}</g>; })}</g>
+                <g className="network-nodes">{displayNodes.map((node) => { const selected = selectedIds.includes(node.id); const active = !selectedIds.length || activeIds.has(node.id); const radius = nodeRadius(node, layoutMode); const showLabel = labelMode === 'all' || (labelMode === 'active' && selectedIds.length > 0 && active); const emphasisClass = selectedIds.length ? (active ? 'is-active' : 'is-dimmed') : 'is-ambient'; const structuredLabel = labelPlacementById.get(node.id); const labelX = structuredLabel?.x ?? (node.x < 450 ? radius + 7 : -radius - 7); const labelY = structuredLabel?.y ?? 4; const labelAnchor = structuredLabel?.textAnchor ?? (node.x < 450 ? 'start' : 'end'); const labelTransform = structuredLabel?.rotation ? `rotate(${structuredLabel.rotation} ${labelX} ${labelY})` : undefined; return <g key={node.id} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass}`} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><NodeShape type={node.type} radius={radius} />{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>; })}</g>
               </g>
             </svg>
           </div> : <div className="graph-empty"><FilterX /><h3>{t.noData}</h3><p>{t.noDataHelp}</p><Button variant="outline" onClick={clearFilters}>{t.clearFilters}</Button></div>}
