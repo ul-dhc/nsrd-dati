@@ -11,6 +11,10 @@ import {
   Info,
   Moon,
   Network,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
   Pause,
   Play,
   RotateCcw,
@@ -84,7 +88,7 @@ const ui = {
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
-    choose: 'Izvēlies mezglu vai kopu', chooseHelp: 'Klikšķini tīklā, lai izceltu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Tīkla kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur mezglu kustību un saišu animāciju.', linkAnimation: 'Saišu animācija', rain: 'Animācija “Lietus”', rainHelp: 'Nepārtraukta saišu plūsma hierarhiskajā un divdaļīgajā skatā.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
+    choose: 'Izvēlies mezglu vai kopu', chooseHelp: 'Klikšķini tīklā, lai izceltu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt tīkla slāņu paneli', showFilters: 'Parādīt tīkla slāņu paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Tīkla kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur mezglu kustību un saišu animāciju.', linkAnimation: 'Saišu animācija', rain: 'Animācija “Lietus”', rainHelp: 'Nepārtraukta saišu plūsma hierarhiskajā un divdaļīgajā skatā.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
   },
   en: {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
@@ -95,7 +99,7 @@ const ui = {
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
-    choose: 'Choose a node or set', chooseHelp: 'Click in the network to highlight links and see a summary of the selected data.', currently: 'Currently filtered', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Network motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses node motion and link animation.', linkAnimation: 'Link animation', rain: '“Rain” animation', rainHelp: 'Continuous link flow in hierarchical and bipartite views.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
+    choose: 'Choose a node or set', chooseHelp: 'Click in the network to highlight links and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide network layers panel', showFilters: 'Show network layers panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Network motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses node motion and link animation.', linkAnimation: 'Link animation', rain: '“Rain” animation', rainHelp: 'Continuous link flow in hierarchical and bipartite views.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
   },
 } as const;
 const displayPersonName = (value: string) => {
@@ -277,6 +281,8 @@ export default function Home() {
   const [textSize, setTextSize] = useState<TextSize>(16);
   const [palette, setPalette] = useState<PaletteId>('archive');
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [controlsPanelOpen, setControlsPanelOpen] = useState(true);
+  const [inspectorPanelOpen, setInspectorPanelOpen] = useState(true);
   const [preferencesReady, setPreferencesReady] = useState(false);
   const [personQuery, setPersonQuery] = useState('');
   const [artifactQuery, setArtifactQuery] = useState('');
@@ -636,8 +642,8 @@ export default function Home() {
           <fieldset className="settings-section"><legend>{t.linkAnimation}</legend><label className="selection-toggle"><Checkbox checked={rainAnimation} onCheckedChange={(checked) => setRainAnimation(Boolean(checked))} /><span><strong>{t.rain}</strong><small>{t.rainHelp}</small></span></label></fieldset>
         </section>
       </>}
-      <div className="workspace">
-        <aside className="controls-panel" aria-label={t.networkLayers}>
+      <div className={`workspace ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
+        <aside id="network-layers-panel" className="controls-panel" aria-label={t.networkLayers} hidden={!controlsPanelOpen}>
           <div className="panel-title"><Network aria-hidden="true" /><div><span>{t.networkLayers}</span><strong>{t.showInNetwork}</strong></div></div>
           <fieldset className="node-type-options"><legend className="sr-only">{t.showInNetwork}</legend>
             <span className="layer-chip is-fixed"><i className="node-swatch artifact" />{currentTypeLabels.artifact}</span>
@@ -655,6 +661,7 @@ export default function Home() {
 
         <section id="network" className="network-panel" aria-label={t.networkAria}>
           <div className="network-toolbar">
+            <button type="button" className="panel-visibility-toggle" onClick={() => setControlsPanelOpen((current) => !current)} aria-label={controlsPanelOpen ? t.hideFilters : t.showFilters} aria-controls="network-layers-panel" aria-expanded={controlsPanelOpen} title={controlsPanelOpen ? t.hideFilters : t.showFilters}>{controlsPanelOpen ? <PanelLeftClose /> : <PanelLeftOpen />}</button>
             <div className="toolbar-tools">
               <div className="network-view-options">
                 <label><span>{t.view}</span><NativeSelect value={layoutMode} onChange={(event) => changeLayoutMode(event.target.value as LayoutMode)}>{(Object.keys(layoutLabels[locale]) as LayoutMode[]).map((mode) => <NativeSelectOption key={mode} value={mode}>{layoutLabels[locale][mode]}</NativeSelectOption>)}</NativeSelect></label>
@@ -673,6 +680,7 @@ export default function Home() {
               </div>
             </div>
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>
+            <button type="button" className="panel-visibility-toggle" onClick={() => setInspectorPanelOpen((current) => !current)} aria-label={inspectorPanelOpen ? t.hideDetails : t.showDetails} aria-controls="selection-details-panel" aria-expanded={inspectorPanelOpen} title={inspectorPanelOpen ? t.hideDetails : t.showDetails}>{inspectorPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}</button>
           </div>
           {graph.nodes.length ? <div className="network-stage">
             <svg ref={svgRef} className={`network-canvas ${layoutMode !== 'force' ? 'is-structured' : ''} ${layoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} ${rainAnimation ? 'is-rain' : ''} ${motionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
@@ -687,7 +695,7 @@ export default function Home() {
           <ResultList locale={locale} resultEvents={resultEvents} selectedCount={selectedIds.length} onSelect={(event) => setSelectedIds([`artifact:${event.id}`])} />
         </section>
 
-        <aside className="inspector-panel" aria-label={t.selection}>
+        <aside id="selection-details-panel" className="inspector-panel" aria-label={t.selection} hidden={!inspectorPanelOpen}>
           {selectedNodes.length ? <SelectionInspector locale={locale} nodes={selectedNodes} resultEvents={resultEvents} logic={selectionLogic} setLogic={setSelectionLogic} removeNode={(id) => setSelectedIds((current) => current.filter((item) => item !== id))} /> : <EmptyInspector locale={locale} count={resultEvents.length} />}
         </aside>
       </div>
