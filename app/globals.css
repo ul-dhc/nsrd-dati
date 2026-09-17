@@ -231,7 +231,7 @@ body {
 .dark .graph-node.is-ambient .node-shape { opacity: .46; }
 .dark .graph-node.is-dimmed { opacity: .58; }
 .dark .network-edges line:not(.is-active) { opacity: .38; }
-.graph-node text { fill: var(--foreground); font-size: .625rem; font-weight: 500; paint-order: stroke; stroke: var(--background); stroke-width: 3px; stroke-linejoin: round; }
+.graph-node text { fill: var(--foreground); font-size: .5rem; font-weight: 500; paint-order: stroke; stroke: var(--background); stroke-width: 2px; stroke-linejoin: round; }
 .network-hint { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: .6875rem; }
 .network-hint > div { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .network-hint strong { color: var(--foreground); font-size: .625rem; font-weight: 500; white-space: nowrap; }
