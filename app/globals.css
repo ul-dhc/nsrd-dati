@@ -150,6 +150,9 @@ body {
 .motion-options button + button { border-left: 1px solid var(--border); }
 .motion-options button[aria-pressed="true"] { color: var(--primary-foreground); background: var(--primary); }
 .motion-options svg { width: 13px; }
+.animation-style-field { display: block; }
+.animation-style-field [data-slot="native-select-wrapper"] { width: 100%; }
+.animation-style-field select { height: 40px; font-size: .6875rem; }
 .settings-section > p { margin-top: 7px; color: var(--muted-foreground); font-size: .5625rem; line-height: 1.45; }
 .eyebrow, .inspector-type { color: var(--muted-foreground); font-size: .625rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
 .workspace { min-height: calc(100vh - 74px); display: grid; grid-template-columns: 248px minmax(500px,1fr) 310px; align-items: start; }
@@ -228,11 +231,20 @@ body {
 .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--palette-teal) 88%, var(--foreground)); opacity: .92; }
 .network-canvas.is-structured .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--palette-magenta) 68%, transparent); opacity: .6; }
 .network-canvas.is-structured .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--palette-magenta) 90%, var(--foreground)); opacity: .96; }
-.network-canvas.is-rain .network-edge-flow { stroke-dasharray: .35 7; stroke-dashoffset: 0; opacity: .52; animation: network-edge-rain var(--rain-duration) linear var(--rain-delay) infinite; }
-.network-canvas.is-motion-paused:not(.is-rain) .network-edge-flow { animation: none; stroke-dashoffset: 0; }
-.network-canvas.is-motion-paused.is-rain .network-edge-flow { animation-play-state: paused; }
+.network-canvas.animation-rain .network-edge-flow { stroke-dasharray: .35 7; stroke-dashoffset: 0; opacity: .52; animation: network-edge-rain var(--rain-duration) linear var(--rain-delay) infinite; }
+.network-canvas.is-motion-paused:not(.animation-rain) .network-edge-flow { animation: none; stroke-dashoffset: 0; }
+.network-canvas.is-motion-paused.animation-rain .network-edge-flow { animation-play-state: paused; }
+.network-canvas.animation-breath .graph-node .node-shape { transform-box: fill-box; transform-origin: center; animation: network-node-breathe 4.8s ease-in-out var(--breath-delay) infinite; }
+.network-canvas.animation-echo.has-selection .graph-node.has-echo-path .node-shape { transform-box: fill-box; transform-origin: center; animation: network-node-echo 1.7s cubic-bezier(.2,.72,.28,1) var(--echo-delay) 1 both; }
+.network-canvas.animation-wave .graph-node .node-shape { transform-box: fill-box; transform-origin: center; animation: network-node-wave 4.8s ease-in-out var(--wave-delay) infinite; }
+.network-canvas.animation-wave .network-edge-base { animation: network-edge-wave 4.8s ease-in-out var(--wave-delay) infinite; }
+.network-canvas.is-motion-paused .graph-node .node-shape, .network-canvas.is-motion-paused .network-edge-base { animation-play-state: paused; }
 @keyframes network-edge-arrive { to { stroke-dashoffset: 0; } }
 @keyframes network-edge-rain { to { stroke-dashoffset: -100; } }
+@keyframes network-node-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.09); } }
+@keyframes network-node-echo { 0%, 100% { transform: scale(1); } 32% { transform: scale(1.2); } }
+@keyframes network-node-wave { 0%, 18%, 100% { transform: scale(1); } 8% { transform: scale(1.16); } }
+@keyframes network-edge-wave { 0%, 18%, 100% { filter: brightness(1); } 8% { filter: brightness(2.2) saturate(1.35); } }
 .graph-node { cursor: grab; outline: none !important; transition: opacity .15s; }
 .graph-node:focus, .graph-node:focus-visible { outline: none !important; }
 .graph-node:active { cursor: grabbing; }
@@ -260,7 +272,7 @@ body {
 .dark .network-edges g.is-active .network-edge-flow { opacity: .96; }
 .graph-node text { fill: var(--foreground); font-size: calc(.5rem * var(--graph-label-scale, 1)); font-weight: 500; paint-order: stroke; stroke: var(--background); stroke-width: 2px; stroke-linejoin: round; }
 .network-canvas.is-bipartite .graph-node text { font-size: calc(.3125rem * var(--graph-label-scale, 1)); stroke-width: .75px; }
-@media (prefers-reduced-motion: reduce) { .network-edge-flow, .network-canvas.is-rain .network-edge-flow { animation: none; stroke-dasharray: 100; stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .network-edge-flow, .network-canvas.animation-rain .network-edge-flow, .network-canvas .graph-node .node-shape, .network-canvas .network-edge-base { animation: none; stroke-dasharray: 100; stroke-dashoffset: 0; } }
 .network-hint { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: .6875rem; }
 .network-hint > div { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .network-hint strong { color: var(--foreground); font-size: .625rem; font-weight: 500; white-space: nowrap; }
