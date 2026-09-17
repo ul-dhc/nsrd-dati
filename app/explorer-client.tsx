@@ -47,7 +47,8 @@ type PaletteId = 'archive' | 'neon' | 'autumn' | 'pastel' | 'vivid';
 type SelectionLogic = 'any' | 'all';
 type LabelMode = 'active' | 'all' | 'none';
 type GraphLabelScale = 1 | 1.25 | 1.5;
-type AnimationStyle = 'none' | 'rain' | 'echo' | 'wave' | 'pencil';
+type AnimationStyle = 'none' | 'rain' | 'echo' | 'wave';
+type VisualizationStyle = 'standard' | 'pencil';
 type AppView = 'network' | 'dashboard';
 type GraphNode = { id: string; payloadId: string; label: string; type: NodeType; degree: number; x: number; y: number };
 type GraphEdge = { source: string; target: string; weight: number; contexts: string[] };
@@ -76,6 +77,9 @@ const animationStyleOptions: Array<{ id: AnimationStyle; lv: string; en: string 
   { id: 'rain', lv: 'Lietus', en: 'Rain' },
   { id: 'echo', lv: 'Atbalss', en: 'Echo' },
   { id: 'wave', lv: 'Vilnis', en: 'Wave' },
+];
+const visualizationStyleOptions: Array<{ id: VisualizationStyle; lv: string; en: string }> = [
+  { id: 'standard', lv: 'Standarta', en: 'Standard' },
   { id: 'pencil', lv: 'Zīmulis', en: 'Pencil' },
 ];
 const appViewOptions: Array<{ id: AppView; lv: string; en: string }> = [
@@ -103,7 +107,7 @@ const ui = {
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
-    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', animationHelpPencil: 'Krāsaino zīmuļu faktūra un brīvi zīmētas kontūras izvēlētās paletes krāsās.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
+    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', visualizationStyle: 'Vizualizācijas stils', visualizationHelpStandard: 'Standarta noformējums ar vienmērīgi aizpildītiem krāsu laukumiem.', visualizationHelpPencil: 'Plānas skices līnijas un krāsains zīmuļa šrafējums uz papīra fona.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
     filters: 'Filtri', filterViews: 'Filtrēt skatus', details: 'Detaļas', showRecords: 'Rādīt ierakstus', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
     records: 'Ieraksti', documentedPeople: 'Personas', relatedPeople: 'Līdzdalībnieki', visibleFormats: 'Formāti', formatChart: 'Ieraksti pēc formāta', peopleChart: 'Personas pēc ierakstu skaita', artifactChart: 'Ieraksti pēc dalībnieku skaita', collaborationMatrix: 'Kopīgo ierakstu matrica', collaborationMobile: 'Personu sadarbības', collaborationHelp: 'Klikšķini šūnā, lai atlasītu personu pāri un apskatītu kopīgos ierakstus.', topCollaborations: 'Biežākie sadarbību pāri', sharedRecords: 'kopīgi ieraksti', noCollaborations: 'Šai atlasei nav pietiekami daudz personu sadarbību.',
   },
@@ -116,7 +120,7 @@ const ui = {
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
-    choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', animationHelpPencil: 'Colored-pencil texture and hand-drawn outlines using the selected palette.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
+    choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', visualizationStyle: 'Visualization style', visualizationHelpStandard: 'Standard appearance with evenly filled color areas.', visualizationHelpPencil: 'Fine sketch lines and colored-pencil hatching on a paper background.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
     filters: 'Filters', filterViews: 'Filter views', details: 'Details', showRecords: 'Show recordings', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
     records: 'Recordings', documentedPeople: 'People', relatedPeople: 'Collaborators', visibleFormats: 'Formats', formatChart: 'Recordings by format', peopleChart: 'People by number of recordings', artifactChart: 'Recordings by number of participants', collaborationMatrix: 'Shared-recording matrix', collaborationMobile: 'Person collaborations', collaborationHelp: 'Click a cell to select a pair of people and inspect their shared recordings.', topCollaborations: 'Top collaboration pairs', sharedRecords: 'shared recordings', noCollaborations: 'There are not enough person collaborations in this selection.',
   },
@@ -301,6 +305,20 @@ function PencilFilterDefs() {
         <feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="2" seed="17" result="noise" />
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.25" xChannelSelector="R" yChannelSelector="G" />
       </filter>
+      {[
+        ['person', 'var(--node-person)', -18],
+        ['artifact', 'var(--node-artifact)', 22],
+        ['format', 'var(--node-format)', -32],
+        ['group', 'var(--node-group)', 28],
+        ['institution', 'var(--node-institution)', -24],
+      ].map(([name, color, angle]) => <pattern key={name} id={`pencil-${name}`} patternUnits="userSpaceOnUse" width="5" height="5" patternTransform={`rotate(${angle})`}>
+        <rect width="5" height="5" fill="#fffdf7" />
+        <path d="M 0 1 L 5 1 M 0 3.7 L 5 3.7" stroke={String(color)} strokeWidth=".75" opacity=".82" />
+      </pattern>)}
+      {['var(--palette-green)', 'var(--palette-amber)', 'var(--palette-teal)', 'var(--palette-blue)', 'var(--palette-magenta)', 'var(--palette-orange)'].map((color, index) => <pattern key={color} id={`pencil-chart-${index}`} patternUnits="userSpaceOnUse" width="4" height="4" patternTransform={`rotate(${index % 2 ? 24 : -24})`}>
+        <rect width="4" height="4" fill="#fffdf7" />
+        <path d="M 0 1 L 4 1 M 0 3 L 4 3" stroke={color} strokeWidth=".8" opacity=".9" />
+      </pattern>)}
     </defs>
   </svg>;
 }
@@ -328,6 +346,7 @@ export default function Home() {
   const [rightType, setRightType] = useState<NodeType>('artifact');
   const [motionFrozen, setMotionFrozen] = useState(false);
   const [animationStyle, setAnimationStyle] = useState<AnimationStyle>('none');
+  const [visualizationStyle, setVisualizationStyle] = useState<VisualizationStyle>('standard');
   const [appView, setAppView] = useState<AppView>('network');
   const [labelMode, setLabelMode] = useState<LabelMode>('active');
   const [graphLabelScale, setGraphLabelScale] = useState<GraphLabelScale>(1);
@@ -355,8 +374,8 @@ export default function Home() {
     rain: t.animationHelpRain,
     echo: t.animationHelpEcho,
     wave: t.animationHelpWave,
-    pencil: t.animationHelpPencil,
   }[animationStyle];
+  const visualizationHelp = visualizationStyle === 'pencil' ? t.visualizationHelpPencil : t.visualizationHelpStandard;
 
   useEffect(() => {
     const savedLocale = window.localStorage.getItem('nsrd-locale');
@@ -365,20 +384,23 @@ export default function Home() {
     const savedPalette = window.localStorage.getItem('nsrd-palette');
     const savedMotion = window.localStorage.getItem('nsrd-motion');
     const savedAnimationStyle = window.localStorage.getItem('nsrd-animation-style');
+    const savedVisualizationStyle = window.localStorage.getItem('nsrd-visualization-style');
     const savedRainAnimation = window.localStorage.getItem('nsrd-rain-animation');
     const initialLocale = savedLocale === 'lv' || savedLocale === 'en' ? savedLocale : 'lv';
     const initialTheme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     const initialTextSize: TextSize = savedTextSize === 18 || savedTextSize === 20 ? savedTextSize : 16;
     const initialPalette = paletteOptions.some((option) => option.id === savedPalette) ? savedPalette as PaletteId : 'archive';
-    const initialAnimationStyle = savedAnimationStyle
+    const initialAnimationStyle = savedAnimationStyle && savedAnimationStyle !== 'pencil'
       ? animationStyleOptions.some((option) => option.id === savedAnimationStyle) ? savedAnimationStyle as AnimationStyle : 'none'
       : savedRainAnimation === 'true' ? 'rain' : 'none';
+    const initialVisualizationStyle: VisualizationStyle = savedVisualizationStyle === 'pencil' || savedAnimationStyle === 'pencil' ? 'pencil' : 'standard';
     setLocale(initialLocale);
     setTheme(initialTheme);
     setTextSize(initialTextSize);
     setPalette(initialPalette);
     setMotionFrozen(savedMotion === 'static');
     setAnimationStyle(initialAnimationStyle);
+    setVisualizationStyle(initialVisualizationStyle);
     document.documentElement.lang = initialLocale;
     document.documentElement.classList.toggle('dark', initialTheme === 'dark');
     document.documentElement.style.colorScheme = initialTheme;
@@ -415,6 +437,10 @@ export default function Home() {
     if (!preferencesReady) return;
     window.localStorage.setItem('nsrd-animation-style', animationStyle);
   }, [animationStyle, preferencesReady]);
+  useEffect(() => {
+    if (!preferencesReady) return;
+    window.localStorage.setItem('nsrd-visualization-style', visualizationStyle);
+  }, [preferencesReady, visualizationStyle]);
   useEffect(() => {
     if (!settingsOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setSettingsOpen(false); };
@@ -738,6 +764,7 @@ export default function Home() {
           </div></fieldset>
           <fieldset className="settings-section"><legend>{t.graphMotion}</legend><div className="motion-options"><button type="button" aria-pressed={!motionFrozen} onClick={() => setMotionFrozen(false)}><Play />{t.dynamic}</button><button type="button" aria-pressed={motionFrozen} onClick={() => setMotionFrozen(true)}><Pause />{t.static}</button></div><p>{t.motionHelp}</p></fieldset>
           <fieldset className="settings-section"><legend>{t.animationStyle}</legend><div className="animation-style-field"><Select value={animationStyle} onValueChange={(value) => setAnimationStyle(value as AnimationStyle)}><SelectTrigger aria-label={t.animationStyle}><SelectValue>{animationStyleOptions.find((option) => option.id === animationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{animationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{animationHelp}</p></fieldset>
+          <fieldset className="settings-section"><legend>{t.visualizationStyle}</legend><div className="visualization-style-field"><Select value={visualizationStyle} onValueChange={(value) => setVisualizationStyle(value as VisualizationStyle)}><SelectTrigger aria-label={t.visualizationStyle}><SelectValue>{visualizationStyleOptions.find((option) => option.id === visualizationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{visualizationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{visualizationHelp}</p></fieldset>
         </section>
       </>}
       <div className={`workspace ${compactPanels ? 'is-compact' : ''} ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
@@ -789,7 +816,7 @@ export default function Home() {
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>
           </div>
           {graph.nodes.length ? <div className="network-stage">
-            <svg ref={svgRef} className={`network-canvas ${layoutMode !== 'force' ? 'is-structured' : ''} ${layoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} animation-${animationStyle} ${motionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
+            <svg ref={svgRef} className={`network-canvas ${layoutMode !== 'force' ? 'is-structured' : ''} ${layoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} animation-${animationStyle} style-${visualizationStyle} ${motionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
               <rect className="network-hit-area" x="0" y="0" width="900" height="570" onPointerDown={startPanning} />
               <g>
                 <g className="network-edges">{graph.edges.map((edge, edgeIndex) => {
@@ -812,7 +839,7 @@ export default function Home() {
                   } as CSSProperties;
                   const baseStyle = { strokeWidth: baseWidth, '--wave-delay': `${-(((start.x + end.x) / 2) / 900) * 4.8}s` } as CSSProperties;
                   const flowKey = `${layoutMode}-${animationStyle}-${selectedIds.join('|') || 'intro'}`;
-                  return <g key={`${edge.source}-${edge.target}`} className={active ? 'is-active' : ''}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />{animationStyle === 'pencil' && <line className="network-edge-pencil" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />}{layoutMode !== 'force' && showFlow && animationStyle !== 'pencil' && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>;
+                  return <g key={`${edge.source}-${edge.target}`} className={active ? 'is-active' : ''}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />{visualizationStyle === 'pencil' && <line className="network-edge-pencil" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />}{layoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>;
                 })}</g>
                 <g className="network-nodes">{displayNodes.map((node) => {
                   const selected = selectedIds.includes(node.id);
@@ -830,7 +857,7 @@ export default function Home() {
                     '--wave-delay': `${-(node.x / 900) * 4.8}s`,
                     '--echo-delay': `${Math.min(echoDistance ?? 0, 6) * .14}s`,
                   } as CSSProperties;
-                  return <g key={`${node.id}-${animationStyle === 'echo' ? selectedIds.join('|') : ''}`} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass} ${echoDistance !== undefined ? 'has-echo-path' : ''}`} style={nodeAnimationStyle} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><NodeShape type={node.type} radius={radius} />{animationStyle === 'pencil' && <NodeShape type={node.type} radius={radius} className="pencil-node-outline" />}{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>;
+                  return <g key={`${node.id}-${animationStyle === 'echo' ? selectedIds.join('|') : ''}`} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass} ${echoDistance !== undefined ? 'has-echo-path' : ''}`} style={nodeAnimationStyle} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><NodeShape type={node.type} radius={radius} />{visualizationStyle === 'pencil' && <NodeShape type={node.type} radius={radius} className="pencil-node-outline" />}{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>;
                 })}</g>
               </g>
             </svg>
@@ -838,7 +865,7 @@ export default function Home() {
           <div className="network-hint"><div><strong>{graph.nodes.length} {t.nodes} · {graph.edges.length} {t.links} · {filteredEvents.length} {t.artifacts}</strong><span>{t.dragHelp}</span></div>{selectedIds.length > 0 && <button onClick={() => setSelectedIds([])}>{t.clearSelection}</button>}</div>
           <ResultList locale={locale} resultEvents={resultEvents} selectedCount={selectedIds.length} onSelect={(event) => setSelectedIds([`artifact:${event.id}`])} />
           </>}
-          {appView === 'dashboard' && <OverviewDashboard locale={locale} resultEvents={resultEvents} selectedIds={selectedIds} animationStyle={animationStyle} motionFrozen={motionFrozen} onSelectPerson={(name) => { setSelectionLogic('any'); setSelectedIds([`person:${name}`]); }} onSelectPair={(left, right) => { setSelectionLogic('all'); setSelectedIds([`person:${left}`, `person:${right}`]); }} onSelectArtifact={(id) => setSelectedIds([`artifact:${id}`])} onSelectFormat={(name) => { setFormat(name); setSelectedIds([]); }} onClearSelection={() => setSelectedIds([])} />}
+          {appView === 'dashboard' && <OverviewDashboard locale={locale} resultEvents={resultEvents} selectedIds={selectedIds} animationStyle={animationStyle} visualizationStyle={visualizationStyle} motionFrozen={motionFrozen} onSelectPerson={(name) => { setSelectionLogic('any'); setSelectedIds([`person:${name}`]); }} onSelectPair={(left, right) => { setSelectionLogic('all'); setSelectedIds([`person:${left}`, `person:${right}`]); }} onSelectArtifact={(id) => setSelectedIds([`artifact:${id}`])} onSelectFormat={(name) => { setFormat(name); setSelectedIds([]); }} onClearSelection={() => setSelectedIds([])} />}
         </section>
 
         <aside id="selection-details-panel" className="inspector-panel" aria-label={t.selection} hidden={!inspectorPanelOpen}>
@@ -850,11 +877,12 @@ export default function Home() {
   );
 }
 
-function OverviewDashboard({ locale, resultEvents, selectedIds, animationStyle, motionFrozen, onSelectPerson, onSelectPair, onSelectArtifact, onSelectFormat, onClearSelection }: {
+function OverviewDashboard({ locale, resultEvents, selectedIds, animationStyle, visualizationStyle, motionFrozen, onSelectPerson, onSelectPair, onSelectArtifact, onSelectFormat, onClearSelection }: {
   locale: Locale;
   resultEvents: EventRecord[];
   selectedIds: string[];
   animationStyle: AnimationStyle;
+  visualizationStyle: VisualizationStyle;
   motionFrozen: boolean;
   onSelectPerson: (name: string) => void;
   onSelectPair: (left: string, right: string) => void;
@@ -876,8 +904,9 @@ function OverviewDashboard({ locale, resultEvents, selectedIds, animationStyle, 
   const maxArtifact = Math.max(1, ...artifactCounts.map(({ count }) => count));
   const totalFormats = Math.max(1, formatCounts.reduce((sum, [, count]) => sum + count, 0));
   const chartColors = ['var(--palette-green)', 'var(--palette-amber)', 'var(--palette-teal)', 'var(--palette-blue)', 'var(--palette-magenta)', 'var(--palette-orange)'];
+  const chartPencilPatterns = chartColors.map((_, index) => `url(#pencil-chart-${index})`);
   let donutOffset = 0;
-  const surfaceClass = `analytics-surface animation-${animationStyle} ${motionFrozen ? 'is-motion-paused' : ''} ${selectedIds.length ? 'has-selection' : ''}`;
+  const surfaceClass = `analytics-surface animation-${animationStyle} style-${visualizationStyle} ${motionFrozen ? 'is-motion-paused' : ''} ${selectedIds.length ? 'has-selection' : ''}`;
 
   return <div className={surfaceClass}>
     <div className="analytics-summary" aria-label={t.overviewAria}>
@@ -894,7 +923,7 @@ function OverviewDashboard({ locale, resultEvents, selectedIds, animationStyle, 
               const segment = count / totalFormats * 100;
               const offset = donutOffset;
               donutOffset += segment;
-              return <circle key={name} className="donut-segment" cx="60" cy="60" r="46" pathLength="100" style={{ stroke: chartColors[index % chartColors.length], strokeDasharray: `${segment} ${100 - segment}`, strokeDashoffset: -offset, '--animation-index': index } as CSSProperties} />;
+              return <circle key={name} className="donut-segment" cx="60" cy="60" r="46" pathLength="100" style={{ stroke: visualizationStyle === 'pencil' ? chartPencilPatterns[index % chartPencilPatterns.length] : chartColors[index % chartColors.length], strokeDasharray: `${segment} ${100 - segment}`, strokeDashoffset: -offset, '--animation-index': index } as CSSProperties} />;
             })}</svg>
             <div><strong>{resultEvents.length}</strong><span>{t.records}</span></div>
           </div>
