@@ -213,7 +213,9 @@ body {
 .network-edges { pointer-events: none; }
 .network-edge-base { stroke: color-mix(in srgb, var(--foreground) 22%, transparent); opacity: .3; transition: opacity .2s, stroke .2s; }
 .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--palette-teal) 62%, transparent); opacity: .76; }
+.network-canvas.has-selection .network-edges g:not(.is-active) .network-edge-base { stroke: color-mix(in srgb, var(--foreground) 40%, transparent); opacity: .35; }
 .network-canvas.is-structured .network-edge-base { opacity: .08; }
+.network-canvas.is-structured.has-selection .network-edges g:not(.is-active) .network-edge-base { opacity: .24; }
 .network-edge-flow { stroke: color-mix(in srgb, var(--palette-teal) 62%, transparent); stroke-dasharray: 100; stroke-dashoffset: 100; stroke-linecap: round; opacity: .34; vector-effect: non-scaling-stroke; animation: network-edge-arrive var(--arrival-duration) cubic-bezier(.22,.72,.24,1) var(--flow-delay) 1 forwards; }
 .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--palette-teal) 88%, var(--foreground)); opacity: .92; }
 .network-canvas.is-structured .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--palette-magenta) 68%, transparent); opacity: .6; }
@@ -245,6 +247,7 @@ body {
 .dark .graph-node.is-dimmed { opacity: .58; }
 .dark .network-edge-base { opacity: .38; }
 .dark .network-canvas.is-structured .network-edge-base { opacity: .11; }
+.dark .network-canvas.is-structured.has-selection .network-edges g:not(.is-active) .network-edge-base { opacity: .3; }
 .dark .network-edge-flow { opacity: .62; }
 .dark .network-edges g.is-active .network-edge-flow { opacity: .96; }
 .graph-node text { fill: var(--foreground); font-size: calc(.5rem * var(--graph-label-scale, 1)); font-weight: 500; paint-order: stroke; stroke: var(--background); stroke-width: 2px; stroke-linejoin: round; }
