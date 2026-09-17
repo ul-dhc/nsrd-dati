@@ -8,6 +8,7 @@ import {
   CircleHelp,
   Eye,
   EyeOff,
+  Expand,
   FilterX,
   Info,
   ListFilter,
@@ -102,7 +103,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'NSRD un Seque ierakstu un personu tīkla vizualizācija', explore: 'Saikņu izpēte', networkLayers: 'Tīkla slāņi', showInNetwork: 'Rādīt tīklā',
     searchPerson: 'Meklēt personu', personPlaceholder: 'Sāc rakstīt vārdu…', clearPerson: 'Notīrīt personas meklējumu', searchArtifact: 'Meklēt artefaktu', artifactPlaceholder: 'Sāc rakstīt nosaukumu…', clearArtifact: 'Notīrīt artefakta meklējumu',
     years: 'Gadu diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', multiHelp: 'Klikšķini, lai pievienotu vai noņemtu', clearFilters: 'Notīrīt filtrus',
-    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Kustināt', freeze: 'Fiksēt', compact: 'Sablīvēt tīklu', spread: 'Izretināt tīklu', distance: 'Attālums starp mezgliem', legend: 'Leģenda',
+    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', distance: 'Tīkla mērogs', legend: 'Leģenda',
     labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', graphTextSize: 'Tīkla nosaukumu izmērs', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
@@ -115,7 +116,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
     searchPerson: 'Search for a person', personPlaceholder: 'Start typing a name…', clearPerson: 'Clear person search', searchArtifact: 'Search for an artifact', artifactPlaceholder: 'Start typing a title…', clearArtifact: 'Clear artifact search',
     years: 'Year range', format: 'Format', allFormats: 'All formats', multi: 'Select multiple nodes', multiHelp: 'Click to add or remove', clearFilters: 'Clear filters',
-    view: 'View', left: 'Left column', right: 'Right column', move: 'Animate', freeze: 'Freeze', compact: 'Compact network', spread: 'Spread network', distance: 'Distance between nodes', legend: 'Legend',
+    view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', distance: 'Network scale', legend: 'Legend',
     labels: 'Labels', labelClick: 'Click to change mode.', graphTextSize: 'Network label size', networkAria: 'NSRD and Seque multilayer network', links: 'links', nodes: 'nodes', artifacts: 'artifacts',
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
@@ -729,6 +730,23 @@ export default function Home() {
   };
   const cancelInteraction = () => { setDraggingId(null); setPanning(false); panStart.current = null; nodePointerStart.current = null; dragCluster.current = null; elasticTargets.current = {}; elasticVelocities.current = {}; };
   const changeZoom = (next: number) => setZoom(Math.max(.35, Math.min(8, next)));
+  const scatterNodes = () => {
+    const factor = 1.18;
+    setManualPositions((current) => Object.fromEntries(graph.nodes.map((node) => {
+      const position = current[node.id] ?? node;
+      let dx = position.x - 450;
+      let dy = position.y - 285;
+      if (Math.hypot(dx, dy) < 2) {
+        const angle = (Math.abs(hash(node.id)) % 628) / 100;
+        dx = Math.cos(angle) * 4;
+        dy = Math.sin(angle) * 4;
+      }
+      return [node.id, {
+        x: Math.max(18, Math.min(882, 450 + dx * factor)),
+        y: Math.max(18, Math.min(552, 285 + dy * factor)),
+      }];
+    })));
+  };
   const changeLayoutMode = (mode: LayoutMode) => {
     setLayoutMode(mode);
     if (mode === 'hierarchical' && !hierarchicalInitialized.current) {
@@ -805,12 +823,13 @@ export default function Home() {
                 </div>}
               </div>
               <div className="network-controls" aria-label={t.distance}>
-                {layoutMode === 'force' && <button type="button" onClick={() => setMotionFrozen((current) => !current)} aria-pressed={motionFrozen}>{motionFrozen ? <Play /> : <Pause />}<span>{motionFrozen ? t.move : t.freeze}</span></button>}
+                {layoutMode === 'force' && <button type="button" onClick={() => setMotionFrozen((current) => !current)} aria-pressed={motionFrozen} aria-label={motionFrozen ? t.move : t.freeze} title={motionFrozen ? t.move : t.freeze}>{motionFrozen ? <Play /> : <Pause />}<span>{motionFrozen ? t.move : t.freeze}</span></button>}
                 <button type="button" className={`label-mode-button is-${labelMode}`} onClick={() => setLabelMode((current) => nextLabelMode[current])} aria-label={`${t.labels}: ${labelModeNames[locale][labelMode]}. ${t.labelClick}`} title={`${t.labels}: ${labelModeNames[locale][labelMode]}`}>{labelMode === 'none' ? <EyeOff /> : <Eye />}</button>
                 <button type="button" className="graph-text-size-button" onClick={() => setGraphLabelScale((current) => nextGraphLabelScale[current])} aria-label={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`} aria-pressed={graphLabelScale !== 1} title={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`}>A+</button>
-                <button type="button" onClick={() => changeZoom(zoom / 1.35)} aria-label={t.compact}><ZoomOut /></button>
+                <button type="button" className="node-scatter-button" onClick={scatterNodes} aria-label={t.scatter} title={t.scatter}><Expand /></button>
+                <button type="button" onClick={() => changeZoom(zoom / 1.35)} aria-label={t.compact} title={t.compact}><ZoomOut /></button>
                 <output aria-label={t.distance}>{Math.round(zoom * 100)}%</output>
-                <button type="button" onClick={() => changeZoom(zoom * 1.35)} aria-label={t.spread}><ZoomIn /></button>
+                <button type="button" onClick={() => changeZoom(zoom * 1.35)} aria-label={t.spread} title={t.spread}><ZoomIn /></button>
               </div>
             </div>
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>

@@ -237,7 +237,8 @@ body {
 .network-controls .label-mode-button.is-none { color: var(--muted-foreground); background: transparent; }
 .network-controls .label-mode-button.is-active { color: var(--palette-amber); background: color-mix(in srgb, var(--palette-amber) 14%, var(--card)); }
 .network-controls .label-mode-button.is-all { color: var(--primary); background: color-mix(in oklch, var(--primary) 12%, var(--card)); }
-.network-controls .graph-text-size-button { margin-right: 3px; border-right: 1px solid var(--border); font-weight: 700; }
+.network-controls .graph-text-size-button { font-weight: 700; }
+.network-controls .node-scatter-button { margin-right: 3px; border-right: 1px solid var(--border); }
 
 .analytics-surface { display: flex; min-height: clamp(570px, calc(100vh - 170px), 720px); flex-direction: column; padding-top: 8px; }
 .analytics-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
@@ -506,7 +507,7 @@ body {
   .network-controls { min-height: 44px; margin-left: auto; padding: 0; }
   .network-controls button { min-width: 44px; height: 44px; padding: 0; }
   .network-controls button > span, .network-controls output { display: none; }
-  .network-controls .label-mode-button, .network-controls .graph-text-size-button { margin: 0; border: 0; }
+  .network-controls .label-mode-button, .network-controls .graph-text-size-button, .network-controls .node-scatter-button { margin: 0; border: 0; }
   .legend { width: 100%; min-height: 40px; overflow-x: auto; gap: 12px; padding-inline: 2px; font-size: .625rem; }
   .legend span { min-height: 40px; }
   .network-stage { height: clamp(430px, calc(100dvh - 226px), 620px); }
@@ -537,6 +538,11 @@ body {
   .mobile-collaboration-list i b { display: block; height: 100%; background: var(--node-person); opacity: .58; }
   .mobile-collaboration-list em { color: var(--foreground); font-size: .625rem; font-style: normal; font-weight: 650; text-align: right; }
   .mobile-collaboration-list button:hover i b, .mobile-collaboration-list button.is-active i b { opacity: .95; }
+}
+
+@media (max-width: 420px) {
+  .toolbar-tools { flex-wrap: wrap; }
+  .network-controls { margin-left: 0; }
 }
 
 .dark {
