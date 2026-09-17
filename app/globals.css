@@ -103,6 +103,7 @@ body {
 }
 
 .prototype-shell { min-height: 100vh; background: var(--background); color: var(--foreground); transition: background-color .2s ease, color .2s ease; }
+.svg-filter-definitions { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
 .topbar { min-height: 76px; padding: 0 24px; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; gap: 24px; background: var(--header); color: var(--header-foreground); }
 .brand { display: flex; width: fit-content; align-items: center; gap: 12px; color: inherit; }
 .brand > span:last-child { display: grid; gap: 2px; }
@@ -312,6 +313,13 @@ body {
 .analytics-surface.animation-rain .matrix-cell:not(.is-diagonal):not(:disabled) { animation: analytics-rain-cell 3.8s ease-in-out calc(var(--animation-index) * -.12s) infinite; }
 .analytics-surface.animation-wave .analytics-bar > i > b, .analytics-surface.animation-wave .artifact-column > i > b, .analytics-surface.animation-wave .donut-segment, .analytics-surface.animation-wave .matrix-cell:not(.is-diagonal):not(:disabled) { animation: analytics-wave 4.8s ease-in-out calc(var(--animation-index) * -.13s) infinite; }
 .analytics-surface.animation-echo.has-selection .analytics-bar.is-active > i > b, .analytics-surface.animation-echo.has-selection .artifact-column.is-active > i > b, .analytics-surface.animation-echo.has-selection .matrix-cell.is-active { animation: analytics-echo 1.4s cubic-bezier(.2,.72,.28,1) 1 both; }
+.analytics-surface.animation-pencil .analytics-chart { border-color: color-mix(in srgb, var(--foreground) 34%, transparent); box-shadow: 1px 1px 0 color-mix(in srgb, var(--foreground) 14%, transparent); }
+.analytics-surface.animation-pencil .analytics-bar > i, .analytics-surface.animation-pencil .artifact-column > i { overflow: visible; background: transparent; border: 1px solid color-mix(in srgb, var(--foreground) 24%, transparent); }
+.analytics-surface.animation-pencil .analytics-bar > i > b, .analytics-surface.animation-pencil .artifact-column > i > b { background-color: var(--node-person); background-image: repeating-linear-gradient(168deg, transparent 0 2px, color-mix(in srgb, var(--palette-cream) 42%, transparent) 2px 3px, transparent 3px 5px); filter: url(#pencil-wobble); }
+.analytics-surface.animation-pencil .artifact-column > i > b { background-color: var(--node-artifact); }
+.analytics-surface.animation-pencil .donut-segment { stroke-linecap: butt; filter: url(#pencil-wobble); opacity: .76; }
+.analytics-surface.animation-pencil .matrix-cell:not(.is-diagonal) { background-image: repeating-linear-gradient(154deg, transparent 0 3px, color-mix(in srgb, var(--palette-cream) 38%, transparent) 3px 4px, transparent 4px 7px); outline: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent); outline-offset: -2px; }
+.analytics-surface.animation-pencil .format-legend button > i { border-radius: 1px; transform: rotate(-5deg); }
 .analytics-surface.is-motion-paused *, .analytics-surface.is-motion-paused *::before, .analytics-surface.is-motion-paused *::after { animation-play-state: paused !important; }
 @keyframes analytics-rain { from { background-position: 150% 0; } to { background-position: -150% 0; } }
 @keyframes analytics-rain-vertical { from { background-position: 0 150%; } to { background-position: 0 -150%; } }
@@ -335,6 +343,10 @@ body {
 .network-canvas.animation-echo.has-selection .graph-node.has-echo-path .node-shape { transform-box: fill-box; transform-origin: center; animation: network-node-echo 1.7s cubic-bezier(.2,.72,.28,1) var(--echo-delay) 1 both; }
 .network-canvas.animation-wave .graph-node .node-shape { transform-box: fill-box; transform-origin: center; animation: network-node-wave 4.8s ease-in-out var(--wave-delay) infinite; }
 .network-canvas.animation-wave .network-edge-base { animation: network-edge-wave 4.8s ease-in-out var(--wave-delay) infinite; }
+.network-canvas.animation-pencil .network-edge-base { stroke: color-mix(in srgb, var(--foreground) 58%, transparent); stroke-dasharray: 1.8 1.1; opacity: .42; filter: url(#pencil-wobble); }
+.network-canvas.animation-pencil .network-edge-pencil { stroke: color-mix(in srgb, var(--palette-teal) 58%, transparent); stroke-width: .65; stroke-dasharray: .7 2.1; opacity: .46; transform: translate(.7px, -.45px); filter: url(#pencil-wobble); vector-effect: non-scaling-stroke; }
+.network-canvas.animation-pencil .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--palette-teal) 86%, var(--foreground)); opacity: .78; }
+.network-canvas.animation-pencil .network-edges g.is-active .network-edge-pencil { stroke: color-mix(in srgb, var(--palette-magenta) 76%, var(--foreground)); opacity: .78; }
 .network-canvas.is-motion-paused .graph-node .node-shape, .network-canvas.is-motion-paused .network-edge-base { animation-play-state: paused; }
 @keyframes network-edge-arrive { to { stroke-dashoffset: 0; } }
 @keyframes network-edge-rain { to { stroke-dashoffset: -100; } }
@@ -358,6 +370,15 @@ body {
 .graph-node.is-ambient .node-shape { opacity: .52; }
 .graph-node.is-active .node-shape { opacity: .82; filter: saturate(1.12) !important; }
 .graph-node.is-selected .node-shape { opacity: .96; stroke: transparent !important; stroke-width: 0 !important; filter: saturate(1.25) !important; }
+.network-canvas.animation-pencil .graph-node .node-shape { opacity: .67; stroke-width: .85px !important; filter: url(#pencil-wobble) saturate(.9) !important; }
+.network-canvas.animation-pencil .graph-node.person .node-shape, .network-canvas.animation-pencil .graph-node.person .pencil-node-outline { stroke: var(--node-person) !important; }
+.network-canvas.animation-pencil .graph-node.artifact .node-shape, .network-canvas.animation-pencil .graph-node.artifact .pencil-node-outline { stroke: var(--node-artifact) !important; }
+.network-canvas.animation-pencil .graph-node.format .node-shape, .network-canvas.animation-pencil .graph-node.format .pencil-node-outline { stroke: var(--node-format) !important; }
+.network-canvas.animation-pencil .graph-node.group .node-shape, .network-canvas.animation-pencil .graph-node.group .pencil-node-outline { stroke: var(--node-group) !important; }
+.network-canvas.animation-pencil .graph-node.institution .node-shape, .network-canvas.animation-pencil .graph-node.institution .pencil-node-outline { stroke: var(--node-institution) !important; }
+.network-canvas.animation-pencil .graph-node .pencil-node-outline { fill: none; stroke-width: .72px; stroke-dasharray: 1.3 .8; opacity: .72; transform: translate(.65px, -.45px) scale(1.035); filter: url(#pencil-wobble); vector-effect: non-scaling-stroke; pointer-events: none; }
+.network-canvas.animation-pencil .graph-node.is-selected .node-shape { opacity: .94; stroke-width: 1.25px !important; }
+.network-canvas.animation-pencil .graph-node text { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; font-weight: 600; letter-spacing: .015em; }
 .graph-node.is-dimmed { opacity: .52; }
 .dark .graph-node.is-ambient .node-shape { opacity: .46; }
 .dark .graph-node.is-dimmed { opacity: .58; }
