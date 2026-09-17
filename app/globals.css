@@ -238,14 +238,12 @@ body {
 .network-canvas.animation-rain .network-edge-flow { stroke-dasharray: .35 7; stroke-dashoffset: 0; opacity: .52; animation: network-edge-rain var(--rain-duration) linear var(--rain-delay) infinite; }
 .network-canvas.is-motion-paused:not(.animation-rain) .network-edge-flow { animation: none; stroke-dashoffset: 0; }
 .network-canvas.is-motion-paused.animation-rain .network-edge-flow { animation-play-state: paused; }
-.network-canvas.animation-breath .graph-node .node-shape { transform-box: fill-box; transform-origin: center; animation: network-node-breathe 4.8s ease-in-out var(--breath-delay) infinite; }
 .network-canvas.animation-echo.has-selection .graph-node.has-echo-path .node-shape { transform-box: fill-box; transform-origin: center; animation: network-node-echo 1.7s cubic-bezier(.2,.72,.28,1) var(--echo-delay) 1 both; }
 .network-canvas.animation-wave .graph-node .node-shape { transform-box: fill-box; transform-origin: center; animation: network-node-wave 4.8s ease-in-out var(--wave-delay) infinite; }
 .network-canvas.animation-wave .network-edge-base { animation: network-edge-wave 4.8s ease-in-out var(--wave-delay) infinite; }
 .network-canvas.is-motion-paused .graph-node .node-shape, .network-canvas.is-motion-paused .network-edge-base { animation-play-state: paused; }
 @keyframes network-edge-arrive { to { stroke-dashoffset: 0; } }
 @keyframes network-edge-rain { to { stroke-dashoffset: -100; } }
-@keyframes network-node-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.09); } }
 @keyframes network-node-echo { 0%, 100% { transform: scale(1); } 32% { transform: scale(1.2); } }
 @keyframes network-node-wave { 0%, 18%, 100% { transform: scale(1); } 8% { transform: scale(1.16); } }
 @keyframes network-edge-wave { 0%, 18%, 100% { filter: brightness(1); } 8% { filter: brightness(2.2) saturate(1.35); } }

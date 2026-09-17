@@ -45,7 +45,7 @@ type PaletteId = 'archive' | 'neon' | 'autumn' | 'pastel' | 'vivid';
 type SelectionLogic = 'any' | 'all';
 type LabelMode = 'active' | 'all' | 'none';
 type GraphLabelScale = 1 | 1.25 | 1.5;
-type AnimationStyle = 'none' | 'rain' | 'breath' | 'echo' | 'wave';
+type AnimationStyle = 'none' | 'rain' | 'echo' | 'wave';
 type GraphNode = { id: string; payloadId: string; label: string; type: NodeType; degree: number; x: number; y: number };
 type GraphEdge = { source: string; target: string; weight: number; contexts: string[] };
 type Graph = { nodes: GraphNode[]; edges: GraphEdge[]; types: NodeType[] };
@@ -71,7 +71,6 @@ const nextGraphLabelScale: Record<GraphLabelScale, GraphLabelScale> = { 1: 1.25,
 const animationStyleOptions: Array<{ id: AnimationStyle; lv: string; en: string }> = [
   { id: 'none', lv: 'Nav', en: 'None' },
   { id: 'rain', lv: 'Lietus', en: 'Rain' },
-  { id: 'breath', lv: 'Elpa', en: 'Breathing' },
   { id: 'echo', lv: 'Atbalss', en: 'Echo' },
   { id: 'wave', lv: 'Vilnis', en: 'Wave' },
 ];
@@ -96,7 +95,7 @@ const ui = {
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
-    choose: 'Izvēlies mezglu vai kopu', chooseHelp: 'Klikšķini tīklā, lai izceltu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt tīkla slāņu paneli', showFilters: 'Parādīt tīkla slāņu paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Tīkla kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur mezglu kustību un saišu animāciju.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Nepārtraukta saišu plūsma hierarhiskajā un divdaļīgajā skatā.', animationHelpBreath: 'Mezgli lēni un nevienmērīgi pulsē.', animationHelpEcho: 'Izvēloties mezglu, impulss izplatās pa tā saitēm.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri visam tīklam.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
+    choose: 'Izvēlies mezglu vai kopu', chooseHelp: 'Klikšķini tīklā, lai izceltu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt tīkla slāņu paneli', showFilters: 'Parādīt tīkla slāņu paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Tīkla kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur mezglu kustību un saišu animāciju.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Nepārtraukta saišu plūsma hierarhiskajā un divdaļīgajā skatā.', animationHelpEcho: 'Izvēloties mezglu, impulss izplatās pa tā saitēm.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri visam tīklam.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
   },
   en: {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
@@ -107,7 +106,7 @@ const ui = {
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
-    choose: 'Choose a node or set', chooseHelp: 'Click in the network to highlight links and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide network layers panel', showFilters: 'Show network layers panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Network motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses node motion and link animation.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'Continuous link flow in hierarchical and bipartite views.', animationHelpBreath: 'Nodes pulse slowly and at slightly different rhythms.', animationHelpEcho: 'Selecting a node sends a pulse through its connections.', animationHelpWave: 'A light wave periodically travels across the network.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
+    choose: 'Choose a node or set', chooseHelp: 'Click in the network to highlight links and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide network layers panel', showFilters: 'Show network layers panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Network motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses node motion and link animation.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'Continuous link flow in hierarchical and bipartite views.', animationHelpEcho: 'Selecting a node sends a pulse through its connections.', animationHelpWave: 'A light wave periodically travels across the network.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
   },
 } as const;
 const displayPersonName = (value: string) => {
@@ -328,7 +327,6 @@ export default function Home() {
   const animationHelp = {
     none: t.animationHelpNone,
     rain: t.animationHelpRain,
-    breath: t.animationHelpBreath,
     echo: t.animationHelpEcho,
     wave: t.animationHelpWave,
   }[animationStyle];
@@ -345,12 +343,15 @@ export default function Home() {
     const initialTheme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     const initialTextSize: TextSize = savedTextSize === 18 || savedTextSize === 20 ? savedTextSize : 16;
     const initialPalette = paletteOptions.some((option) => option.id === savedPalette) ? savedPalette as PaletteId : 'archive';
+    const initialAnimationStyle = savedAnimationStyle
+      ? animationStyleOptions.some((option) => option.id === savedAnimationStyle) ? savedAnimationStyle as AnimationStyle : 'none'
+      : savedRainAnimation === 'true' ? 'rain' : 'none';
     setLocale(initialLocale);
     setTheme(initialTheme);
     setTextSize(initialTextSize);
     setPalette(initialPalette);
     setMotionFrozen(savedMotion === 'static');
-    setAnimationStyle(animationStyleOptions.some((option) => option.id === savedAnimationStyle) ? savedAnimationStyle as AnimationStyle : savedRainAnimation === 'true' ? 'rain' : 'none');
+    setAnimationStyle(initialAnimationStyle);
     document.documentElement.lang = initialLocale;
     document.documentElement.classList.toggle('dark', initialTheme === 'dark');
     document.documentElement.style.colorScheme = initialTheme;
@@ -758,7 +759,6 @@ export default function Home() {
                   const labelTransform = structuredLabel?.rotation ? `rotate(${structuredLabel.rotation} ${labelX} ${labelY})` : undefined;
                   const echoDistance = echoDistanceById.get(node.id);
                   const nodeAnimationStyle = {
-                    '--breath-delay': `${-(Math.abs(hash(`${node.id}:breath`)) % 4200) / 1000}s`,
                     '--wave-delay': `${-(node.x / 900) * 4.8}s`,
                     '--echo-delay': `${Math.min(echoDistance ?? 0, 6) * .14}s`,
                   } as CSSProperties;
