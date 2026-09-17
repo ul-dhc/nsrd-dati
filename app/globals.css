@@ -169,7 +169,7 @@ body {
 .layer-chip { display: inline-flex; width: auto; min-height: 29px; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted-foreground); background: var(--card); font-size: .625rem; line-height: 1; }
 .layer-chip:hover { border-color: color-mix(in oklch, var(--primary) 45%, var(--border)); color: var(--foreground); }
 .layer-chip[aria-pressed="true"] { border-color: var(--primary); color: var(--foreground); background: color-mix(in oklch, var(--primary) 8%, var(--card)); }
-.layer-chip.is-fixed { color: var(--foreground); background: var(--muted); }
+.layer-chip.is-fixed { border-color: var(--primary); color: var(--foreground); background: color-mix(in oklch, var(--primary) 8%, var(--card)); }
 .layer-chip .node-swatch { display: inline-block; width: 7px; height: 7px; border-radius: 50%; }
 .field-label { display: grid; gap: 7px; margin-bottom: 18px; color: var(--muted-foreground); font-size: .6875rem; font-weight: 600; }
 .field-label [data-slot="native-select-wrapper"] { width: 100%; }
