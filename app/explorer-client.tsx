@@ -279,7 +279,7 @@ export default function Home() {
   const [visibleTypes, setVisibleTypes] = useState<Set<NodeType>>(new Set(['artifact', 'person']));
   const [multiSelect, setMultiSelect] = useState(false);
   const [selectionLogic, setSelectionLogic] = useState<SelectionLogic>('any');
-  const [selectedIds, setSelectedIds] = useState<string[]>(['person:Lediņš, Hardijs']);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('force');
   const [leftType, setLeftType] = useState<NodeType>('person');
   const [rightType, setRightType] = useState<NodeType>('artifact');
