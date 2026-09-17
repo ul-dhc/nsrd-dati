@@ -729,8 +729,8 @@ export default function Home() {
       </>}
       <div className={`workspace ${compactPanels ? 'is-compact' : ''} ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
         {compactPanels && (controlsPanelOpen || inspectorPanelOpen) && <button type="button" className="panel-scrim" aria-label={controlsPanelOpen ? t.hideFilters : t.hideDetails} onClick={() => { setControlsPanelOpen(false); setInspectorPanelOpen(false); }} />}
-        <aside id="network-layers-panel" className="controls-panel" aria-label={appView === 'network' ? t.networkLayers : t.filters} hidden={!controlsPanelOpen}>
-          <div className="panel-title">{appView === 'network' ? <Network aria-hidden="true" /> : <BarChart3 aria-hidden="true" />}<div><span>{appView === 'network' ? t.networkLayers : t.filters}</span><strong>{appView === 'network' ? t.showInNetwork : t.filterViews}</strong></div>{compactPanels && <button type="button" className="panel-drawer-close" aria-label={t.hideFilters} onClick={() => setControlsPanelOpen(false)}><X /></button>}</div>
+        <aside id="network-layers-panel" className="controls-panel" aria-label={t.filters} hidden={!controlsPanelOpen}>
+          <div className="panel-title"><ListFilter aria-hidden="true" /><div><strong>{t.filters}</strong></div>{compactPanels && <button type="button" className="panel-drawer-close" aria-label={t.hideFilters} onClick={() => setControlsPanelOpen(false)}><X /></button>}</div>
           {appView === 'network' && <fieldset className="node-type-options"><legend className="sr-only">{t.showInNetwork}</legend>
             <span className="layer-chip is-fixed"><i className="node-swatch artifact" />{currentTypeLabels.artifact}</span>
             {optionalTypes.map((type) => <button type="button" className="layer-chip" aria-pressed={visibleTypes.has(type)} key={type} onClick={() => toggleType(type, !visibleTypes.has(type))}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</button>)}
