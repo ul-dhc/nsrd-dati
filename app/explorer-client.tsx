@@ -10,6 +10,7 @@ import {
   EyeOff,
   FilterX,
   Info,
+  ListFilter,
   Moon,
   Network,
   PanelLeftClose,
@@ -81,11 +82,11 @@ const appViewOptions: Array<{ id: AppView; lv: string; en: string }> = [
   { id: 'dashboard', lv: 'Pārskats', en: 'Data overview' },
 ];
 const paletteOptions: Array<{ id: PaletteId; lv: string; en: string; colors: string[] }> = [
-  { id: 'archive', lv: 'Arhīva spektrs', en: 'Archive Spectrum', colors: ['#c83f00', '#f4a000', '#cf0060', '#114b94', '#02a49f'] },
-  { id: 'neon', lv: 'Neona nakts', en: 'Neon Night', colors: ['#0D0D0D', '#00FF85', '#1E90FF', '#FF0099', '#FFFFFF'] },
-  { id: 'autumn', lv: 'Dzintara rudens', en: 'Amber Autumn', colors: ['#1C1C1C', '#FF6F61', '#DAA520', '#FF4500', '#F5E8D8'] },
-  { id: 'pastel', lv: 'Pasteļu krēsla', en: 'Pastel Twilight', colors: ['#2C2C2C', '#A8DADC', '#FFC1CC', '#B39CD0', '#E4E4E4'] },
-  { id: 'vivid', lv: 'Košais impulss', en: 'Vivid Pulse', colors: ['#181818', '#FF5722', '#673AB7', '#FFEB3B', '#F7F7F7'] },
+  { id: 'archive', lv: 'Arhīvs', en: 'Archive', colors: ['#c83f00', '#f4a000', '#cf0060', '#114b94', '#02a49f'] },
+  { id: 'neon', lv: 'Neons', en: 'Neon', colors: ['#0D0D0D', '#00FF85', '#1E90FF', '#FF0099', '#FFFFFF'] },
+  { id: 'autumn', lv: 'Dzintars', en: 'Amber', colors: ['#1C1C1C', '#FF6F61', '#DAA520', '#FF4500', '#F5E8D8'] },
+  { id: 'pastel', lv: 'Pastelis', en: 'Pastel', colors: ['#2C2C2C', '#A8DADC', '#FFC1CC', '#B39CD0', '#E4E4E4'] },
+  { id: 'vivid', lv: 'Košums', en: 'Vivid', colors: ['#181818', '#FF5722', '#673AB7', '#FFEB3B', '#F7F7F7'] },
 ];
 const labelModeNames: Record<Locale, Record<LabelMode, string>> = {
   lv: { none: 'nosaukumi paslēpti', active: 'nosaukumi aktīvajiem mezgliem', all: 'visu mezglu nosaukumi' },
@@ -102,8 +103,8 @@ const ui = {
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
     choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
-    filters: 'Filtri', filterViews: 'Filtrēt skatus', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
-    records: 'Ieraksti', documentedPeople: 'Personas', relatedPeople: 'Līdzdalībnieki', visibleFormats: 'Formāti', formatChart: 'Ieraksti pēc formāta', peopleChart: 'Personas pēc ierakstu skaita', artifactChart: 'Ieraksti pēc dalībnieku skaita', collaborationMatrix: 'Kopīgo ierakstu matrica', collaborationHelp: 'Klikšķini šūnā, lai atlasītu personu pāri un apskatītu kopīgos ierakstus.', sharedRecords: 'kopīgi ieraksti', noCollaborations: 'Šai atlasei nav pietiekami daudz personu sadarbību.',
+    filters: 'Filtri', filterViews: 'Filtrēt skatus', details: 'Detaļas', showRecords: 'Rādīt ierakstus', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
+    records: 'Ieraksti', documentedPeople: 'Personas', relatedPeople: 'Līdzdalībnieki', visibleFormats: 'Formāti', formatChart: 'Ieraksti pēc formāta', peopleChart: 'Personas pēc ierakstu skaita', artifactChart: 'Ieraksti pēc dalībnieku skaita', collaborationMatrix: 'Kopīgo ierakstu matrica', collaborationMobile: 'Personu sadarbības', collaborationHelp: 'Klikšķini šūnā, lai atlasītu personu pāri un apskatītu kopīgos ierakstus.', topCollaborations: 'Biežākie sadarbību pāri', sharedRecords: 'kopīgi ieraksti', noCollaborations: 'Šai atlasei nav pietiekami daudz personu sadarbību.',
   },
   en: {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
@@ -115,8 +116,8 @@ const ui = {
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
     choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
-    filters: 'Filters', filterViews: 'Filter views', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
-    records: 'Recordings', documentedPeople: 'People', relatedPeople: 'Collaborators', visibleFormats: 'Formats', formatChart: 'Recordings by format', peopleChart: 'People by number of recordings', artifactChart: 'Recordings by number of participants', collaborationMatrix: 'Shared-recording matrix', collaborationHelp: 'Click a cell to select a pair of people and inspect their shared recordings.', sharedRecords: 'shared recordings', noCollaborations: 'There are not enough person collaborations in this selection.',
+    filters: 'Filters', filterViews: 'Filter views', details: 'Details', showRecords: 'Show recordings', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
+    records: 'Recordings', documentedPeople: 'People', relatedPeople: 'Collaborators', visibleFormats: 'Formats', formatChart: 'Recordings by format', peopleChart: 'People by number of recordings', artifactChart: 'Recordings by number of participants', collaborationMatrix: 'Shared-recording matrix', collaborationMobile: 'Person collaborations', collaborationHelp: 'Click a cell to select a pair of people and inspect their shared recordings.', topCollaborations: 'Top collaboration pairs', sharedRecords: 'shared recordings', noCollaborations: 'There are not enough person collaborations in this selection.',
   },
 } as const;
 const displayPersonName = (value: string) => {
@@ -300,6 +301,7 @@ export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [controlsPanelOpen, setControlsPanelOpen] = useState(true);
   const [inspectorPanelOpen, setInspectorPanelOpen] = useState(true);
+  const [compactPanels, setCompactPanels] = useState(false);
   const [preferencesReady, setPreferencesReady] = useState(false);
   const [personQuery, setPersonQuery] = useState('');
   const [artifactQuery, setArtifactQuery] = useState('');
@@ -333,6 +335,7 @@ export default function Home() {
   const elasticTargets = useRef<Record<string, Point>>({});
   const elasticVelocities = useRef<Record<string, Point>>({});
   const elasticFrame = useRef<number | null>(null);
+  const compactPanelsRef = useRef<boolean | null>(null);
   const t = ui[locale];
   const currentTypeLabels = typeLabels[locale];
   const animationHelp = {
@@ -405,11 +408,44 @@ export default function Home() {
     window.addEventListener('keydown', closeOnEscape);
     return () => window.removeEventListener('keydown', closeOnEscape);
   }, [settingsOpen]);
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 1100px)');
+    const syncPanels = () => {
+      const compact = media.matches;
+      setCompactPanels(compact);
+      if (compactPanelsRef.current !== compact) {
+        setControlsPanelOpen(!compact);
+        setInspectorPanelOpen(!compact);
+        compactPanelsRef.current = compact;
+      }
+    };
+    syncPanels();
+    media.addEventListener('change', syncPanels);
+    return () => media.removeEventListener('change', syncPanels);
+  }, []);
+  useEffect(() => {
+    if (!compactPanels || !selectedIds.length) return;
+    setControlsPanelOpen(false);
+    setInspectorPanelOpen(true);
+  }, [compactPanels, selectedIds]);
+  useEffect(() => {
+    if (!compactPanels || (!controlsPanelOpen && !inspectorPanelOpen)) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setControlsPanelOpen(false); setInspectorPanelOpen(false); }
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => { document.body.style.overflow = previousOverflow; window.removeEventListener('keydown', closeOnEscape); };
+  }, [compactPanels, controlsPanelOpen, inspectorPanelOpen]);
 
   const filteredEvents = useMemo(() => events.filter((event) => {
     return event.year >= yearRange[0] && event.year <= yearRange[1]
       && (format === 'all' || event.format === format);
   }), [format, yearRange]);
+  const activeFilterCount = (personQuery ? 1 : 0) + (artifactQuery ? 1 : 0) + (format !== 'all' ? 1 : 0)
+    + (yearRange[0] !== dataset.meta.yearStart || yearRange[1] !== dataset.meta.yearEnd ? 1 : 0)
+    + (visibleTypes.size !== nodeTypeOrder.length ? 1 : 0);
   const graph = useMemo(() => {
     if (layoutMode === 'bipartite') return buildBipartiteGraph(filteredEvents, leftType, rightType);
     const baseGraph = buildGraph(filteredEvents, visibleTypes);
@@ -691,9 +727,10 @@ export default function Home() {
           <fieldset className="settings-section"><legend>{t.animationStyle}</legend><div className="animation-style-field"><Select value={animationStyle} onValueChange={(value) => setAnimationStyle(value as AnimationStyle)}><SelectTrigger aria-label={t.animationStyle}><SelectValue>{animationStyleOptions.find((option) => option.id === animationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{animationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{animationHelp}</p></fieldset>
         </section>
       </>}
-      <div className={`workspace ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
+      <div className={`workspace ${compactPanels ? 'is-compact' : ''} ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
+        {compactPanels && (controlsPanelOpen || inspectorPanelOpen) && <button type="button" className="panel-scrim" aria-label={controlsPanelOpen ? t.hideFilters : t.hideDetails} onClick={() => { setControlsPanelOpen(false); setInspectorPanelOpen(false); }} />}
         <aside id="network-layers-panel" className="controls-panel" aria-label={appView === 'network' ? t.networkLayers : t.filters} hidden={!controlsPanelOpen}>
-          <div className="panel-title">{appView === 'network' ? <Network aria-hidden="true" /> : <BarChart3 aria-hidden="true" />}<div><span>{appView === 'network' ? t.networkLayers : t.filters}</span><strong>{appView === 'network' ? t.showInNetwork : t.filterViews}</strong></div></div>
+          <div className="panel-title">{appView === 'network' ? <Network aria-hidden="true" /> : <BarChart3 aria-hidden="true" />}<div><span>{appView === 'network' ? t.networkLayers : t.filters}</span><strong>{appView === 'network' ? t.showInNetwork : t.filterViews}</strong></div>{compactPanels && <button type="button" className="panel-drawer-close" aria-label={t.hideFilters} onClick={() => setControlsPanelOpen(false)}><X /></button>}</div>
           {appView === 'network' && <fieldset className="node-type-options"><legend className="sr-only">{t.showInNetwork}</legend>
             <span className="layer-chip is-fixed"><i className="node-swatch artifact" />{currentTypeLabels.artifact}</span>
             {optionalTypes.map((type) => <button type="button" className="layer-chip" aria-pressed={visibleTypes.has(type)} key={type} onClick={() => toggleType(type, !visibleTypes.has(type))}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</button>)}
@@ -706,15 +743,16 @@ export default function Home() {
           <div className="field-label format-label"><span>{t.format}</span><Select value={format} onValueChange={(value) => setFormat(value ?? 'all')}><SelectTrigger aria-label={t.format}><SelectValue>{format === 'all' ? t.allFormats : format}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start"><SelectItem value="all">{t.allFormats}</SelectItem>{formats.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div>
           {appView === 'network' && <label className="selection-toggle"><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong><small>{t.multiHelp}</small></span></label>}
           <Button variant="outline" className="w-full" onClick={clearFilters}><RotateCcw aria-hidden="true" /> {t.clearFilters}</Button>
+          {compactPanels && <div className="mobile-panel-actions"><Button className="w-full" onClick={() => setControlsPanelOpen(false)}>{t.showRecords} · {resultEvents.length}</Button></div>}
         </aside>
 
         <section id="network" className="network-panel" aria-label={appView === 'network' ? t.networkAria : t.overviewAria}>
           <div className="view-mode-bar">
-            <button type="button" className="panel-visibility-toggle" onClick={() => setControlsPanelOpen((current) => !current)} aria-label={controlsPanelOpen ? t.hideFilters : t.showFilters} aria-controls="network-layers-panel" aria-expanded={controlsPanelOpen} title={controlsPanelOpen ? t.hideFilters : t.showFilters}>{controlsPanelOpen ? <PanelLeftClose /> : <PanelLeftOpen />}</button>
+            <button type="button" className="panel-visibility-toggle" onClick={() => { const next = !controlsPanelOpen; setControlsPanelOpen(next); if (compactPanels && next) setInspectorPanelOpen(false); }} aria-label={controlsPanelOpen ? t.hideFilters : t.showFilters} aria-controls="network-layers-panel" aria-expanded={controlsPanelOpen} title={controlsPanelOpen ? t.hideFilters : t.showFilters}>{compactPanels ? <ListFilter /> : controlsPanelOpen ? <PanelLeftClose /> : <PanelLeftOpen />}<span className="mobile-toggle-label">{t.filters}</span>{activeFilterCount > 0 && <b className="mobile-toggle-badge">{activeFilterCount}</b>}</button>
             <div className="app-view-switcher" role="tablist" aria-label={t.visualization}>
               {appViewOptions.map((option) => <button type="button" role="tab" aria-selected={appView === option.id} key={option.id} onClick={() => setAppView(option.id)}>{option.id === 'network' ? <Network aria-hidden="true" /> : <BarChart3 aria-hidden="true" />}<span>{option[locale]}</span></button>)}
             </div>
-            <button type="button" className="panel-visibility-toggle" onClick={() => setInspectorPanelOpen((current) => !current)} aria-label={inspectorPanelOpen ? t.hideDetails : t.showDetails} aria-controls="selection-details-panel" aria-expanded={inspectorPanelOpen} title={inspectorPanelOpen ? t.hideDetails : t.showDetails}>{inspectorPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}</button>
+            <button type="button" className="panel-visibility-toggle" onClick={() => { const next = !inspectorPanelOpen; setInspectorPanelOpen(next); if (compactPanels && next) setControlsPanelOpen(false); }} aria-label={inspectorPanelOpen ? t.hideDetails : t.showDetails} aria-controls="selection-details-panel" aria-expanded={inspectorPanelOpen} title={inspectorPanelOpen ? t.hideDetails : t.showDetails}>{compactPanels ? <Info /> : inspectorPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}<span className="mobile-toggle-label">{t.details}</span>{selectedIds.length > 0 && <b className="mobile-toggle-badge">{selectedIds.length}</b>}</button>
           </div>
           {appView === 'network' && <>
           <div className="network-toolbar network-toolbar-secondary">
@@ -791,6 +829,7 @@ export default function Home() {
         </section>
 
         <aside id="selection-details-panel" className="inspector-panel" aria-label={t.selection} hidden={!inspectorPanelOpen}>
+          {compactPanels && <div className="mobile-inspector-heading"><strong>{t.details}</strong><button type="button" aria-label={t.hideDetails} onClick={() => setInspectorPanelOpen(false)}><X /></button></div>}
           {selectedNodes.length ? <SelectionInspector locale={locale} nodes={selectedNodes} resultEvents={resultEvents} logic={selectionLogic} setLogic={setSelectionLogic} removeNode={(id) => setSelectedIds((current) => current.filter((item) => item !== id))} /> : <EmptyInspector locale={locale} count={resultEvents.length} />}
         </aside>
       </div>
@@ -891,12 +930,19 @@ function CollaborationMatrixChart({ locale, resultEvents, selectedIds, onSelectP
     }));
   });
   const maxPair = Math.max(1, ...pairCounts.values());
+  const topPairs = Array.from(pairCounts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([key, count]) => {
+    const [left, right] = key.split('|');
+    return { left, right, count };
+  });
   const hasCollaborations = pairCounts.size > 0;
   const isSelected = (name: string) => selectedIds.includes(`person:${name}`);
 
   return <section className="analytics-chart matrix-section">
-      <div className="matrix-heading"><div><h2>{t.collaborationMatrix}</h2><p>{t.collaborationHelp}</p></div><span>{rankedPeople.length} {t.documentedPeople.toLocaleLowerCase()}</span></div>
-      {hasCollaborations ? <div className="matrix-scroll"><div className="collaboration-matrix" style={{ '--matrix-size': rankedPeople.length } as CSSProperties}>
+      <div className="matrix-heading"><div><h2><span className="desktop-matrix-title">{t.collaborationMatrix}</span><span className="mobile-matrix-title">{t.collaborationMobile}</span></h2><p>{t.collaborationHelp}</p></div><span>{rankedPeople.length} {t.documentedPeople.toLocaleLowerCase()}</span></div>
+      {hasCollaborations ? <><div className="mobile-collaboration-list" aria-label={t.topCollaborations}><h3>{t.topCollaborations}</h3>{topPairs.map(({ left, right, count }) => {
+        const active = isSelected(left) && isSelected(right);
+        return <button type="button" key={`${left}|${right}`} className={active ? 'is-active' : ''} onClick={() => onSelectPair(left, right)} aria-pressed={active}><span><strong>{displayPersonName(left)}</strong><small>{displayPersonName(right)}</small></span><i aria-hidden="true"><b style={{ width: `${count / maxPair * 100}%` }} /></i><em>{count}</em></button>;
+      })}</div><div className="matrix-scroll"><div className="collaboration-matrix" style={{ '--matrix-size': rankedPeople.length } as CSSProperties}>
         <span className="matrix-corner" />
         {rankedPeople.map((name) => <button type="button" key={`column-${name}`} className={`matrix-column-label ${isSelected(name) ? 'is-active' : ''}`} onClick={() => onSelectPerson(name)} aria-pressed={isSelected(name)}><span>{displayPersonName(name)}</span></button>)}
         {rankedPeople.map((rowName, rowIndex) => <div className="matrix-row" key={rowName}>
@@ -907,7 +953,7 @@ function CollaborationMatrixChart({ locale, resultEvents, selectedIds, onSelectP
             return <button type="button" key={`${rowName}-${columnName}`} disabled={rowName === columnName || count === 0} className={`matrix-cell ${rowName === columnName ? 'is-diagonal' : ''} ${active ? 'is-active' : ''}`} style={{ '--cell-strength': rowName === columnName ? .12 : .12 + count / maxPair * .78, '--animation-index': rowIndex + columnIndex } as CSSProperties} onClick={() => onSelectPair(rowName, columnName)} aria-label={`${displayPersonName(rowName)} + ${displayPersonName(columnName)}: ${count} ${t.sharedRecords}`} aria-pressed={active}><span>{rowName !== columnName && count > 0 ? count : ''}</span></button>;
           })}
         </div>)}
-      </div></div> : <div className="graph-empty compact-empty"><Network /><h3>{t.noCollaborations}</h3></div>}
+      </div></div></> : <div className="graph-empty compact-empty"><Network /><h3>{t.noCollaborations}</h3></div>}
     </section>;
 }
 
