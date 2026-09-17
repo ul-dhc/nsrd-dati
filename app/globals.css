@@ -210,12 +210,15 @@ body {
 .network-edge-base { stroke: color-mix(in srgb, var(--foreground) 22%, transparent); opacity: .3; transition: opacity .2s, stroke .2s; }
 .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--palette-teal) 62%, transparent); opacity: .76; }
 .network-canvas.is-structured .network-edge-base { opacity: .08; }
-.network-edge-flow { stroke: color-mix(in srgb, var(--palette-teal) 62%, transparent); stroke-dasharray: .35 7; stroke-linecap: round; opacity: .52; vector-effect: non-scaling-stroke; animation: network-edge-flow var(--flow-duration) linear var(--flow-delay) infinite; }
+.network-edge-flow { stroke: color-mix(in srgb, var(--palette-teal) 62%, transparent); stroke-dasharray: 100; stroke-dashoffset: 100; stroke-linecap: round; opacity: .34; vector-effect: non-scaling-stroke; animation: network-edge-arrive var(--arrival-duration) cubic-bezier(.22,.72,.24,1) var(--flow-delay) 1 forwards; }
 .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--palette-teal) 88%, var(--foreground)); opacity: .92; }
 .network-canvas.is-structured .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--palette-magenta) 68%, transparent); opacity: .6; }
 .network-canvas.is-structured .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--palette-magenta) 90%, var(--foreground)); opacity: .96; }
-.network-canvas.is-motion-paused .network-edge-flow { animation-play-state: paused; }
-@keyframes network-edge-flow { to { stroke-dashoffset: -100; } }
+.network-canvas.is-rain .network-edge-flow { stroke-dasharray: .35 7; stroke-dashoffset: 0; opacity: .52; animation: network-edge-rain var(--rain-duration) linear var(--rain-delay) infinite; }
+.network-canvas.is-motion-paused:not(.is-rain) .network-edge-flow { animation: none; stroke-dashoffset: 0; }
+.network-canvas.is-motion-paused.is-rain .network-edge-flow { animation-play-state: paused; }
+@keyframes network-edge-arrive { to { stroke-dashoffset: 0; } }
+@keyframes network-edge-rain { to { stroke-dashoffset: -100; } }
 .graph-node { cursor: grab; outline: none !important; transition: opacity .15s; }
 .graph-node:focus, .graph-node:focus-visible { outline: none !important; }
 .graph-node:active { cursor: grabbing; }
@@ -241,7 +244,7 @@ body {
 .dark .network-edge-flow { opacity: .62; }
 .dark .network-edges g.is-active .network-edge-flow { opacity: .96; }
 .graph-node text { fill: var(--foreground); font-size: .5rem; font-weight: 500; paint-order: stroke; stroke: var(--background); stroke-width: 2px; stroke-linejoin: round; }
-@media (prefers-reduced-motion: reduce) { .network-edge-flow { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .network-edge-flow, .network-canvas.is-rain .network-edge-flow { animation: none; stroke-dasharray: 100; stroke-dashoffset: 0; } }
 .network-hint { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: .6875rem; }
 .network-hint > div { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .network-hint strong { color: var(--foreground); font-size: .625rem; font-weight: 500; white-space: nowrap; }

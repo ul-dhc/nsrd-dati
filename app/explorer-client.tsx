@@ -82,7 +82,7 @@ const ui = {
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
-    choose: 'Izvēlies mezglu vai kopu', chooseHelp: 'Klikšķini tīklā, lai izceltu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Tīkla kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur mezglu kustību un saišu plūsmu.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
+    choose: 'Izvēlies mezglu vai kopu', chooseHelp: 'Klikšķini tīklā, lai izceltu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Tīkla kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur mezglu kustību un saišu animāciju.', linkAnimation: 'Saišu animācija', rain: 'Animācija “Lietus”', rainHelp: 'Nepārtraukta saišu plūsma hierarhiskajā un divdaļīgajā skatā.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
   },
   en: {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
@@ -93,7 +93,7 @@ const ui = {
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
-    choose: 'Choose a node or set', chooseHelp: 'Click in the network to highlight links and see a summary of the selected data.', currently: 'Currently filtered', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Network motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses node motion and link flow.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
+    choose: 'Choose a node or set', chooseHelp: 'Click in the network to highlight links and see a summary of the selected data.', currently: 'Currently filtered', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Network motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses node motion and link animation.', linkAnimation: 'Link animation', rain: '“Rain” animation', rainHelp: 'Continuous link flow in hierarchical and bipartite views.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
   },
 } as const;
 const displayPersonName = (value: string) => {
@@ -284,6 +284,7 @@ export default function Home() {
   const [leftType, setLeftType] = useState<NodeType>('person');
   const [rightType, setRightType] = useState<NodeType>('artifact');
   const [motionFrozen, setMotionFrozen] = useState(false);
+  const [rainAnimation, setRainAnimation] = useState(false);
   const [labelMode, setLabelMode] = useState<LabelMode>('active');
   const [driftClock, setDriftClock] = useState(0);
   const [zoom, setZoom] = useState(1.8);
@@ -309,6 +310,7 @@ export default function Home() {
     const savedTextSize = Number(window.localStorage.getItem('nsrd-text-size'));
     const savedPalette = window.localStorage.getItem('nsrd-palette');
     const savedMotion = window.localStorage.getItem('nsrd-motion');
+    const savedRainAnimation = window.localStorage.getItem('nsrd-rain-animation');
     const initialLocale = savedLocale === 'lv' || savedLocale === 'en' ? savedLocale : 'lv';
     const initialTheme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     const initialTextSize: TextSize = savedTextSize === 18 || savedTextSize === 20 ? savedTextSize : 16;
@@ -318,6 +320,7 @@ export default function Home() {
     setTextSize(initialTextSize);
     setPalette(initialPalette);
     setMotionFrozen(savedMotion === 'static');
+    setRainAnimation(savedRainAnimation === 'true');
     document.documentElement.lang = initialLocale;
     document.documentElement.classList.toggle('dark', initialTheme === 'dark');
     document.documentElement.style.colorScheme = initialTheme;
@@ -350,6 +353,10 @@ export default function Home() {
     if (!preferencesReady) return;
     window.localStorage.setItem('nsrd-motion', motionFrozen ? 'static' : 'dynamic');
   }, [motionFrozen, preferencesReady]);
+  useEffect(() => {
+    if (!preferencesReady) return;
+    window.localStorage.setItem('nsrd-rain-animation', String(rainAnimation));
+  }, [preferencesReady, rainAnimation]);
   useEffect(() => {
     if (!settingsOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setSettingsOpen(false); };
@@ -581,6 +588,7 @@ export default function Home() {
             {paletteOptions.map((option) => <button type="button" className="palette-option" key={option.id} aria-pressed={palette === option.id} onClick={() => setPalette(option.id)}><span className="palette-swatches" aria-hidden="true">{option.colors.map((color) => <i key={color} style={{ backgroundColor: color }} />)}</span><span><strong>{option[locale]}</strong><small>{option[locale === 'lv' ? 'en' : 'lv']}</small></span>{palette === option.id && <Check aria-hidden="true" />}</button>)}
           </div></fieldset>
           <fieldset className="settings-section"><legend>{t.graphMotion}</legend><div className="motion-options"><button type="button" aria-pressed={!motionFrozen} onClick={() => setMotionFrozen(false)}><Play />{t.dynamic}</button><button type="button" aria-pressed={motionFrozen} onClick={() => setMotionFrozen(true)}><Pause />{t.static}</button></div><p>{t.motionHelp}</p></fieldset>
+          <fieldset className="settings-section"><legend>{t.linkAnimation}</legend><label className="selection-toggle"><Checkbox checked={rainAnimation} onCheckedChange={(checked) => setRainAnimation(Boolean(checked))} /><span><strong>{t.rain}</strong><small>{t.rainHelp}</small></span></label></fieldset>
         </section>
       </>}
       <div className="workspace">
@@ -621,10 +629,10 @@ export default function Home() {
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>
           </div>
           {graph.nodes.length ? <div className="network-stage">
-            <svg ref={svgRef} className={`network-canvas ${layoutMode !== 'force' ? 'is-structured' : ''} ${motionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} viewBox="0 0 900 570" role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
+            <svg ref={svgRef} className={`network-canvas ${layoutMode !== 'force' ? 'is-structured' : ''} ${rainAnimation ? 'is-rain' : ''} ${motionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} viewBox="0 0 900 570" role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
               <rect className="network-hit-area" x="0" y="0" width="900" height="570" onPointerDown={startPanning} />
               <g>
-                <g className="network-edges">{graph.edges.map((edge, edgeIndex) => { const source = positionById.get(edge.source)!; const target = positionById.get(edge.target)!; const reverseFlow = layoutMode === 'hierarchical' && source.y > target.y; const start = reverseFlow ? target : source; const end = reverseFlow ? source : target; const active = selectedIds.length > 0 && (selectedIds.includes(edge.source) || selectedIds.includes(edge.target)); const baseWidth = active ? Math.min(1.65, .45 + Math.sqrt(edge.weight) * .32) : .48; const flowStyle = { strokeWidth: active ? Math.min(1.9, baseWidth + .25) : .72, '--flow-duration': `${4.4 + (edgeIndex % 5) * .32}s`, '--flow-delay': `${-(edgeIndex % 9) * .43}s` } as CSSProperties; return <g key={`${edge.source}-${edge.target}`} className={active ? 'is-active' : ''}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={{ strokeWidth: baseWidth }} />{layoutMode !== 'force' && <line className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>; })}</g>
+                <g className="network-edges">{graph.edges.map((edge, edgeIndex) => { const source = positionById.get(edge.source)!; const target = positionById.get(edge.target)!; const sourceSelected = selectedIds.includes(edge.source); const targetSelected = selectedIds.includes(edge.target); const active = selectedIds.length > 0 && (sourceSelected || targetSelected); const reverseFlow = sourceSelected !== targetSelected ? targetSelected : layoutMode === 'hierarchical' && source.y > target.y; const start = reverseFlow ? target : source; const end = reverseFlow ? source : target; const baseWidth = active ? Math.min(1.65, .45 + Math.sqrt(edge.weight) * .32) : .48; const showFlow = rainAnimation || selectedIds.length === 0 || active; const flowStyle = { strokeWidth: active ? Math.min(1.9, baseWidth + .25) : .72, '--arrival-duration': `${active ? 1.05 + (edgeIndex % 3) * .08 : 1.4 + (edgeIndex % 5) * .08}s`, '--flow-delay': `${(edgeIndex % 9) * .035}s`, '--rain-duration': `${4.4 + (edgeIndex % 5) * .32}s`, '--rain-delay': `${-(edgeIndex % 9) * .43}s` } as CSSProperties; const flowKey = `${layoutMode}-${rainAnimation ? 'rain' : selectedIds.join('|') || 'intro'}`; return <g key={`${edge.source}-${edge.target}`} className={active ? 'is-active' : ''}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={{ strokeWidth: baseWidth }} />{layoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>; })}</g>
                 <g className="network-nodes">{displayNodes.map((node) => { const selected = selectedIds.includes(node.id); const active = !selectedIds.length || activeIds.has(node.id); const radius = layoutMode === 'force' ? Math.min(27, 6 + Math.sqrt(node.degree) * 2.2) : Math.min(15, 3.5 + Math.sqrt(node.degree) * 1.45); const showLabel = labelMode === 'all' || (labelMode === 'active' && selectedIds.length > 0 && active); const emphasisClass = selectedIds.length ? (active ? 'is-active' : 'is-dimmed') : 'is-ambient'; return <g key={node.id} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass}`} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><NodeShape type={node.type} radius={radius} />{showLabel && <text x={node.x < 450 ? radius + 7 : -radius - 7} y="4" textAnchor={node.x < 450 ? 'start' : 'end'}>{node.label}</text>}</g>; })}</g>
               </g>
             </svg>
