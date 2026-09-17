@@ -370,13 +370,9 @@ export default function Home() {
   }, [settingsOpen]);
 
   const filteredEvents = useMemo(() => events.filter((event) => {
-    const peopleText = normalize(event.credits.map((credit) => displayPersonName(credit.person)).join(' '));
-    const artifactText = normalize(event.title);
     return event.year >= yearRange[0] && event.year <= yearRange[1]
-      && (format === 'all' || event.format === format)
-      && (!personQuery.trim() || peopleText.includes(normalize(personQuery.trim())))
-      && (!artifactQuery.trim() || artifactText.includes(normalize(artifactQuery.trim())));
-  }), [artifactQuery, format, personQuery, yearRange]);
+      && (format === 'all' || event.format === format);
+  }), [format, yearRange]);
   const graph = useMemo(() => {
     if (layoutMode === 'bipartite') return buildBipartiteGraph(filteredEvents, leftType, rightType);
     const baseGraph = buildGraph(filteredEvents, visibleTypes);
