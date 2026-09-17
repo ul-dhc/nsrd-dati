@@ -339,7 +339,7 @@ body {
 .network-canvas.has-selection .network-edges g:not(.is-active) .network-edge-base { stroke: color-mix(in srgb, var(--foreground) 40%, transparent); opacity: .35; }
 .network-canvas.is-structured .network-edge-base { opacity: .08; }
 .network-canvas.is-structured.has-selection .network-edges g:not(.is-active) .network-edge-base { opacity: .24; }
-.network-edge-flow { stroke: color-mix(in srgb, var(--palette-teal) 62%, transparent); stroke-dasharray: 100; stroke-dashoffset: 100; stroke-linecap: round; opacity: .34; vector-effect: non-scaling-stroke; animation: network-edge-arrive var(--arrival-duration) cubic-bezier(.22,.72,.24,1) var(--flow-delay) 1 forwards; }
+.network-edge-flow { stroke: color-mix(in srgb, var(--palette-teal) 62%, transparent); stroke-dasharray: none; stroke-dashoffset: 0; stroke-linecap: round; opacity: .34; vector-effect: non-scaling-stroke; }
 .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--palette-teal) 88%, var(--foreground)); opacity: .92; }
 .network-canvas.is-structured .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--palette-magenta) 68%, transparent); opacity: .6; }
 .network-canvas.is-structured .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--palette-magenta) 90%, var(--foreground)); opacity: .96; }
@@ -355,7 +355,6 @@ body {
 .network-canvas.style-pencil .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--palette-teal) 88%, var(--foreground)); opacity: .88; }
 .network-canvas.style-pencil .network-edges g.is-active .network-edge-pencil { stroke: color-mix(in srgb, var(--palette-magenta) 78%, var(--foreground)); opacity: .82; }
 .network-canvas.is-motion-paused .graph-node .node-shape, .network-canvas.is-motion-paused .network-edge-base { animation-play-state: paused; }
-@keyframes network-edge-arrive { to { stroke-dashoffset: 0; } }
 @keyframes network-edge-rain { to { stroke-dashoffset: -100; } }
 @keyframes network-node-echo { 0%, 100% { transform: scale(1); } 32% { transform: scale(1.2); } }
 @keyframes network-node-wave { 0%, 18%, 100% { transform: scale(1); } 8% { transform: scale(1.16); } }
