@@ -542,7 +542,7 @@ export default function Home() {
     return () => { if (animationFrame.current !== null) cancelAnimationFrame(animationFrame.current); lastFrame.current = null; };
   }, [layoutMode, motionFrozen]);
   const positionedNodes = useMemo(() => graph.nodes.map((node) => {
-    const base = manualPositions[node.id] ?? node;
+    const base = layoutMode === 'force' ? manualPositions[node.id] ?? node : node;
     if (layoutMode !== 'force' || draggingId === node.id) return { ...node, x: base.x, y: base.y };
     const phase = Math.abs(hash(node.id)) % 628 / 100;
     const amplitude = 6 + (Math.abs(hash(`${node.id}:drift`)) % 35) / 10;
@@ -861,7 +861,7 @@ export default function Home() {
                 {layoutMode === 'force' && <button type="button" onClick={() => setMotionFrozen((current) => !current)} aria-pressed={motionFrozen} aria-label={motionFrozen ? t.move : t.freeze} title={motionFrozen ? t.move : t.freeze}>{motionFrozen ? <Play /> : <Pause />}<span>{motionFrozen ? t.move : t.freeze}</span></button>}
                 <button type="button" className={`label-mode-button is-${labelMode}`} onClick={() => setLabelMode((current) => nextLabelMode[current])} aria-label={`${t.labels}: ${labelModeNames[locale][labelMode]}. ${t.labelClick}`} title={`${t.labels}: ${labelModeNames[locale][labelMode]}`}>{labelMode === 'none' ? <EyeOff /> : <Eye />}</button>
                 <button type="button" className="graph-text-size-button" onClick={() => setGraphLabelScale((current) => nextGraphLabelScale[current])} aria-label={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`} aria-pressed={graphLabelScale !== 1} title={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`}>A+</button>
-                <button type="button" className="node-scatter-button" onClick={scatterNodes} aria-label={t.scatter} title={t.scatter}><ChartScatter /></button>
+                {layoutMode === 'force' && <button type="button" className="node-scatter-button" onClick={scatterNodes} aria-label={t.scatter} title={t.scatter}><ChartScatter /></button>}
                 <button type="button" onClick={() => changeZoom(zoom / 1.35)} aria-label={t.compact} title={t.compact}><ZoomOut /></button>
                 <output aria-label={t.distance}>{Math.round(zoom * 100)}%</output>
                 <button type="button" onClick={() => changeZoom(zoom * 1.35)} aria-label={t.spread} title={t.spread}><ZoomIn /></button>
