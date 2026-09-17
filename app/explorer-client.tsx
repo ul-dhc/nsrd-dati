@@ -265,6 +265,10 @@ function NodeShape({ type, radius }: { type: NodeType; radius: number }) {
   return <polygon className="node-shape" points={`${-radius * .88},${-radius * .5} 0,${-radius} ${radius * .88},${-radius * .5} ${radius * .88},${radius * .5} 0,${radius} ${-radius * .88},${radius * .5}`} />;
 }
 
+const nodeRadius = (node: GraphNode, layoutMode: LayoutMode) => layoutMode === 'force'
+  ? Math.min(27, 6 + Math.sqrt(node.degree) * 2.2)
+  : Math.min(15, 3.5 + Math.sqrt(node.degree) * 1.45);
+
 export default function Home() {
   const [locale, setLocale] = useState<Locale>('lv');
   const [theme, setTheme] = useState<Theme>('light');
@@ -448,6 +452,50 @@ export default function Home() {
     x: 450 + (node.x - 450) * zoom + pan.x,
     y: 285 + (node.y - 285) * zoom + pan.y,
   })), [pan, positionedNodes, zoom]);
+  const labelPlacementById = useMemo(() => {
+    const placements = new Map<string, { x: number; y: number; textAnchor: 'start' | 'middle' | 'end' }>();
+    if (layoutMode === 'force') return placements;
+
+    const orderedTypes = nodeTypeOrder.filter((type) => displayNodes.some((node) => node.type === type));
+    orderedTypes.forEach((type) => {
+      const sameType = displayNodes.filter((node) => node.type === type).sort((a, b) => layoutMode === 'bipartite'
+        ? a.y - b.y || a.label.localeCompare(b.label, 'lv')
+        : a.x - b.x || a.label.localeCompare(b.label, 'lv'));
+      const laneEnds: number[] = [];
+      const laneLastY: number[] = [];
+      sameType.forEach((node) => {
+        const radius = nodeRadius(node, layoutMode);
+        if (layoutMode === 'bipartite') {
+          const leftColumn = node.x < 450;
+          let lane = laneLastY.findIndex((lastY) => node.y - lastY >= 11);
+          if (lane === -1) lane = laneLastY.length;
+          laneLastY[lane] = node.y;
+          const outside = lane % 2 === 0;
+          const direction = leftColumn === outside ? -1 : 1;
+          const distance = radius + 8 + Math.floor(lane / 2) * 66;
+          placements.set(node.id, {
+            x: direction * distance,
+            y: 3,
+            textAnchor: direction < 0 ? 'end' : 'start',
+          });
+          return;
+        }
+
+        const labelWidth = Math.min(170, Math.max(24, node.label.length * 4.35));
+        const center = Math.max(labelWidth / 2 + 7, Math.min(893 - labelWidth / 2, node.x));
+        const leftEdge = center - labelWidth / 2;
+        let lane = laneEnds.findIndex((rightEdge) => leftEdge - rightEdge >= 5);
+        if (lane === -1) lane = laneEnds.length;
+        laneEnds[lane] = center + labelWidth / 2;
+        placements.set(node.id, {
+          x: center - node.x,
+          y: 27 + lane * 10,
+          textAnchor: 'middle',
+        });
+      });
+    });
+    return placements;
+  }, [displayNodes, layoutMode]);
   const positionById = useMemo(() => new Map(displayNodes.map((node) => [node.id, node])), [displayNodes]);
   const selectedNodes = selectedIds.map((id) => graph.nodes.find((node) => node.id === id)).filter(Boolean) as GraphNode[];
   useEffect(() => setSelectedIds((current) => current.filter((id) => graph.nodes.some((node) => node.id === id))), [graph]);
@@ -641,7 +689,7 @@ export default function Home() {
               <rect className="network-hit-area" x="0" y="0" width="900" height="570" onPointerDown={startPanning} />
               <g>
                 <g className="network-edges">{graph.edges.map((edge, edgeIndex) => { const source = positionById.get(edge.source)!; const target = positionById.get(edge.target)!; const sourceSelected = selectedIds.includes(edge.source); const targetSelected = selectedIds.includes(edge.target); const active = selectedIds.length > 0 && (sourceSelected || targetSelected); const reverseFlow = sourceSelected !== targetSelected ? targetSelected : layoutMode === 'hierarchical' && source.y > target.y; const start = reverseFlow ? target : source; const end = reverseFlow ? source : target; const baseWidth = active ? Math.min(1.65, .45 + Math.sqrt(edge.weight) * .32) : .48; const showFlow = rainAnimation || selectedIds.length === 0 || active; const flowStyle = { strokeWidth: active ? Math.min(1.9, baseWidth + .25) : .72, '--arrival-duration': `${active ? 1.05 + (edgeIndex % 3) * .08 : 1.4 + (edgeIndex % 5) * .08}s`, '--flow-delay': `${(edgeIndex % 9) * .035}s`, '--rain-duration': `${4.4 + (edgeIndex % 5) * .32}s`, '--rain-delay': `${-(edgeIndex % 9) * .43}s` } as CSSProperties; const flowKey = `${layoutMode}-${rainAnimation ? 'rain' : selectedIds.join('|') || 'intro'}`; return <g key={`${edge.source}-${edge.target}`} className={active ? 'is-active' : ''}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={{ strokeWidth: baseWidth }} />{layoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>; })}</g>
-                <g className="network-nodes">{displayNodes.map((node) => { const selected = selectedIds.includes(node.id); const active = !selectedIds.length || activeIds.has(node.id); const radius = layoutMode === 'force' ? Math.min(27, 6 + Math.sqrt(node.degree) * 2.2) : Math.min(15, 3.5 + Math.sqrt(node.degree) * 1.45); const showLabel = labelMode === 'all' || (labelMode === 'active' && selectedIds.length > 0 && active); const emphasisClass = selectedIds.length ? (active ? 'is-active' : 'is-dimmed') : 'is-ambient'; return <g key={node.id} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass}`} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><NodeShape type={node.type} radius={radius} />{showLabel && <text x={node.x < 450 ? radius + 7 : -radius - 7} y="4" textAnchor={node.x < 450 ? 'start' : 'end'}>{node.label}</text>}</g>; })}</g>
+                <g className="network-nodes">{displayNodes.map((node) => { const selected = selectedIds.includes(node.id); const active = !selectedIds.length || activeIds.has(node.id); const radius = nodeRadius(node, layoutMode); const showLabel = labelMode === 'all' || (labelMode === 'active' && selectedIds.length > 0 && active); const emphasisClass = selectedIds.length ? (active ? 'is-active' : 'is-dimmed') : 'is-ambient'; const structuredLabel = labelPlacementById.get(node.id); const labelX = structuredLabel?.x ?? (node.x < 450 ? radius + 7 : -radius - 7); const labelY = structuredLabel?.y ?? 4; const labelAnchor = structuredLabel?.textAnchor ?? (node.x < 450 ? 'start' : 'end'); return <g key={node.id} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass}`} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><NodeShape type={node.type} radius={radius} />{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined}>{node.label}</text>}</g>; })}</g>
               </g>
             </svg>
           </div> : <div className="graph-empty"><FilterX /><h3>{t.noData}</h3><p>{t.noDataHelp}</p><Button variant="outline" onClick={clearFilters}>{t.clearFilters}</Button></div>}
