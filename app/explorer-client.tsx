@@ -8,7 +8,7 @@ import {
   CircleHelp,
   Eye,
   EyeOff,
-  Expand,
+  ChartScatter,
   FilterX,
   Info,
   ListFilter,
@@ -731,21 +731,56 @@ export default function Home() {
   const cancelInteraction = () => { setDraggingId(null); setPanning(false); panStart.current = null; nodePointerStart.current = null; dragCluster.current = null; elasticTargets.current = {}; elasticVelocities.current = {}; };
   const changeZoom = (next: number) => setZoom(Math.max(.35, Math.min(8, next)));
   const scatterNodes = () => {
-    const factor = 1.18;
-    setManualPositions((current) => Object.fromEntries(graph.nodes.map((node) => {
-      const position = current[node.id] ?? node;
-      let dx = position.x - 450;
-      let dy = position.y - 285;
-      if (Math.hypot(dx, dy) < 2) {
-        const angle = (Math.abs(hash(node.id)) % 628) / 100;
-        dx = Math.cos(angle) * 4;
-        dy = Math.sin(angle) * 4;
+    setManualPositions((current) => {
+      const positions = graph.nodes.map((node) => {
+        const position = current[node.id] ?? node;
+        return { x: position.x, y: position.y };
+      });
+      const radiusX = 392;
+      const radiusY = 232;
+
+      for (let iteration = 0; iteration < 48; iteration += 1) {
+        const shifts = positions.map(() => ({ x: 0, y: 0 }));
+        for (let leftIndex = 0; leftIndex < positions.length; leftIndex += 1) {
+          for (let rightIndex = leftIndex + 1; rightIndex < positions.length; rightIndex += 1) {
+            const left = positions[leftIndex];
+            const right = positions[rightIndex];
+            let dx = right.x - left.x;
+            let dy = right.y - left.y;
+            let distance = Math.hypot(dx, dy);
+            const minimumDistance = nodeRadius(graph.nodes[leftIndex], layoutMode) + nodeRadius(graph.nodes[rightIndex], layoutMode) + (layoutMode === 'force' ? 9 : 5);
+            const influenceDistance = minimumDistance + (layoutMode === 'force' ? 34 : 14);
+            if (distance >= influenceDistance) continue;
+            if (distance < .01) {
+              const angle = (Math.abs(hash(`${graph.nodes[leftIndex].id}:${graph.nodes[rightIndex].id}`)) % 628) / 100;
+              dx = Math.cos(angle);
+              dy = Math.sin(angle);
+              distance = 1;
+            }
+            const overlap = Math.max(0, minimumDistance - distance);
+            const breathingRoom = influenceDistance - Math.max(distance, minimumDistance);
+            const push = Math.min(8, overlap * .34 + breathingRoom * .035);
+            const pushX = dx / distance * push;
+            const pushY = dy / distance * push;
+            shifts[leftIndex].x -= pushX;
+            shifts[leftIndex].y -= pushY;
+            shifts[rightIndex].x += pushX;
+            shifts[rightIndex].y += pushY;
+          }
+        }
+        positions.forEach((position, index) => {
+          position.x += Math.max(-10, Math.min(10, shifts[index].x));
+          position.y += Math.max(-10, Math.min(10, shifts[index].y));
+          const normalizedDistance = Math.hypot((position.x - 450) / radiusX, (position.y - 285) / radiusY);
+          if (normalizedDistance > 1) {
+            position.x = 450 + (position.x - 450) / normalizedDistance;
+            position.y = 285 + (position.y - 285) / normalizedDistance;
+          }
+        });
       }
-      return [node.id, {
-        x: Math.max(18, Math.min(882, 450 + dx * factor)),
-        y: Math.max(18, Math.min(552, 285 + dy * factor)),
-      }];
-    })));
+
+      return Object.fromEntries(graph.nodes.map((node, index) => [node.id, positions[index]]));
+    });
   };
   const changeLayoutMode = (mode: LayoutMode) => {
     setLayoutMode(mode);
@@ -826,7 +861,7 @@ export default function Home() {
                 {layoutMode === 'force' && <button type="button" onClick={() => setMotionFrozen((current) => !current)} aria-pressed={motionFrozen} aria-label={motionFrozen ? t.move : t.freeze} title={motionFrozen ? t.move : t.freeze}>{motionFrozen ? <Play /> : <Pause />}<span>{motionFrozen ? t.move : t.freeze}</span></button>}
                 <button type="button" className={`label-mode-button is-${labelMode}`} onClick={() => setLabelMode((current) => nextLabelMode[current])} aria-label={`${t.labels}: ${labelModeNames[locale][labelMode]}. ${t.labelClick}`} title={`${t.labels}: ${labelModeNames[locale][labelMode]}`}>{labelMode === 'none' ? <EyeOff /> : <Eye />}</button>
                 <button type="button" className="graph-text-size-button" onClick={() => setGraphLabelScale((current) => nextGraphLabelScale[current])} aria-label={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`} aria-pressed={graphLabelScale !== 1} title={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`}>A+</button>
-                <button type="button" className="node-scatter-button" onClick={scatterNodes} aria-label={t.scatter} title={t.scatter}><Expand /></button>
+                <button type="button" className="node-scatter-button" onClick={scatterNodes} aria-label={t.scatter} title={t.scatter}><ChartScatter /></button>
                 <button type="button" onClick={() => changeZoom(zoom / 1.35)} aria-label={t.compact} title={t.compact}><ZoomOut /></button>
                 <output aria-label={t.distance}>{Math.round(zoom * 100)}%</output>
                 <button type="button" onClick={() => changeZoom(zoom * 1.35)} aria-label={t.spread} title={t.spread}><ZoomIn /></button>
