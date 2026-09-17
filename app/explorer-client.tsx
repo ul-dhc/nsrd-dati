@@ -282,7 +282,7 @@ export default function Home() {
   const [artifactQuery, setArtifactQuery] = useState('');
   const [format, setFormat] = useState('all');
   const [yearRange, setYearRange] = useState<number[]>([dataset.meta.yearStart, dataset.meta.yearEnd]);
-  const [visibleTypes, setVisibleTypes] = useState<Set<NodeType>>(new Set(['artifact', 'person']));
+  const [visibleTypes, setVisibleTypes] = useState<Set<NodeType>>(new Set(nodeTypeOrder));
   const [multiSelect, setMultiSelect] = useState(false);
   const [selectionLogic, setSelectionLogic] = useState<SelectionLogic>('any');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -294,7 +294,7 @@ export default function Home() {
   const [labelMode, setLabelMode] = useState<LabelMode>('active');
   const [graphLabelScale, setGraphLabelScale] = useState<GraphLabelScale>(1);
   const [driftClock, setDriftClock] = useState(0);
-  const [zoom, setZoom] = useState(1.8);
+  const [zoom, setZoom] = useState(.84);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [panning, setPanning] = useState(false);
   const [pan, setPan] = useState<Point>({ x: 0, y: 0 });
@@ -384,7 +384,7 @@ export default function Home() {
   useEffect(() => {
     setManualPositions({});
     setPan({ x: 0, y: 0 });
-    setZoom(layoutMode === 'force' ? 1.8 : 1);
+    setZoom(layoutMode === 'force' ? .84 : 1);
   }, [layoutMode, leftType, rightType]);
   useEffect(() => {
     setManualPositions((current) => Object.fromEntries(Object.entries(current).filter(([id]) => graph.nodes.some((node) => node.id === id))));
