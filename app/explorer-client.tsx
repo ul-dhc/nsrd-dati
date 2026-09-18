@@ -108,7 +108,7 @@ const ui = {
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
-    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', visualizationStyle: 'Vizualizācijas stils', visualizationHelpStandard: 'Standarta noformējums ar vienmērīgi aizpildītiem krāsu laukumiem.', visualizationHelpPencil: 'Plānas skices līnijas un krāsains zīmuļa šrafējums uz papīra fona.', inDevelopment: 'Izstrādes procesā', aboutComing: 'Par projektu — sadaļa tiek veidota',
+    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', about: 'Par projektu', closeAbout: 'Aizvērt informāciju par projektu', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', visualizationStyle: 'Vizualizācijas stils', visualizationHelpStandard: 'Standarta noformējums ar vienmērīgi aizpildītiem krāsu laukumiem.', visualizationHelpPencil: 'Plānas skices līnijas un krāsains zīmuļa šrafējums uz papīra fona.', inDevelopment: 'Izstrādes procesā',
     filters: 'Filtri', filterViews: 'Filtrēt skatus', details: 'Detaļas', showRecords: 'Rādīt ierakstus', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
     records: 'Ieraksti', documentedPeople: 'Personas', relatedPeople: 'Līdzdalībnieki', visibleFormats: 'Formāti', formatChart: 'Ieraksti pēc formāta', peopleChart: 'Personas pēc ierakstu skaita', artifactChart: 'Ieraksti pēc dalībnieku skaita', collaborationMatrix: 'Kopīgo ierakstu matrica', collaborationMobile: 'Personu sadarbības', collaborationHelp: 'Klikšķini šūnā, lai atlasītu personu pāri un apskatītu kopīgos ierakstus.', topCollaborations: 'Biežākie sadarbību pāri', sharedRecords: 'kopīgi ieraksti', noCollaborations: 'Šai atlasei nav pietiekami daudz personu sadarbību.',
   },
@@ -121,7 +121,7 @@ const ui = {
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
-    choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', visualizationStyle: 'Visualization style', visualizationHelpStandard: 'Standard appearance with evenly filled color areas.', visualizationHelpPencil: 'Fine sketch lines and colored-pencil hatching on a paper background.', inDevelopment: 'In development', aboutComing: 'About this project — coming soon',
+    choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', about: 'About the project', closeAbout: 'Close project information', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', visualizationStyle: 'Visualization style', visualizationHelpStandard: 'Standard appearance with evenly filled color areas.', visualizationHelpPencil: 'Fine sketch lines and colored-pencil hatching on a paper background.', inDevelopment: 'In development',
     filters: 'Filters', filterViews: 'Filter views', details: 'Details', showRecords: 'Show recordings', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
     records: 'Recordings', documentedPeople: 'People', relatedPeople: 'Collaborators', visibleFormats: 'Formats', formatChart: 'Recordings by format', peopleChart: 'People by number of recordings', artifactChart: 'Recordings by number of participants', collaborationMatrix: 'Shared-recording matrix', collaborationMobile: 'Person collaborations', collaborationHelp: 'Click a cell to select a pair of people and inspect their shared recordings.', topCollaborations: 'Top collaboration pairs', sharedRecords: 'shared recordings', noCollaborations: 'There are not enough person collaborations in this selection.',
   },
@@ -324,11 +324,61 @@ function PencilFilterDefs() {
   </svg>;
 }
 
+function AboutContent({ locale }: { locale: Locale }) {
+  const external = { target: '_blank', rel: 'noreferrer' } as const;
+
+  return <div className="about-content">
+    <div className="about-meta">
+      <p>Kevin C. Karnes, Jānis Daugavietis</p>
+      <a href="https://doi.org/10.5281/zenodo.19686162" {...external}>doi.org/10.5281/zenodo.19686162</a>
+      <p>{locale === 'lv' ? 'Atjaunots' : 'Updated'}: 2026.04.23</p>
+    </div>
+
+    <section>
+      <h3>{locale === 'lv' ? 'Par vizualizāciju' : 'About the visualization'}</h3>
+      {locale === 'lv' ? <>
+        <p>Saite savieno personu ar skaņu ierakstu, kurā viņš vai viņa piedalījusies.</p>
+        <p>Tā balstīta datos, kas apkopoti no daudziem avotiem: galvenokārt dokumentiem un artefaktiem, kas glabājas <a href="https://lcca.lv/" {...external}>Latvijas Laikmetīgās mākslas centra</a> kolekcijas Hardija Lediņa krājumā, kā arī artefaktiem, kas atrodas privātkolekcijās Latvijā un ASV, daži no tiem tika iekļauti izstādē <a href="https://lcca.lv/lv/izstades/nsrd--izstade/" {...external}>“NSRD: Informācija par transformētu situāciju”</a> (Viļņa, Radvila pils mākslas muzejs, 2024.–2025. g.) vai digitalizēti tiešsaistes arhīvā <a href="http://pietura.lv/" {...external}>“Pietura nebijušām sajūtām”</a>.</p>
+        <p>Redzi kļūdas vai nepilnības? Sūti e-pastu uz janis.daugavietis lulfmi.lv.</p>
+      </> : <>
+        <p>A link connects a person to a sound recording in which they participated.</p>
+        <p>It is based on data compiled from many sources: primarily documents and artifacts held in the Hardijs Lediņš collection of the <a href="https://lcca.lv/en/" {...external}>Latvian Centre for Contemporary Art</a>, as well as artifacts in private collections in Latvia and the United States. Some were included in the exhibition <a href="https://lcca.lv/lv/izstades/nsrd--izstade/" {...external}>“NSRD: Information on a Transformed Situation”</a> (Vilnius, Radvila Palace Art Museum, 2024–2025) or digitized in the online archive <a href="http://pietura.lv/" {...external}>“A Stop for Unprecedented Feelings”</a>.</p>
+        <p>See an error or omission? Email janis.daugavietis lulfmi.lv.</p>
+      </>}
+    </section>
+
+    <section>
+      <h3>{locale === 'lv' ? 'Citi avoti' : 'Other sources'}</h3>
+      <ul className="about-sources">
+        <li>Astahovska, Ieva, &amp; Žeikare, Māra. (2016). <cite>Nebijušu sajūtu restaurēšanas darbnīca. Juris Boiko un Hardijs Lediņš.</cite> Latvijas Laikmetīgās mākslas centrs.</li>
+        <li>Mazvērsīte, Daiga (2025). <a href="https://enciklopedija.lv/skirklis/111774" {...external}>“Nebijušu sajūtu restaurēšanas darbnīca”</a>. Nacionālā enciklopēdija.</li>
+        <li>Mazvērsīte, Daiga &amp; Traumane, Māra (2017). <a href="http://www.soundexchange.eu/#latvia_en?id=43" {...external}>“Avant-garde Trends in Latvian Music, 1970s–1990s”</a>. <cite>Soundexchange</cite>.</li>
+        <li>Karnes, Kevin C. (2021). <a href="https://press.uchicago.edu/ucp/books/book/chicago/S/bo123169154.html" {...external}><cite>Sounds Beyond: Arvo Pärt and the 1970s Soviet Underground.</cite></a> University of Chicago Press.</li>
+        <li>Karnes, Kevin C. (2024). <a href="https://doi.org/10.3390/arts13030088" {...external}>“A German DJ, Postmodern Dreams, and the Ambivalent Politics of East–West Exchange at the First Exhibition of Approximate Art in Riga, April 1987.”</a> <cite>Arts</cite>, 13(3), 88.</li>
+        <li><a href="https://www.nsrd.lv/" {...external}>“Hardija Lediņa gads 2015”</a>. www.nsrd.lv.</li>
+      </ul>
+    </section>
+
+    <section className="about-support">
+      {locale === 'lv' ? <>
+        <p>Vizualizācija tapusi projekta <a href="https://lulfmi.lv/petijumi/projekti/primitiva-un-troksnaina-muzika-padomju-latvija-1956-1986-kontroles-mehanismi-un-izvairisanas-prakses-autoritaras-varas-apstaklos" {...external}>“‘Primitīvā un trokšņainā mūzika’ Padomju Latvijā (1956-1986): kontroles mehānismi un izvairīšanās prakses autoritāras varas apstākļos”</a> (lzp-2024/1-0059) ietvaros.</p>
+        <p>Papildu atbalstu sniedza <a href="https://www.emory.edu/" {...external}>Emorija Universitātes</a> Mākslas un zinātņu koledža (Atlanta, ASV).</p>
+      </> : <>
+        <p>This visualization was created as part of the project <a href="https://lulfmi.lv/en/research/projects/primitive-and-noisy-music-in-soviet-latvia-1956-1986-control-mechanisms-and-practices-of-avoidance-under-authoritarian-rule-1" {...external}>“‘Primitive and Noisy Music’ in Soviet Latvia (1956-1986): Control Mechanisms and Practices of Avoidance Under Authoritarian Rule”</a> (lzp-2024/1-0059).</p>
+        <p>Additional support was provided by Emory College of Arts &amp; Sciences, <a href="https://www.emory.edu/" {...external}>Emory University</a> (Atlanta, USA).</p>
+      </>}
+    </section>
+
+    <p className="about-developer">{locale === 'lv' ? 'Vizualizācijas rīku izstrādāja ' : 'The visualization tool was developed by '}<a href="https://dhc.lu.lv/" {...external}>{locale === 'lv' ? 'LU Digitālo humanitāro zinātņu centrs' : 'University of Latvia Digital Humanities Centre'}</a>.</p>
+  </div>;
+}
+
 export default function Home() {
   const [locale, setLocale] = useState<Locale>('lv');
   const [theme, setTheme] = useState<Theme>('light');
   const [textSize, setTextSize] = useState<TextSize>(16);
   const [palette, setPalette] = useState<PaletteId>('archive');
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [controlsPanelOpen, setControlsPanelOpen] = useState(true);
   const [inspectorPanelOpen, setInspectorPanelOpen] = useState(true);
@@ -443,11 +493,15 @@ export default function Home() {
     window.localStorage.setItem('nsrd-visualization-style', visualizationStyle);
   }, [preferencesReady, visualizationStyle]);
   useEffect(() => {
-    if (!settingsOpen) return;
-    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setSettingsOpen(false); };
+    if (!settingsOpen && !aboutOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setSettingsOpen(false);
+      setAboutOpen(false);
+    };
     window.addEventListener('keydown', closeOnEscape);
     return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [settingsOpen]);
+  }, [aboutOpen, settingsOpen]);
   useEffect(() => {
     const media = window.matchMedia('(max-width: 1100px)');
     const syncPanels = () => {
@@ -804,10 +858,17 @@ export default function Home() {
           <button type="button" className="text-size-switch" onClick={() => setTextSize((current) => nextTextSize[current])} aria-label={t.textSize} aria-pressed={textSize !== 16} title={`${t.textSize}: ${textSize}px`}>A+</button>
           <span className="utility-divider" aria-hidden="true" />
           <button type="button" className="theme-switch" onClick={() => setTheme((current) => current === 'light' ? 'dark' : 'light')} aria-label={theme === 'dark' ? t.light : t.dark} title={theme === 'dark' ? t.light : t.dark}>{theme === 'dark' ? <Sun /> : <Moon />}</button>
-          <button type="button" className="about-switch" disabled aria-label={t.aboutComing} title={t.aboutComing}><Info /></button>
-          <button type="button" className="settings-switch" onClick={() => setSettingsOpen((current) => !current)} aria-label={t.settings} aria-expanded={settingsOpen} aria-controls="settings-panel"><Settings2 /></button>
+          <button type="button" className="about-switch" onClick={() => { setSettingsOpen(false); setAboutOpen((current) => !current); }} aria-label={t.about} aria-expanded={aboutOpen} aria-controls="about-panel" title={t.about}><Info /></button>
+          <button type="button" className="settings-switch" onClick={() => { setAboutOpen(false); setSettingsOpen((current) => !current); }} aria-label={t.settings} aria-expanded={settingsOpen} aria-controls="settings-panel"><Settings2 /></button>
         </div>
       </header>
+      {aboutOpen && <>
+        <button type="button" className="settings-scrim" aria-label={t.closeAbout} onClick={() => setAboutOpen(false)} />
+        <section id="about-panel" className="about-panel" role="dialog" aria-modal="true" aria-labelledby="about-title">
+          <div className="about-heading"><div><span>{t.about}</span><h2 id="about-title">{t.product}</h2></div><button type="button" onClick={() => setAboutOpen(false)} aria-label={t.closeAbout}><X /></button></div>
+          <AboutContent locale={locale} />
+        </section>
+      </>}
       {settingsOpen && <>
         <button type="button" className="settings-scrim" aria-label={t.closeSettings} onClick={() => setSettingsOpen(false)} />
         <section id="settings-panel" className="settings-panel" role="dialog" aria-modal="false" aria-labelledby="settings-title">
