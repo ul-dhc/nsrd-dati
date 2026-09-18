@@ -879,6 +879,7 @@ export default function Home() {
                   const sourceSelected = selectedIds.includes(edge.source);
                   const targetSelected = selectedIds.includes(edge.target);
                   const active = selectedIds.length > 0 && (sourceSelected || targetSelected);
+                  const threadType = source.type === 'artifact' ? target.type : target.type === 'artifact' ? source.type : target.type;
                   const reverseFlow = sourceSelected !== targetSelected ? targetSelected : layoutMode === 'hierarchical' && source.y > target.y;
                   const start = reverseFlow ? target : source;
                   const end = reverseFlow ? source : target;
@@ -893,7 +894,7 @@ export default function Home() {
                   } as CSSProperties;
                   const baseStyle = { strokeWidth: baseWidth, '--wave-delay': `${-(((start.x + end.x) / 2) / 900) * 4.8}s` } as CSSProperties;
                   const flowKey = `${layoutMode}-${animationStyle}-${selectedIds.join('|') || 'intro'}`;
-                  return <g key={`${edge.source}-${edge.target}`} className={active ? 'is-active' : ''}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />{visualizationStyle === 'pencil' && <line className="network-edge-pencil" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />}{layoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>;
+                  return <g key={`${edge.source}-${edge.target}`} className={`edge-${threadType} ${active ? 'is-active' : ''}`}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />{visualizationStyle === 'pencil' && <line className="network-edge-pencil" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />}{layoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>;
                 })}</g>
                 <g className="network-nodes">{displayNodes.map((node) => {
                   const selected = selectedIds.includes(node.id);

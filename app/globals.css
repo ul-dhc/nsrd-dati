@@ -334,15 +334,21 @@ body {
 @keyframes analytics-wave { 0%, 18%, 100% { filter: brightness(1); } 8% { filter: brightness(1.7) saturate(1.22); } }
 @keyframes analytics-echo { 0%, 100% { transform: scaleX(1); filter: brightness(1); } 35% { transform: scaleX(1.045); filter: brightness(1.7) saturate(1.3); } }
 .network-edges { pointer-events: none; }
+.network-edges g { --thread-color: var(--node-artifact); }
+.network-edges g.edge-person { --thread-color: var(--node-person); }
+.network-edges g.edge-artifact { --thread-color: var(--node-artifact); }
+.network-edges g.edge-format { --thread-color: var(--node-format); }
+.network-edges g.edge-group { --thread-color: var(--node-group); }
+.network-edges g.edge-institution { --thread-color: var(--node-institution); }
 .network-edge-base { stroke: color-mix(in srgb, var(--foreground) 22%, transparent); opacity: .3; transition: opacity .2s, stroke .2s; }
-.network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--palette-teal) 62%, transparent); opacity: .76; }
+.network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--thread-color) 78%, var(--foreground)); opacity: .78; }
 .network-canvas.has-selection .network-edges g:not(.is-active) .network-edge-base { stroke: color-mix(in srgb, var(--foreground) 40%, transparent); opacity: .35; }
-.network-canvas.is-structured .network-edge-base { opacity: .08; }
-.network-canvas.is-structured.has-selection .network-edges g:not(.is-active) .network-edge-base { opacity: .24; }
-.network-edge-flow { stroke: color-mix(in srgb, var(--palette-teal) 62%, transparent); stroke-dasharray: none; stroke-dashoffset: 0; stroke-linecap: round; opacity: .34; vector-effect: non-scaling-stroke; }
-.network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--palette-teal) 88%, var(--foreground)); opacity: .92; }
-.network-canvas.is-structured .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--palette-magenta) 68%, transparent); opacity: .6; }
-.network-canvas.is-structured .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--palette-magenta) 90%, var(--foreground)); opacity: .96; }
+.network-canvas.is-structured .network-edge-base { stroke: color-mix(in srgb, var(--thread-color) 46%, transparent); opacity: .1; }
+.network-canvas.is-structured.has-selection .network-edges g:not(.is-active) .network-edge-base { stroke: color-mix(in srgb, var(--thread-color) 42%, transparent); opacity: .2; }
+.network-edge-flow { stroke: color-mix(in srgb, var(--thread-color) 68%, transparent); stroke-dasharray: none; stroke-dashoffset: 0; stroke-linecap: round; opacity: .34; vector-effect: non-scaling-stroke; }
+.network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--thread-color) 90%, var(--foreground)); opacity: .94; }
+.network-canvas.is-structured .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--thread-color) 84%, var(--foreground)); opacity: .72; }
+.network-canvas.is-structured .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--thread-color) 92%, var(--foreground)); opacity: .98; }
 .network-canvas.animation-rain .network-edge-flow { stroke-dasharray: .35 7; stroke-dashoffset: 0; opacity: .52; animation: network-edge-rain var(--rain-duration) linear var(--rain-delay) infinite; }
 .network-canvas.is-motion-paused:not(.animation-rain) .network-edge-flow { animation: none; stroke-dashoffset: 0; }
 .network-canvas.is-motion-paused.animation-rain .network-edge-flow { animation-play-state: paused; }
@@ -350,10 +356,10 @@ body {
 .network-canvas.animation-wave .graph-node .node-shape { transform-box: fill-box; transform-origin: center; animation: network-node-wave 4.8s ease-in-out var(--wave-delay) infinite; }
 .network-canvas.animation-wave .network-edge-base { animation: network-edge-wave 4.8s ease-in-out var(--wave-delay) infinite; }
 .network-canvas.style-pencil { --foreground: #292724; --background: #fffdf7; background-color: #fffdf7; background-image: linear-gradient(color-mix(in srgb, #9db1c2 18%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, #9db1c2 18%, transparent) 1px, transparent 1px), radial-gradient(circle, color-mix(in srgb, #292724 9%, transparent) .5px, transparent .7px); background-size: 28px 28px, 28px 28px, 11px 11px; }
-.network-canvas.style-pencil .network-edge-base { stroke: color-mix(in srgb, var(--foreground) 78%, transparent); stroke-dasharray: 2.4 .8; opacity: .48; filter: url(#pencil-wobble); }
-.network-canvas.style-pencil .network-edge-pencil { stroke: color-mix(in srgb, var(--foreground) 64%, transparent); stroke-width: .5; stroke-dasharray: .8 2.2; opacity: .5; transform: translate(.8px, -.55px); filter: url(#pencil-wobble); vector-effect: non-scaling-stroke; }
-.network-canvas.style-pencil .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--palette-teal) 88%, var(--foreground)); opacity: .88; }
-.network-canvas.style-pencil .network-edges g.is-active .network-edge-pencil { stroke: color-mix(in srgb, var(--palette-magenta) 78%, var(--foreground)); opacity: .82; }
+.network-canvas.style-pencil .network-edge-base { stroke: color-mix(in srgb, var(--thread-color) 58%, var(--foreground)); stroke-dasharray: 2.4 .8; opacity: .44; filter: url(#pencil-wobble); }
+.network-canvas.style-pencil .network-edge-pencil { stroke: color-mix(in srgb, var(--thread-color) 48%, var(--foreground)); stroke-width: .5; stroke-dasharray: .8 2.2; opacity: .46; transform: translate(.8px, -.55px); filter: url(#pencil-wobble); vector-effect: non-scaling-stroke; }
+.network-canvas.style-pencil .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--thread-color) 90%, var(--foreground)); opacity: .9; }
+.network-canvas.style-pencil .network-edges g.is-active .network-edge-pencil { stroke: color-mix(in srgb, var(--thread-color) 80%, var(--foreground)); opacity: .84; }
 .network-canvas.is-motion-paused .graph-node .node-shape, .network-canvas.is-motion-paused .network-edge-base { animation-play-state: paused; }
 @keyframes network-edge-rain { to { stroke-dashoffset: -100; } }
 @keyframes network-node-echo { 0%, 100% { transform: scale(1); } 32% { transform: scale(1.2); } }
