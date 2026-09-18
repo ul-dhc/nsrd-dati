@@ -638,12 +638,12 @@ export default function Home() {
         }
 
         const diagonal = sameType.length > 10;
-        const leanLeft = diagonal && node.x > 765;
+        const alignInsideRightEdge = diagonal && node.x > 765;
         placements.set(node.id, {
-          x: diagonal ? (leanLeft ? -radius - 6 : radius + 6) : 0,
+          x: diagonal ? (alignInsideRightEdge ? -radius - 6 : radius + 6) : 0,
           y: -radius - 8,
-          textAnchor: diagonal ? (leanLeft ? 'end' : 'start') : 'middle',
-          rotation: diagonal ? (leanLeft ? 45 : -45) : undefined,
+          textAnchor: diagonal ? (alignInsideRightEdge ? 'end' : 'start') : 'middle',
+          rotation: diagonal ? -45 : undefined,
         });
       });
     });
