@@ -893,10 +893,16 @@ export default function Home() {
         const position = current[node.id] ?? node;
         return { x: position.x, y: position.y };
       });
-      const radiusX = 392;
-      const radiusY = 232;
+      const center = positions.reduce((result, position) => ({ x: result.x + position.x / positions.length, y: result.y + position.y / positions.length }), { x: 0, y: 0 });
+      const indexById = new Map(graph.nodes.map((node, index) => [node.id, index]));
+      const bounds = { left: 28, right: 872, top: 28, bottom: 542 };
 
-      for (let iteration = 0; iteration < 48; iteration += 1) {
+      positions.forEach((position) => {
+        position.x = 450 + (position.x - center.x) * 1.28;
+        position.y = 285 + (position.y - center.y) * 1.24;
+      });
+
+      for (let iteration = 0; iteration < 64; iteration += 1) {
         const shifts = positions.map(() => ({ x: 0, y: 0 }));
         for (let leftIndex = 0; leftIndex < positions.length; leftIndex += 1) {
           for (let rightIndex = leftIndex + 1; rightIndex < positions.length; rightIndex += 1) {
@@ -915,8 +921,8 @@ export default function Home() {
               distance = 1;
             }
             const overlap = Math.max(0, minimumDistance - distance);
-            const breathingRoom = influenceDistance - Math.max(distance, minimumDistance);
-            const push = Math.min(8, overlap * .34 + breathingRoom * .035);
+            const proximity = Math.max(0, (influenceDistance - distance) / influenceDistance);
+            const push = Math.min(9, overlap * .38 + proximity * proximity * 2.4);
             const pushX = dx / distance * push;
             const pushY = dy / distance * push;
             shifts[leftIndex].x -= pushX;
@@ -925,14 +931,33 @@ export default function Home() {
             shifts[rightIndex].y += pushY;
           }
         }
+
+        graph.edges.forEach((edge) => {
+          const sourceIndex = indexById.get(edge.source);
+          const targetIndex = indexById.get(edge.target);
+          if (sourceIndex === undefined || targetIndex === undefined) return;
+          const source = positions[sourceIndex];
+          const target = positions[targetIndex];
+          const dx = target.x - source.x;
+          const dy = target.y - source.y;
+          const distance = Math.max(1, Math.hypot(dx, dy));
+          if (distance <= 230) return;
+          const pull = Math.min(1.1, (distance - 230) * .0035);
+          const pullX = dx / distance * pull;
+          const pullY = dy / distance * pull;
+          shifts[sourceIndex].x += pullX;
+          shifts[sourceIndex].y += pullY;
+          shifts[targetIndex].x -= pullX;
+          shifts[targetIndex].y -= pullY;
+        });
+
         positions.forEach((position, index) => {
-          position.x += Math.max(-10, Math.min(10, shifts[index].x));
-          position.y += Math.max(-10, Math.min(10, shifts[index].y));
-          const normalizedDistance = Math.hypot((position.x - 450) / radiusX, (position.y - 285) / radiusY);
-          if (normalizedDistance > 1) {
-            position.x = 450 + (position.x - 450) / normalizedDistance;
-            position.y = 285 + (position.y - 285) / normalizedDistance;
-          }
+          if (position.x < bounds.left) shifts[index].x += (bounds.left - position.x) * .18;
+          if (position.x > bounds.right) shifts[index].x -= (position.x - bounds.right) * .18;
+          if (position.y < bounds.top) shifts[index].y += (bounds.top - position.y) * .18;
+          if (position.y > bounds.bottom) shifts[index].y -= (position.y - bounds.bottom) * .18;
+          position.x = Math.max(bounds.left, Math.min(bounds.right, position.x + Math.max(-10, Math.min(10, shifts[index].x))));
+          position.y = Math.max(bounds.top, Math.min(bounds.bottom, position.y + Math.max(-10, Math.min(10, shifts[index].y))));
         });
       }
 
