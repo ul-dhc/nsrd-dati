@@ -52,6 +52,7 @@ type LabelMode = 'active' | 'all' | 'none';
 type AnimationStyle = 'none' | 'rain' | 'echo' | 'wave';
 type VisualizationStyle = 'standard' | 'pencil';
 type NodeShapeMode = 'category' | 'circle';
+type NetworkMotionStyle = 'drift' | 'orbit' | 'chaos' | 'breathing';
 type AppView = 'network' | 'dashboard';
 type GraphNode = { id: string; payloadId: string; label: string; type: NodeType; degree: number; x: number; y: number };
 type GraphEdge = { source: string; target: string; weight: number; contexts: string[] };
@@ -84,6 +85,12 @@ const visualizationStyleOptions: Array<{ id: VisualizationStyle; lv: string; en:
   { id: 'standard', lv: 'Standarta', en: 'Standard' },
   { id: 'pencil', lv: 'Zīmulis', en: 'Pencil' },
 ];
+const networkMotionStyleOptions: Array<{ id: NetworkMotionStyle; lv: string; en: string }> = [
+  { id: 'drift', lv: 'Plūdums', en: 'Drift' },
+  { id: 'orbit', lv: 'Orbīta', en: 'Orbit' },
+  { id: 'chaos', lv: 'Haoss', en: 'Chaos' },
+  { id: 'breathing', lv: 'Elpa', en: 'Breathing' },
+];
 const appViewOptions: Array<{ id: AppView; lv: string; en: string }> = [
   { id: 'network', lv: 'Tīkls', en: 'Network' },
   { id: 'dashboard', lv: 'Pārskats', en: 'Data overview' },
@@ -109,7 +116,7 @@ const ui = {
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
-    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', about: 'Par projektu', closeAbout: 'Aizvērt informāciju par projektu', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', visualizationStyle: 'Vizualizācijas stils', visualizationHelpStandard: 'Standarta noformējums ar vienmērīgi aizpildītiem krāsu laukumiem.', visualizationHelpPencil: 'Plānas skices līnijas un krāsains zīmuļa šrafējums uz papīra fona.', nodeShape: 'Mezglu forma', categoryShapes: 'Pēc kategorijas', circleShapes: 'Visi apļi', nodeShapeHelp: 'Kategorijas var atšķirt pēc formas un krāsas vai tikai pēc krāsas.', inDevelopment: 'Izstrādes procesā',
+    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', about: 'Par projektu', closeAbout: 'Aizvērt informāciju par projektu', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', networkMotion: 'Tīkla kustība', movementIntensity: 'Kustības intensitāte', movementHelpDrift: 'Mezgli lēni un viegli dreifē ap savu vietu.', movementHelpOrbit: 'Mezglu kopas rotē ap tīkla centru kā planētas orbītā.', movementHelpChaos: 'Mezgli kustas aktīvāk un neregulārāk, nezaudējot tīkla pamatstruktūru.', movementHelpBreathing: 'Tīkls ritmiski izplešas un saraujas ap centru.', movementFreeOnly: 'Kustība darbojas brīvajā tīkla skatā.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', visualizationStyle: 'Vizualizācijas stils', visualizationHelpStandard: 'Standarta noformējums ar vienmērīgi aizpildītiem krāsu laukumiem.', visualizationHelpPencil: 'Plānas skices līnijas un krāsains zīmuļa šrafējums uz papīra fona.', nodeShape: 'Mezglu forma', categoryShapes: 'Pēc kategorijas', circleShapes: 'Visi apļi', nodeShapeHelp: 'Kategorijas var atšķirt pēc formas un krāsas vai tikai pēc krāsas.', inDevelopment: 'Izstrādes procesā',
     filters: 'Filtri', filterViews: 'Filtrēt skatus', details: 'Detaļas', showRecords: 'Rādīt ierakstus', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
     records: 'Ieraksti', documentedPeople: 'Personas', relatedPeople: 'Līdzdalībnieki', visibleFormats: 'Formāti', formatChart: 'Ieraksti pēc formāta', peopleChart: 'Personas pēc ierakstu skaita', artifactChart: 'Ieraksti pēc dalībnieku skaita', collaborationMatrix: 'Kopīgo ierakstu matrica', collaborationMobile: 'Personu sadarbības', collaborationHelp: 'Klikšķini šūnā, lai atlasītu personu pāri un apskatītu kopīgos ierakstus.', topCollaborations: 'Biežākie sadarbību pāri', sharedRecords: 'kopīgi ieraksti', noCollaborations: 'Šai atlasei nav pietiekami daudz personu sadarbību.',
   },
@@ -122,7 +129,7 @@ const ui = {
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
-    choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', about: 'About the project', closeAbout: 'Close project information', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', visualizationStyle: 'Visualization style', visualizationHelpStandard: 'Standard appearance with evenly filled color areas.', visualizationHelpPencil: 'Fine sketch lines and colored-pencil hatching on a paper background.', nodeShape: 'Node shape', categoryShapes: 'By category', circleShapes: 'All circles', nodeShapeHelp: 'Categories can be distinguished by shape and color or by color alone.', inDevelopment: 'In development',
+    choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', about: 'About the project', closeAbout: 'Close project information', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', networkMotion: 'Network motion', movementIntensity: 'Motion intensity', movementHelpDrift: 'Nodes drift slowly and gently around their positions.', movementHelpOrbit: 'Node groups revolve around the network center like planets in orbit.', movementHelpChaos: 'Nodes move more actively and irregularly without losing the underlying structure.', movementHelpBreathing: 'The network rhythmically expands and contracts around its center.', movementFreeOnly: 'Motion applies to the free network view.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', visualizationStyle: 'Visualization style', visualizationHelpStandard: 'Standard appearance with evenly filled color areas.', visualizationHelpPencil: 'Fine sketch lines and colored-pencil hatching on a paper background.', nodeShape: 'Node shape', categoryShapes: 'By category', circleShapes: 'All circles', nodeShapeHelp: 'Categories can be distinguished by shape and color or by color alone.', inDevelopment: 'In development',
     filters: 'Filters', filterViews: 'Filter views', details: 'Details', showRecords: 'Show recordings', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
     records: 'Recordings', documentedPeople: 'People', relatedPeople: 'Collaborators', visibleFormats: 'Formats', formatChart: 'Recordings by format', peopleChart: 'People by number of recordings', artifactChart: 'Recordings by number of participants', collaborationMatrix: 'Shared-recording matrix', collaborationMobile: 'Person collaborations', collaborationHelp: 'Click a cell to select a pair of people and inspect their shared recordings.', topCollaborations: 'Top collaboration pairs', sharedRecords: 'shared recordings', noCollaborations: 'There are not enough person collaborations in this selection.',
   },
@@ -398,6 +405,8 @@ export default function Home() {
   const [leftType, setLeftType] = useState<NodeType>('person');
   const [rightType, setRightType] = useState<NodeType>('artifact');
   const [motionFrozen, setMotionFrozen] = useState(false);
+  const [networkMotionStyle, setNetworkMotionStyle] = useState<NetworkMotionStyle>('drift');
+  const [networkMotionIntensity, setNetworkMotionIntensity] = useState(100);
   const [animationStyle, setAnimationStyle] = useState<AnimationStyle>('none');
   const [visualizationStyle, setVisualizationStyle] = useState<VisualizationStyle>('standard');
   const [nodeShapeMode, setNodeShapeMode] = useState<NodeShapeMode>('category');
@@ -432,6 +441,12 @@ export default function Home() {
     wave: t.animationHelpWave,
   }[animationStyle];
   const visualizationHelp = visualizationStyle === 'pencil' ? t.visualizationHelpPencil : t.visualizationHelpStandard;
+  const networkMovementHelp = {
+    drift: t.movementHelpDrift,
+    orbit: t.movementHelpOrbit,
+    chaos: t.movementHelpChaos,
+    breathing: t.movementHelpBreathing,
+  }[networkMotionStyle];
 
   useEffect(() => {
     const savedLocale = window.localStorage.getItem('nsrd-locale');
@@ -439,6 +454,8 @@ export default function Home() {
     const savedTextSize = Number(window.localStorage.getItem('nsrd-text-size'));
     const savedPalette = window.localStorage.getItem('nsrd-palette');
     const savedMotion = window.localStorage.getItem('nsrd-motion');
+    const savedNetworkMotionStyle = window.localStorage.getItem('nsrd-network-motion-style');
+    const savedNetworkMotionIntensity = Number(window.localStorage.getItem('nsrd-network-motion-intensity'));
     const savedAnimationStyle = window.localStorage.getItem('nsrd-animation-style');
     const savedVisualizationStyle = window.localStorage.getItem('nsrd-visualization-style');
     const savedNodeShapeMode = window.localStorage.getItem('nsrd-node-shape');
@@ -458,6 +475,8 @@ export default function Home() {
     setTextSize(initialTextSize);
     setPalette(initialPalette);
     setMotionFrozen(savedMotion === 'static');
+    setNetworkMotionStyle(networkMotionStyleOptions.some((option) => option.id === savedNetworkMotionStyle) ? savedNetworkMotionStyle as NetworkMotionStyle : 'drift');
+    setNetworkMotionIntensity(savedNetworkMotionIntensity >= 10 && savedNetworkMotionIntensity <= 200 ? savedNetworkMotionIntensity : 100);
     setAnimationStyle(initialAnimationStyle);
     setVisualizationStyle(initialVisualizationStyle);
     setNodeShapeMode(savedNodeShapeMode === 'circle' ? 'circle' : 'category');
@@ -495,6 +514,14 @@ export default function Home() {
     if (!preferencesReady) return;
     window.localStorage.setItem('nsrd-motion', motionFrozen ? 'static' : 'dynamic');
   }, [motionFrozen, preferencesReady]);
+  useEffect(() => {
+    if (!preferencesReady) return;
+    window.localStorage.setItem('nsrd-network-motion-style', networkMotionStyle);
+  }, [networkMotionStyle, preferencesReady]);
+  useEffect(() => {
+    if (!preferencesReady) return;
+    window.localStorage.setItem('nsrd-network-motion-intensity', String(networkMotionIntensity));
+  }, [networkMotionIntensity, preferencesReady]);
   useEffect(() => {
     if (!preferencesReady) return;
     window.localStorage.setItem('nsrd-animation-style', animationStyle);
@@ -619,6 +646,9 @@ export default function Home() {
     return () => { if (elasticFrame.current !== null) cancelAnimationFrame(elasticFrame.current); };
   }, [draggingId]);
   useEffect(() => {
+    setDriftClock(0);
+  }, [networkMotionStyle]);
+  useEffect(() => {
     if (motionFrozen || layoutMode !== 'force') { lastFrame.current = null; return; }
     let lastPaint = 0;
     const animate = (time: number) => {
@@ -637,17 +667,39 @@ export default function Home() {
   const positionedNodes = useMemo(() => graph.nodes.map((node) => {
     const base = manualPositions[node.id] ?? node;
     if (layoutMode !== 'force' || draggingId === node.id) return { ...node, x: base.x, y: base.y };
-    const phase = Math.abs(hash(node.id)) % 628 / 100;
-    const amplitude = 6 + (Math.abs(hash(`${node.id}:drift`)) % 35) / 10;
-    const orbit = driftClock * .00013 + phase;
-    const sharedX = Math.sin(driftClock * .000065) * 4;
-    const sharedY = Math.cos(driftClock * .000055) * 3;
-    return {
-      ...node,
-      x: Math.round((base.x + sharedX + Math.sin(orbit) * amplitude) * 1000) / 1000,
-      y: Math.round((base.y + sharedY + Math.cos(orbit) * amplitude * .76) * 1000) / 1000,
-    };
-  }), [draggingId, driftClock, graph.nodes, layoutMode, manualPositions]);
+    const intensity = networkMotionIntensity / 100;
+    const seed = Math.abs(hash(node.id));
+    const phase = seed % 628 / 100;
+    let x = base.x;
+    let y = base.y;
+
+    if (networkMotionStyle === 'orbit') {
+      const typeIndex = Math.max(0, nodeTypeOrder.indexOf(node.type));
+      const angle = driftClock * .00003 * intensity * (1 + typeIndex * .12);
+      const dx = base.x - 450;
+      const dy = base.y - 285;
+      x = 450 + dx * Math.cos(angle) - dy * Math.sin(angle);
+      y = 285 + dx * Math.sin(angle) + dy * Math.cos(angle);
+    } else if (networkMotionStyle === 'chaos') {
+      const amplitude = (15 + seed % 16) * intensity;
+      const speed = .00045 + (seed % 11) * .000018;
+      x = base.x + Math.sin(driftClock * speed + phase) * amplitude + Math.sin(driftClock * speed * 2.17 + phase * .43) * amplitude * .28;
+      y = base.y + Math.cos(driftClock * speed * 1.31 + phase * 1.27) * amplitude * .78 + Math.sin(driftClock * speed * 1.83 + phase) * amplitude * .24;
+    } else if (networkMotionStyle === 'breathing') {
+      const breath = 1 + Math.sin(driftClock * .00115) * .06 * intensity;
+      x = 450 + (base.x - 450) * breath;
+      y = 285 + (base.y - 285) * breath;
+    } else {
+      const amplitude = (6 + (Math.abs(hash(`${node.id}:drift`)) % 35) / 10) * intensity;
+      const orbit = driftClock * .00013 * Math.max(.25, intensity) + phase;
+      const sharedX = Math.sin(driftClock * .000065 * Math.max(.25, intensity)) * 4 * intensity;
+      const sharedY = Math.cos(driftClock * .000055 * Math.max(.25, intensity)) * 3 * intensity;
+      x = base.x + sharedX + Math.sin(orbit) * amplitude;
+      y = base.y + sharedY + Math.cos(orbit) * amplitude * .76;
+    }
+
+    return { ...node, x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000 };
+  }), [draggingId, driftClock, graph.nodes, layoutMode, manualPositions, networkMotionIntensity, networkMotionStyle]);
   const driftPositionById = useMemo(() => new Map(positionedNodes.map((node) => [node.id, node])), [positionedNodes]);
   const displayNodes = useMemo(() => positionedNodes.map((node) => ({
     ...node,
@@ -916,6 +968,7 @@ export default function Home() {
             {paletteOptions.map((option) => <button type="button" className="palette-option" key={option.id} aria-pressed={palette === option.id} onClick={() => setPalette(option.id)}><span className="palette-swatches" aria-hidden="true">{option.colors.map((color) => <i key={color} style={{ backgroundColor: color }} />)}</span><span><strong>{option[locale]}</strong><small>{option[locale === 'lv' ? 'en' : 'lv']}</small></span>{palette === option.id && <Check aria-hidden="true" />}</button>)}
           </div></fieldset>
           <fieldset className="settings-section"><legend>{t.graphMotion}</legend><div className="motion-options"><button type="button" aria-pressed={!motionFrozen} onClick={() => setMotionFrozen(false)}><Play />{t.dynamic}</button><button type="button" aria-pressed={motionFrozen} onClick={() => setMotionFrozen(true)}><Pause />{t.static}</button></div><p>{t.motionHelp}</p></fieldset>
+          <fieldset className="settings-section"><legend>{t.networkMotion}</legend><div className="network-motion-field"><Select value={networkMotionStyle} onValueChange={(value) => setNetworkMotionStyle(value as NetworkMotionStyle)}><SelectTrigger aria-label={t.networkMotion}><SelectValue>{networkMotionStyleOptions.find((option) => option.id === networkMotionStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{networkMotionStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select><label className="motion-intensity-control"><span>{t.movementIntensity}<output>{networkMotionIntensity}%</output></span><Slider min={10} max={200} step={5} value={[networkMotionIntensity]} onValueChange={(value) => setNetworkMotionIntensity(singleSliderValue(value))} aria-label={t.movementIntensity} /></label></div><p>{networkMovementHelp} {t.movementFreeOnly}</p></fieldset>
           <fieldset className="settings-section"><legend>{t.animationStyle}</legend><div className="animation-style-field"><Select value={animationStyle} onValueChange={(value) => setAnimationStyle(value as AnimationStyle)}><SelectTrigger aria-label={t.animationStyle}><SelectValue>{animationStyleOptions.find((option) => option.id === animationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{animationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{animationHelp}</p></fieldset>
           <fieldset className="settings-section"><legend>{t.visualizationStyle}</legend><div className="visualization-style-field"><Select value={visualizationStyle} onValueChange={(value) => setVisualizationStyle(value as VisualizationStyle)}><SelectTrigger aria-label={t.visualizationStyle}><SelectValue>{visualizationStyleOptions.find((option) => option.id === visualizationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{visualizationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{visualizationHelp}</p></fieldset>
           <fieldset className="settings-section"><legend>{t.nodeShape}</legend><div className="node-shape-options"><button type="button" aria-pressed={nodeShapeMode === 'category'} onClick={() => setNodeShapeMode('category')}>{t.categoryShapes}</button><button type="button" aria-pressed={nodeShapeMode === 'circle'} onClick={() => setNodeShapeMode('circle')}>{t.circleShapes}</button></div><p>{t.nodeShapeHelp}</p></fieldset>
