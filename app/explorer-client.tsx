@@ -140,6 +140,7 @@ const artifactSuggestions = events
 
 const normalize = (value: string) => value.toLocaleLowerCase('lv-LV').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const hash = (value: string) => Array.from(value).reduce((result, char) => ((result << 5) - result + char.charCodeAt(0)) | 0, 0);
+const singleSliderValue = (value: number | number[]) => Array.isArray(value) ? value[0] : value;
 
 function buildGraph(sourceEvents: EventRecord[], visibleTypes: Set<NodeType>): Graph {
   const nodes = new Map<string, Omit<GraphNode, 'degree' | 'x' | 'y'>>();
@@ -946,11 +947,11 @@ export default function Home() {
                 <button type="button" className={`label-mode-button is-${labelMode}`} onClick={() => setLabelMode((current) => nextLabelMode[current])} aria-label={`${t.labels}: ${labelModeNames[locale][labelMode]}. ${t.labelClick}`} title={`${t.labels}: ${labelModeNames[locale][labelMode]}`}>{labelMode === 'none' ? <EyeOff /> : <Eye />}</button>
                 <div className="graph-scale-control">
                   <button type="button" onClick={() => setActiveScaleControl((current) => current === 'node' ? null : 'node')} aria-label={`${t.nodeSize}: ${Math.round(nodeScale * 100)}%`} aria-expanded={activeScaleControl === 'node'} aria-controls="node-size-control" title={`${t.nodeSize}: ${Math.round(nodeScale * 100)}%`}><Circle /></button>
-                  {activeScaleControl === 'node' && <div id="node-size-control" className="graph-scale-popover"><span>{t.nodeSize}</span><Slider min={.5} max={2} step={.05} value={[nodeScale]} onValueChange={(value) => setNodeScale(value[0])} aria-label={t.nodeSize} /><output>{Math.round(nodeScale * 100)}%</output></div>}
+                  {activeScaleControl === 'node' && <div id="node-size-control" className="graph-scale-popover"><span>{t.nodeSize}</span><Slider min={.5} max={2} step={.05} value={[nodeScale]} onValueChange={(value) => setNodeScale(singleSliderValue(value))} aria-label={t.nodeSize} /><output>{Math.round(nodeScale * 100)}%</output></div>}
                 </div>
                 <div className="graph-scale-control">
                   <button type="button" className="graph-text-size-button" onClick={() => setActiveScaleControl((current) => current === 'label' ? null : 'label')} aria-label={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`} aria-expanded={activeScaleControl === 'label'} aria-controls="graph-text-size-control" title={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`}><Type /></button>
-                  {activeScaleControl === 'label' && <div id="graph-text-size-control" className="graph-scale-popover"><span>{t.graphTextSize}</span><Slider min={.5} max={3} step={.1} value={[graphLabelScale]} onValueChange={(value) => setGraphLabelScale(value[0])} aria-label={t.graphTextSize} /><output>{Math.round(graphLabelScale * 100)}%</output></div>}
+                  {activeScaleControl === 'label' && <div id="graph-text-size-control" className="graph-scale-popover"><span>{t.graphTextSize}</span><Slider min={.5} max={3} step={.1} value={[graphLabelScale]} onValueChange={(value) => setGraphLabelScale(singleSliderValue(value))} aria-label={t.graphTextSize} /><output>{Math.round(graphLabelScale * 100)}%</output></div>}
                 </div>
                 {layoutMode === 'force' && <button type="button" className="node-scatter-button" onClick={scatterNodes} aria-label={t.scatter} title={t.scatter}><ChartScatter /></button>}
                 <button type="button" onClick={() => changeZoom(zoom / 1.35)} aria-label={t.compact} title={t.compact}><ZoomOut /></button>
