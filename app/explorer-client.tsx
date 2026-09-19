@@ -109,7 +109,7 @@ const ui = {
   lv: {
     brand: 'NSRD / SEQUE', product: 'NSRD un Seque ierakstu un personu tīkla vizualizācija', explore: 'Saikņu izpēte', networkLayers: 'Tīkla slāņi', showInNetwork: 'Rādīt tīklā',
     searchPerson: 'Meklēt personu', personPlaceholder: 'Sāc rakstīt vārdu…', clearPerson: 'Notīrīt personas meklējumu', searchArtifact: 'Meklēt artefaktu', artifactPlaceholder: 'Sāc rakstīt nosaukumu…', clearArtifact: 'Notīrīt artefakta meklējumu',
-    years: 'Gadu diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', multiHelp: 'Klikšķini, lai pievienotu vai noņemtu', clearFilters: 'Notīrīt filtrus',
+    years: 'Laika diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', multiHelp: 'Klikšķini, lai pievienotu vai noņemtu', clearFilters: 'Notīrīt filtrus',
     view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', distance: 'Tīkla mērogs', legend: 'Leģenda',
     labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', graphTextSize: 'Tīkla nosaukumu izmērs', nodeSize: 'Mezglu izmērs', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
