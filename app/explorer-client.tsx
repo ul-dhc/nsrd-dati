@@ -516,6 +516,22 @@ export default function Home() {
     window.localStorage.setItem('nsrd-graph-label-scale', String(graphLabelScale));
   }, [graphLabelScale, preferencesReady]);
   useEffect(() => {
+    if (!activeScaleControl) return;
+    const closeScaleControl = (event: PointerEvent) => {
+      if (event.target instanceof Element && event.target.closest('.graph-scale-control')) return;
+      setActiveScaleControl(null);
+    };
+    const closeScaleControlWithKeyboard = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setActiveScaleControl(null);
+    };
+    document.addEventListener('pointerdown', closeScaleControl);
+    window.addEventListener('keydown', closeScaleControlWithKeyboard);
+    return () => {
+      document.removeEventListener('pointerdown', closeScaleControl);
+      window.removeEventListener('keydown', closeScaleControlWithKeyboard);
+    };
+  }, [activeScaleControl]);
+  useEffect(() => {
     if (!settingsOpen && !aboutOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
