@@ -222,7 +222,7 @@ body {
 .app-view-switcher button[aria-selected="true"] { color: var(--primary-foreground); background: var(--primary); }
 .app-view-switcher svg { width: 13px; height: 13px; }
 .network-toolbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; min-height: 42px; }
-.network-toolbar-secondary { align-items: flex-end; justify-content: space-between; flex-wrap: nowrap; gap: 10px; margin-bottom: 4px; overflow-x: auto; padding-bottom: 2px; }
+.network-toolbar-secondary { position: relative; z-index: 12; align-items: flex-end; justify-content: space-between; flex-wrap: nowrap; gap: 10px; margin-bottom: 4px; overflow: visible; padding-bottom: 2px; }
 .panel-visibility-toggle { display: grid; width: 30px; height: 38px; flex: none; place-items: center; border: 1px solid transparent; color: var(--muted-foreground); }
 .panel-visibility-toggle:hover, .panel-visibility-toggle[aria-expanded="false"] { border-color: var(--border); color: var(--foreground); background: var(--muted); }
 .panel-visibility-toggle svg { width: 16px; height: 16px; }
