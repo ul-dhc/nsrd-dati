@@ -258,6 +258,15 @@ body {
 .network-controls .label-mode-button.is-active { color: var(--palette-amber); background: color-mix(in srgb, var(--palette-amber) 14%, var(--card)); }
 .network-controls .label-mode-button.is-all { color: var(--primary); background: color-mix(in oklch, var(--primary) 12%, var(--card)); }
 .network-controls .graph-text-size-button { font-weight: 700; }
+.graph-scale-control { position: relative; display: flex; }
+.graph-scale-control > button[aria-expanded="true"] { color: var(--primary); background: color-mix(in oklch, var(--primary) 12%, var(--card)); }
+.graph-scale-control > button svg { fill: color-mix(in srgb, currentColor 16%, transparent); }
+.graph-scale-popover { position: absolute; z-index: 24; top: calc(100% + 8px); left: 50%; display: grid; width: 176px; grid-template-columns: 1fr auto; align-items: center; gap: 8px 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; color: var(--foreground); background: color-mix(in srgb, var(--popover) 97%, transparent); box-shadow: 0 12px 28px color-mix(in srgb, #000 22%, transparent); transform: translateX(-50%); backdrop-filter: blur(12px); }
+.graph-scale-popover > span { font-size: .625rem; font-weight: 650; white-space: nowrap; }
+.graph-scale-popover > output { min-width: 34px; color: var(--foreground); font-size: .625rem; font-weight: 650; }
+.graph-scale-popover [data-slot="slider"] { grid-column: 1 / -1; min-height: 22px; }
+.graph-scale-popover [data-slot="slider-track"] { height: 3px; }
+.graph-scale-popover [data-slot="slider-thumb"] { width: 13px; height: 13px; }
 .network-controls .node-scatter-button { margin-right: 3px; border-right: 1px solid var(--border); }
 
 .analytics-surface { display: flex; min-height: clamp(570px, calc(100vh - 170px), 720px); flex-direction: column; padding-top: 8px; }
@@ -539,6 +548,7 @@ body {
   .network-controls button { min-width: 44px; height: 44px; padding: 0; }
   .network-controls button > span, .network-controls output { display: none; }
   .network-controls .label-mode-button, .network-controls .graph-text-size-button, .network-controls .node-scatter-button { margin: 0; border: 0; }
+  .graph-scale-popover { top: calc(100% + 8px); right: -82px; left: auto; width: min(220px, calc(100vw - 24px)); transform: none; }
   .legend { width: 100%; min-height: 40px; overflow-x: auto; gap: 12px; padding-inline: 2px; font-size: .625rem; }
   .legend span { min-height: 40px; }
   .network-stage { height: clamp(430px, calc(100dvh - 226px), 620px); }

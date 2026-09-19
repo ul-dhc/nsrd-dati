@@ -5,6 +5,7 @@ import {
   BarChart3,
   Check,
   ChevronRight,
+  Circle,
   CircleHelp,
   Eye,
   EyeOff,
@@ -24,6 +25,7 @@ import {
   Search,
   Settings2,
   Sun,
+  Type,
   Users,
   X,
   ZoomIn,
@@ -47,7 +49,6 @@ type TextSize = 16 | 18 | 20;
 type PaletteId = 'archive' | 'neon' | 'autumn' | 'pastel' | 'vivid';
 type SelectionLogic = 'any' | 'all';
 type LabelMode = 'active' | 'all' | 'none';
-type GraphLabelScale = 1 | 1.25 | 1.5;
 type AnimationStyle = 'none' | 'rain' | 'echo' | 'wave';
 type VisualizationStyle = 'standard' | 'pencil';
 type NodeShapeMode = 'category' | 'circle';
@@ -73,7 +74,6 @@ const layoutLabels: Record<Locale, Record<LayoutMode, string>> = {
 };
 const nextLabelMode: Record<LabelMode, LabelMode> = { none: 'active', active: 'all', all: 'none' };
 const nextTextSize: Record<TextSize, TextSize> = { 16: 18, 18: 20, 20: 16 };
-const nextGraphLabelScale: Record<GraphLabelScale, GraphLabelScale> = { 1: 1.25, 1.25: 1.5, 1.5: 1 };
 const animationStyleOptions: Array<{ id: AnimationStyle; lv: string; en: string }> = [
   { id: 'none', lv: 'Nav', en: 'None' },
   { id: 'rain', lv: 'Lietus', en: 'Rain' },
@@ -105,7 +105,7 @@ const ui = {
     searchPerson: 'Meklēt personu', personPlaceholder: 'Sāc rakstīt vārdu…', clearPerson: 'Notīrīt personas meklējumu', searchArtifact: 'Meklēt artefaktu', artifactPlaceholder: 'Sāc rakstīt nosaukumu…', clearArtifact: 'Notīrīt artefakta meklējumu',
     years: 'Gadu diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', multiHelp: 'Klikšķini, lai pievienotu vai noņemtu', clearFilters: 'Notīrīt filtrus',
     view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', distance: 'Tīkla mērogs', legend: 'Leģenda',
-    labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', graphTextSize: 'Tīkla nosaukumu izmērs', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
+    labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', graphTextSize: 'Tīkla nosaukumu izmērs', nodeSize: 'Mezglu izmērs', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
@@ -118,7 +118,7 @@ const ui = {
     searchPerson: 'Search for a person', personPlaceholder: 'Start typing a name…', clearPerson: 'Clear person search', searchArtifact: 'Search for an artifact', artifactPlaceholder: 'Start typing a title…', clearArtifact: 'Clear artifact search',
     years: 'Year range', format: 'Format', allFormats: 'All formats', multi: 'Select multiple nodes', multiHelp: 'Click to add or remove', clearFilters: 'Clear filters',
     view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', distance: 'Network scale', legend: 'Legend',
-    labels: 'Labels', labelClick: 'Click to change mode.', graphTextSize: 'Network label size', networkAria: 'NSRD and Seque multilayer network', links: 'links', nodes: 'nodes', artifacts: 'artifacts',
+    labels: 'Labels', labelClick: 'Click to change mode.', graphTextSize: 'Network label size', nodeSize: 'Node size', networkAria: 'NSRD and Seque multilayer network', links: 'links', nodes: 'nodes', artifacts: 'artifacts',
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
@@ -402,7 +402,9 @@ export default function Home() {
   const [nodeShapeMode, setNodeShapeMode] = useState<NodeShapeMode>('category');
   const [appView, setAppView] = useState<AppView>('network');
   const [labelMode, setLabelMode] = useState<LabelMode>('active');
-  const [graphLabelScale, setGraphLabelScale] = useState<GraphLabelScale>(1);
+  const [graphLabelScale, setGraphLabelScale] = useState(1);
+  const [nodeScale, setNodeScale] = useState(1);
+  const [activeScaleControl, setActiveScaleControl] = useState<'node' | 'label' | null>(null);
   const [driftClock, setDriftClock] = useState(0);
   const [zoom, setZoom] = useState(.84);
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -439,6 +441,8 @@ export default function Home() {
     const savedAnimationStyle = window.localStorage.getItem('nsrd-animation-style');
     const savedVisualizationStyle = window.localStorage.getItem('nsrd-visualization-style');
     const savedNodeShapeMode = window.localStorage.getItem('nsrd-node-shape');
+    const savedNodeScale = Number(window.localStorage.getItem('nsrd-node-scale'));
+    const savedGraphLabelScale = Number(window.localStorage.getItem('nsrd-graph-label-scale'));
     const savedRainAnimation = window.localStorage.getItem('nsrd-rain-animation');
     const initialLocale = savedLocale === 'lv' || savedLocale === 'en' ? savedLocale : 'lv';
     const initialTheme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -456,6 +460,8 @@ export default function Home() {
     setAnimationStyle(initialAnimationStyle);
     setVisualizationStyle(initialVisualizationStyle);
     setNodeShapeMode(savedNodeShapeMode === 'circle' ? 'circle' : 'category');
+    setNodeScale(savedNodeScale >= .5 && savedNodeScale <= 2 ? savedNodeScale : 1);
+    setGraphLabelScale(savedGraphLabelScale >= .5 && savedGraphLabelScale <= 3 ? savedGraphLabelScale : 1);
     document.documentElement.lang = initialLocale;
     document.documentElement.classList.toggle('dark', initialTheme === 'dark');
     document.documentElement.style.colorScheme = initialTheme;
@@ -500,6 +506,14 @@ export default function Home() {
     if (!preferencesReady) return;
     window.localStorage.setItem('nsrd-node-shape', nodeShapeMode);
   }, [nodeShapeMode, preferencesReady]);
+  useEffect(() => {
+    if (!preferencesReady) return;
+    window.localStorage.setItem('nsrd-node-scale', String(nodeScale));
+  }, [nodeScale, preferencesReady]);
+  useEffect(() => {
+    if (!preferencesReady) return;
+    window.localStorage.setItem('nsrd-graph-label-scale', String(graphLabelScale));
+  }, [graphLabelScale, preferencesReady]);
   useEffect(() => {
     if (!settingsOpen && !aboutOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -633,7 +647,7 @@ export default function Home() {
         ? a.y - b.y || a.label.localeCompare(b.label, 'lv')
         : a.x - b.x || a.label.localeCompare(b.label, 'lv'));
       sameType.forEach((node) => {
-        const radius = nodeRadius(node, layoutMode);
+        const radius = nodeRadius(node, layoutMode) * nodeScale;
         if (layoutMode === 'bipartite') {
           const leftColumn = node.x < 450;
           const direction = leftColumn ? -1 : 1;
@@ -656,7 +670,7 @@ export default function Home() {
       });
     });
     return placements;
-  }, [displayNodes, layoutMode]);
+  }, [displayNodes, layoutMode, nodeScale]);
   const positionById = useMemo(() => new Map(displayNodes.map((node) => [node.id, node])), [displayNodes]);
   const selectedNodes = selectedIds.map((id) => graph.nodes.find((node) => node.id === id)).filter(Boolean) as GraphNode[];
   useEffect(() => setSelectedIds((current) => current.filter((id) => graph.nodes.some((node) => node.id === id))), [graph]);
@@ -810,7 +824,7 @@ export default function Home() {
             let dx = right.x - left.x;
             let dy = right.y - left.y;
             let distance = Math.hypot(dx, dy);
-            const minimumDistance = nodeRadius(graph.nodes[leftIndex], layoutMode) + nodeRadius(graph.nodes[rightIndex], layoutMode) + (layoutMode === 'force' ? 9 : 5);
+            const minimumDistance = (nodeRadius(graph.nodes[leftIndex], layoutMode) + nodeRadius(graph.nodes[rightIndex], layoutMode)) * nodeScale + (layoutMode === 'force' ? 9 : 5);
             const influenceDistance = minimumDistance + (layoutMode === 'force' ? 34 : 14);
             if (distance >= influenceDistance) continue;
             if (distance < .01) {
@@ -930,7 +944,14 @@ export default function Home() {
               <div className="network-controls" aria-label={t.distance}>
                 {layoutMode === 'force' && <button type="button" onClick={() => setMotionFrozen((current) => !current)} aria-pressed={motionFrozen} aria-label={motionFrozen ? t.move : t.freeze} title={motionFrozen ? t.move : t.freeze}>{motionFrozen ? <Play /> : <Pause />}</button>}
                 <button type="button" className={`label-mode-button is-${labelMode}`} onClick={() => setLabelMode((current) => nextLabelMode[current])} aria-label={`${t.labels}: ${labelModeNames[locale][labelMode]}. ${t.labelClick}`} title={`${t.labels}: ${labelModeNames[locale][labelMode]}`}>{labelMode === 'none' ? <EyeOff /> : <Eye />}</button>
-                <button type="button" className="graph-text-size-button" onClick={() => setGraphLabelScale((current) => nextGraphLabelScale[current])} aria-label={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`} aria-pressed={graphLabelScale !== 1} title={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`}>A+</button>
+                <div className="graph-scale-control">
+                  <button type="button" onClick={() => setActiveScaleControl((current) => current === 'node' ? null : 'node')} aria-label={`${t.nodeSize}: ${Math.round(nodeScale * 100)}%`} aria-expanded={activeScaleControl === 'node'} aria-controls="node-size-control" title={`${t.nodeSize}: ${Math.round(nodeScale * 100)}%`}><Circle /></button>
+                  {activeScaleControl === 'node' && <div id="node-size-control" className="graph-scale-popover"><span>{t.nodeSize}</span><Slider min={.5} max={2} step={.05} value={[nodeScale]} onValueChange={(value) => setNodeScale(value[0])} aria-label={t.nodeSize} /><output>{Math.round(nodeScale * 100)}%</output></div>}
+                </div>
+                <div className="graph-scale-control">
+                  <button type="button" className="graph-text-size-button" onClick={() => setActiveScaleControl((current) => current === 'label' ? null : 'label')} aria-label={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`} aria-expanded={activeScaleControl === 'label'} aria-controls="graph-text-size-control" title={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`}><Type /></button>
+                  {activeScaleControl === 'label' && <div id="graph-text-size-control" className="graph-scale-popover"><span>{t.graphTextSize}</span><Slider min={.5} max={3} step={.1} value={[graphLabelScale]} onValueChange={(value) => setGraphLabelScale(value[0])} aria-label={t.graphTextSize} /><output>{Math.round(graphLabelScale * 100)}%</output></div>}
+                </div>
                 {layoutMode === 'force' && <button type="button" className="node-scatter-button" onClick={scatterNodes} aria-label={t.scatter} title={t.scatter}><ChartScatter /></button>}
                 <button type="button" onClick={() => changeZoom(zoom / 1.35)} aria-label={t.compact} title={t.compact}><ZoomOut /></button>
                 <output aria-label={t.distance}>{Math.round(zoom * 100)}%</output>
@@ -969,7 +990,7 @@ export default function Home() {
                 <g className="network-nodes">{displayNodes.map((node) => {
                   const selected = selectedIds.includes(node.id);
                   const active = !selectedIds.length || activeIds.has(node.id);
-                  const radius = nodeRadius(node, layoutMode);
+                  const radius = nodeRadius(node, layoutMode) * nodeScale;
                   const showLabel = labelMode === 'all' || (labelMode === 'active' && selectedIds.length > 0 && active);
                   const emphasisClass = selectedIds.length ? (active ? 'is-active' : 'is-dimmed') : 'is-ambient';
                   const structuredLabel = labelPlacementById.get(node.id);
