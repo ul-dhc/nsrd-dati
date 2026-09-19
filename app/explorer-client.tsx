@@ -461,7 +461,7 @@ export default function Home() {
     setAnimationStyle(initialAnimationStyle);
     setVisualizationStyle(initialVisualizationStyle);
     setNodeShapeMode(savedNodeShapeMode === 'circle' ? 'circle' : 'category');
-    setNodeScale(savedNodeScale >= .5 && savedNodeScale <= 2 ? savedNodeScale : 1);
+    setNodeScale(savedNodeScale >= .1 && savedNodeScale <= 2 ? savedNodeScale : 1);
     setGraphLabelScale(savedGraphLabelScale >= .5 && savedGraphLabelScale <= 3 ? savedGraphLabelScale : 1);
     document.documentElement.lang = initialLocale;
     document.documentElement.classList.toggle('dark', initialTheme === 'dark');
@@ -963,7 +963,7 @@ export default function Home() {
                 <button type="button" className={`label-mode-button is-${labelMode}`} onClick={() => setLabelMode((current) => nextLabelMode[current])} aria-label={`${t.labels}: ${labelModeNames[locale][labelMode]}. ${t.labelClick}`} title={`${t.labels}: ${labelModeNames[locale][labelMode]}`}>{labelMode === 'none' ? <EyeOff /> : <Eye />}</button>
                 <div className="graph-scale-control">
                   <button type="button" onClick={() => setActiveScaleControl((current) => current === 'node' ? null : 'node')} aria-label={`${t.nodeSize}: ${Math.round(nodeScale * 100)}%`} aria-expanded={activeScaleControl === 'node'} aria-controls="node-size-control" title={`${t.nodeSize}: ${Math.round(nodeScale * 100)}%`}><Circle /></button>
-                  {activeScaleControl === 'node' && <div id="node-size-control" className="graph-scale-popover"><span>{t.nodeSize}</span><Slider min={.5} max={2} step={.05} value={[nodeScale]} onValueChange={(value) => setNodeScale(singleSliderValue(value))} aria-label={t.nodeSize} /><output>{Math.round(nodeScale * 100)}%</output></div>}
+                  {activeScaleControl === 'node' && <div id="node-size-control" className="graph-scale-popover"><span>{t.nodeSize}</span><Slider min={.1} max={2} step={.05} value={[nodeScale]} onValueChange={(value) => setNodeScale(singleSliderValue(value))} aria-label={t.nodeSize} /><output>{Math.round(nodeScale * 100)}%</output></div>}
                 </div>
                 <div className="graph-scale-control">
                   <button type="button" className="graph-text-size-button" onClick={() => setActiveScaleControl((current) => current === 'label' ? null : 'label')} aria-label={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`} aria-expanded={activeScaleControl === 'label'} aria-controls="graph-text-size-control" title={`${t.graphTextSize}: ${Math.round(graphLabelScale * 100)}%`}><Type /></button>
@@ -1020,7 +1020,7 @@ export default function Home() {
                     '--wave-delay': `${-(node.x / 900) * 4.8}s`,
                     '--echo-delay': `${Math.min(echoDistance ?? 0, 6) * .14}s`,
                   } as CSSProperties;
-                  return <g key={`${node.id}-${animationStyle === 'echo' ? selectedIds.join('|') : ''}`} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass} ${echoDistance !== undefined ? 'has-echo-path' : ''}`} style={nodeAnimationStyle} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><NodeShape type={node.type} radius={radius} mode={nodeShapeMode} />{visualizationStyle === 'pencil' && <NodeShape type={node.type} radius={radius} mode={nodeShapeMode} className="pencil-node-outline" />}{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>;
+                  return <g key={`${node.id}-${animationStyle === 'echo' ? selectedIds.join('|') : ''}`} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass} ${echoDistance !== undefined ? 'has-echo-path' : ''}`} style={nodeAnimationStyle} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><circle className="node-hit-target" r={Math.max(radius, 7)} /><NodeShape type={node.type} radius={radius} mode={nodeShapeMode} />{visualizationStyle === 'pencil' && <NodeShape type={node.type} radius={radius} mode={nodeShapeMode} className="pencil-node-outline" />}{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>;
                 })}</g>
               </g>
             </svg>

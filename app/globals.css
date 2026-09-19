@@ -408,6 +408,7 @@ body {
 .node-swatch.group { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
 .node-swatch.institution { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
 .node-shape-circles .node-swatch { border-radius: 50%; clip-path: none; transform: none; }
+.node-hit-target { fill: transparent; pointer-events: all; }
 .graph-node .node-shape { opacity: .56; stroke: transparent !important; stroke-width: 0 !important; filter: none !important; vector-effect: non-scaling-stroke; transition: opacity .22s, filter .22s; }
 .graph-node.is-ambient .node-shape { opacity: .52; }
 .graph-node.is-active .node-shape { opacity: .82; filter: saturate(1.12) !important; }
