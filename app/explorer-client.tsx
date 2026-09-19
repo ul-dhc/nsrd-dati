@@ -1104,7 +1104,7 @@ export default function Home() {
                   const baseWidth = active ? Math.min(1.65, .45 + Math.sqrt(edge.weight) * .32) : .48;
                   const showFlow = animationStyle === 'rain' || selectedIds.length === 0 || active;
                   const flowStyle = {
-                    strokeWidth: active ? Math.min(1.9, baseWidth + .25) : .72,
+                    strokeWidth: active ? Math.min(1.9, baseWidth + .25) : animationStyle === 'rain' ? .9 : .72,
                     '--arrival-duration': `${active ? 1.05 + (edgeIndex % 3) * .08 : 1.4 + (edgeIndex % 5) * .08}s`,
                     '--flow-delay': `${(edgeIndex % 9) * .035}s`,
                     '--rain-duration': `${4.4 + (edgeIndex % 5) * .32}s`,

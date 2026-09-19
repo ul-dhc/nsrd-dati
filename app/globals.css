@@ -387,7 +387,9 @@ body {
 .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--thread-color) 90%, var(--foreground)); opacity: .94; }
 .network-canvas.is-structured .network-edges g.is-active .network-edge-base { stroke: color-mix(in srgb, var(--thread-color) 84%, var(--foreground)); opacity: .72; }
 .network-canvas.is-structured .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--thread-color) 92%, var(--foreground)); opacity: .98; }
-.network-canvas.animation-rain .network-edge-flow { stroke-dasharray: .35 7; stroke-dashoffset: 0; opacity: .52; animation: network-edge-rain var(--rain-duration) linear var(--rain-delay) infinite; }
+.network-canvas.is-structured.animation-rain .network-edge-base { opacity: .17; }
+.network-canvas.animation-rain .network-edge-flow { stroke: color-mix(in srgb, var(--thread-color) 82%, var(--foreground)); stroke-dasharray: 1.15 5.25; stroke-dashoffset: 0; opacity: .72; animation: network-edge-rain var(--rain-duration) linear var(--rain-delay) infinite; }
+.network-canvas.animation-rain .network-edges g.is-active .network-edge-flow { stroke: color-mix(in srgb, var(--thread-color) 94%, var(--foreground)); opacity: .98; }
 .network-canvas.is-motion-paused:not(.animation-rain) .network-edge-flow { animation: none; stroke-dashoffset: 0; }
 .network-canvas.is-motion-paused.animation-rain .network-edge-flow { animation-play-state: paused; }
 .network-canvas.animation-echo.has-selection .graph-node.has-echo-path .node-shape { transform-box: fill-box; transform-origin: center; animation: network-node-echo 1.7s cubic-bezier(.2,.72,.28,1) var(--echo-delay) 1 both; }
@@ -439,6 +441,9 @@ body {
 .dark .network-canvas.is-structured.has-selection .network-edges g:not(.is-active) .network-edge-base { opacity: .3; }
 .dark .network-edge-flow { opacity: .62; }
 .dark .network-edges g.is-active .network-edge-flow { opacity: .96; }
+.dark .network-canvas.is-structured.animation-rain .network-edge-base { opacity: .2; }
+.dark .network-canvas.animation-rain .network-edge-flow { opacity: .78; }
+.dark .network-canvas.animation-rain .network-edges g.is-active .network-edge-flow { opacity: 1; }
 .graph-node text { fill: var(--foreground); font-size: calc(.5rem * var(--graph-label-scale, 1)); font-weight: 500; paint-order: stroke; stroke: var(--background); stroke-width: 2px; stroke-linejoin: round; }
 .network-canvas.is-bipartite .graph-node text { font-size: calc(.3125rem * var(--graph-label-scale, 1)); stroke-width: .75px; }
 @media (prefers-reduced-motion: reduce) { .network-edge-flow, .network-canvas.animation-rain .network-edge-flow, .network-canvas .graph-node .node-shape, .network-canvas .network-edge-base { animation: none; stroke-dasharray: 100; stroke-dashoffset: 0; } }
