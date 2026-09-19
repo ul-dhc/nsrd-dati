@@ -52,9 +52,9 @@ type LabelMode = 'active' | 'all' | 'none';
 type AnimationStyle = 'none' | 'rain' | 'echo' | 'wave';
 type VisualizationStyle = 'standard' | 'pencil';
 type NodeShapeMode = 'category' | 'circle';
-type NetworkMotionStyle = 'drift' | 'orbit' | 'chaos' | 'breathing';
+type NetworkMotionStyle = 'drift' | 'orbit' | 'chaos';
 type AppView = 'network' | 'dashboard';
-type GraphNode = { id: string; payloadId: string; label: string; type: NodeType; degree: number; x: number; y: number };
+type GraphNode = { id: string; payloadId: string; label: string; type: NodeType; degree: number; x: number; y: number; depthScale?: number };
 type GraphEdge = { source: string; target: string; weight: number; contexts: string[] };
 type Graph = { nodes: GraphNode[]; edges: GraphEdge[]; types: NodeType[] };
 type Point = { x: number; y: number };
@@ -89,7 +89,6 @@ const networkMotionStyleOptions: Array<{ id: NetworkMotionStyle; lv: string; en:
   { id: 'drift', lv: 'Plūdums', en: 'Drift' },
   { id: 'orbit', lv: 'Orbīta', en: 'Orbit' },
   { id: 'chaos', lv: 'Haoss', en: 'Chaos' },
-  { id: 'breathing', lv: 'Elpa', en: 'Breathing' },
 ];
 const appViewOptions: Array<{ id: AppView; lv: string; en: string }> = [
   { id: 'network', lv: 'Tīkls', en: 'Network' },
@@ -116,7 +115,7 @@ const ui = {
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
-    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', about: 'Par projektu', closeAbout: 'Aizvērt informāciju par projektu', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', networkMotion: 'Tīkla kustība', movementIntensity: 'Kustības intensitāte', movementHelpDrift: 'Mezgli lēni un viegli dreifē ap savu vietu.', movementHelpOrbit: 'Mezglu kopas rotē ap tīkla centru kā planētas orbītā.', movementHelpChaos: 'Mezgli kustas aktīvāk un neregulārāk, nezaudējot tīkla pamatstruktūru.', movementHelpBreathing: 'Tīkls ritmiski izplešas un saraujas ap centru.', movementFreeOnly: 'Kustība darbojas brīvajā tīkla skatā.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', visualizationStyle: 'Vizualizācijas stils', visualizationHelpStandard: 'Standarta noformējums ar vienmērīgi aizpildītiem krāsu laukumiem.', visualizationHelpPencil: 'Plānas skices līnijas un krāsains zīmuļa šrafējums uz papīra fona.', nodeShape: 'Mezglu forma', categoryShapes: 'Pēc kategorijas', circleShapes: 'Visi apļi', nodeShapeHelp: 'Kategorijas var atšķirt pēc formas un krāsas vai tikai pēc krāsas.', inDevelopment: 'Izstrādes procesā',
+    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', about: 'Par projektu', closeAbout: 'Aizvērt informāciju par projektu', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', networkMotion: 'Tīkla kustība', movementIntensity: 'Kustības intensitāte', movementHelpDrift: 'Mezgli lēni un viegli dreifē ap savu vietu.', movementHelpOrbit: 'Viss tīkls lēni riņķo ap centru, bet katram mezglam ir arī sava orbīta, ātrums un virziens.', movementHelpChaos: 'Mezgli kustas aktīvāk un neregulārāk, nezaudējot tīkla pamatstruktūru.', movementFreeOnly: 'Kustība darbojas brīvajā tīkla skatā.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', visualizationStyle: 'Vizualizācijas stils', visualizationHelpStandard: 'Standarta noformējums ar vienmērīgi aizpildītiem krāsu laukumiem.', visualizationHelpPencil: 'Plānas skices līnijas un krāsains zīmuļa šrafējums uz papīra fona.', nodeShape: 'Mezglu forma', categoryShapes: 'Pēc kategorijas', circleShapes: 'Visi apļi', nodeShapeHelp: 'Kategorijas var atšķirt pēc formas un krāsas vai tikai pēc krāsas.', inDevelopment: 'Izstrādes procesā',
     filters: 'Filtri', filterViews: 'Filtrēt skatus', details: 'Detaļas', showRecords: 'Rādīt ierakstus', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
     records: 'Ieraksti', documentedPeople: 'Personas', relatedPeople: 'Līdzdalībnieki', visibleFormats: 'Formāti', formatChart: 'Ieraksti pēc formāta', peopleChart: 'Personas pēc ierakstu skaita', artifactChart: 'Ieraksti pēc dalībnieku skaita', collaborationMatrix: 'Kopīgo ierakstu matrica', collaborationMobile: 'Personu sadarbības', collaborationHelp: 'Klikšķini šūnā, lai atlasītu personu pāri un apskatītu kopīgos ierakstus.', topCollaborations: 'Biežākie sadarbību pāri', sharedRecords: 'kopīgi ieraksti', noCollaborations: 'Šai atlasei nav pietiekami daudz personu sadarbību.',
   },
@@ -129,7 +128,7 @@ const ui = {
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
-    choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', about: 'About the project', closeAbout: 'Close project information', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', networkMotion: 'Network motion', movementIntensity: 'Motion intensity', movementHelpDrift: 'Nodes drift slowly and gently around their positions.', movementHelpOrbit: 'Node groups revolve around the network center like planets in orbit.', movementHelpChaos: 'Nodes move more actively and irregularly without losing the underlying structure.', movementHelpBreathing: 'The network rhythmically expands and contracts around its center.', movementFreeOnly: 'Motion applies to the free network view.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', visualizationStyle: 'Visualization style', visualizationHelpStandard: 'Standard appearance with evenly filled color areas.', visualizationHelpPencil: 'Fine sketch lines and colored-pencil hatching on a paper background.', nodeShape: 'Node shape', categoryShapes: 'By category', circleShapes: 'All circles', nodeShapeHelp: 'Categories can be distinguished by shape and color or by color alone.', inDevelopment: 'In development',
+    choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', about: 'About the project', closeAbout: 'Close project information', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', networkMotion: 'Network motion', movementIntensity: 'Motion intensity', movementHelpDrift: 'Nodes drift slowly and gently around their positions.', movementHelpOrbit: 'The whole network revolves slowly around its center while every node follows its own orbit, speed, and direction.', movementHelpChaos: 'Nodes move more actively and irregularly without losing the underlying structure.', movementFreeOnly: 'Motion applies to the free network view.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', visualizationStyle: 'Visualization style', visualizationHelpStandard: 'Standard appearance with evenly filled color areas.', visualizationHelpPencil: 'Fine sketch lines and colored-pencil hatching on a paper background.', nodeShape: 'Node shape', categoryShapes: 'By category', circleShapes: 'All circles', nodeShapeHelp: 'Categories can be distinguished by shape and color or by color alone.', inDevelopment: 'In development',
     filters: 'Filters', filterViews: 'Filter views', details: 'Details', showRecords: 'Show recordings', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
     records: 'Recordings', documentedPeople: 'People', relatedPeople: 'Collaborators', visibleFormats: 'Formats', formatChart: 'Recordings by format', peopleChart: 'People by number of recordings', artifactChart: 'Recordings by number of participants', collaborationMatrix: 'Shared-recording matrix', collaborationMobile: 'Person collaborations', collaborationHelp: 'Click a cell to select a pair of people and inspect their shared recordings.', topCollaborations: 'Top collaboration pairs', sharedRecords: 'shared recordings', noCollaborations: 'There are not enough person collaborations in this selection.',
   },
@@ -445,7 +444,6 @@ export default function Home() {
     drift: t.movementHelpDrift,
     orbit: t.movementHelpOrbit,
     chaos: t.movementHelpChaos,
-    breathing: t.movementHelpBreathing,
   }[networkMotionStyle];
 
   useEffect(() => {
@@ -672,23 +670,27 @@ export default function Home() {
     const phase = seed % 628 / 100;
     let x = base.x;
     let y = base.y;
+    let depthScale = 1;
 
     if (networkMotionStyle === 'orbit') {
-      const typeIndex = Math.max(0, nodeTypeOrder.indexOf(node.type));
-      const angle = driftClock * .00003 * intensity * (1 + typeIndex * .12);
+      const angle = driftClock * .000018 * intensity;
       const dx = base.x - 450;
       const dy = base.y - 285;
-      x = 450 + dx * Math.cos(angle) - dy * Math.sin(angle);
-      y = 285 + dx * Math.sin(angle) + dy * Math.cos(angle);
+      const sharedX = 450 + dx * Math.cos(angle) - dy * Math.sin(angle);
+      const sharedY = 285 + (dx * Math.sin(angle) + dy * Math.cos(angle)) * .92;
+      const direction = seed % 2 === 0 ? 1 : -1;
+      const localSpeed = (.00011 + (seed % 13) * .000006) * intensity * direction;
+      const localAngle = phase + driftClock * localSpeed;
+      const localRadius = (6 + seed % 13) * Math.min(1.6, intensity);
+      x = sharedX + (Math.cos(localAngle) - Math.cos(phase)) * localRadius;
+      y = sharedY + (Math.sin(localAngle) - Math.sin(phase)) * localRadius * .62;
+      const depth = Math.sin(localAngle + phase * .37);
+      depthScale = Math.max(.55, Math.min(1.45, 1 + depth * .24 * Math.min(1.6, intensity)));
     } else if (networkMotionStyle === 'chaos') {
       const amplitude = (15 + seed % 16) * intensity;
       const speed = .00045 + (seed % 11) * .000018;
       x = base.x + Math.sin(driftClock * speed + phase) * amplitude + Math.sin(driftClock * speed * 2.17 + phase * .43) * amplitude * .28;
       y = base.y + Math.cos(driftClock * speed * 1.31 + phase * 1.27) * amplitude * .78 + Math.sin(driftClock * speed * 1.83 + phase) * amplitude * .24;
-    } else if (networkMotionStyle === 'breathing') {
-      const breath = 1 + Math.sin(driftClock * .00115) * .06 * intensity;
-      x = 450 + (base.x - 450) * breath;
-      y = 285 + (base.y - 285) * breath;
     } else {
       const amplitude = (6 + (Math.abs(hash(`${node.id}:drift`)) % 35) / 10) * intensity;
       const orbit = driftClock * .00013 * Math.max(.25, intensity) + phase;
@@ -698,7 +700,7 @@ export default function Home() {
       y = base.y + sharedY + Math.cos(orbit) * amplitude * .76;
     }
 
-    return { ...node, x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000 };
+    return { ...node, x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000, depthScale };
   }), [draggingId, driftClock, graph.nodes, layoutMode, manualPositions, networkMotionIntensity, networkMotionStyle]);
   const driftPositionById = useMemo(() => new Map(positionedNodes.map((node) => [node.id, node])), [positionedNodes]);
   const displayNodes = useMemo(() => positionedNodes.map((node) => ({
@@ -706,6 +708,9 @@ export default function Home() {
     x: 450 + (node.x - 450) * zoom + pan.x,
     y: 285 + (node.y - 285) * zoom + pan.y,
   })), [pan, positionedNodes, zoom]);
+  const renderedNodes = useMemo(() => networkMotionStyle === 'orbit' && layoutMode === 'force'
+    ? [...displayNodes].sort((left, right) => (left.depthScale ?? 1) - (right.depthScale ?? 1))
+    : displayNodes, [displayNodes, layoutMode, networkMotionStyle]);
   const labelPlacementById = useMemo(() => {
     const placements = new Map<string, { x: number; y: number; textAnchor: 'start' | 'middle' | 'end'; rotation?: number }>();
     if (layoutMode === 'force') return placements;
@@ -1057,10 +1062,10 @@ export default function Home() {
                   const flowKey = `${layoutMode}-${animationStyle}-${selectedIds.join('|') || 'intro'}`;
                   return <g key={`${edge.source}-${edge.target}`} className={`edge-${threadType} ${active ? 'is-active' : ''}`}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />{visualizationStyle === 'pencil' && <line className="network-edge-pencil" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />}{layoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>;
                 })}</g>
-                <g className="network-nodes">{displayNodes.map((node) => {
+                <g className="network-nodes">{renderedNodes.map((node) => {
                   const selected = selectedIds.includes(node.id);
                   const active = !selectedIds.length || activeIds.has(node.id);
-                  const radius = nodeRadius(node, layoutMode) * nodeScale;
+                  const radius = nodeRadius(node, layoutMode) * nodeScale * (node.depthScale ?? 1);
                   const showLabel = labelMode === 'all' || (labelMode === 'active' && selectedIds.length > 0 && active);
                   const emphasisClass = selectedIds.length ? (active ? 'is-active' : 'is-dimmed') : 'is-ambient';
                   const structuredLabel = labelPlacementById.get(node.id);
