@@ -462,7 +462,6 @@ body {
 .empty-inspector div svg { width: 14px; }
 .selection-toggle { display: flex; align-items: flex-start; gap: 10px; margin: 21px 0; padding: 12px 0; border-block: 1px solid var(--border); }
 .selection-toggle > span { display: grid; gap: 2px; font-size: .6875rem; }
-.selection-toggle small { color: var(--muted-foreground); font-size: .625rem; }
 .clear-filters-button { font-size: .6875rem; font-weight: 600; }
 .clear-filters-button svg { width: 14px; height: 14px; }
 .selection-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 14px; }

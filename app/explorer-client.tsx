@@ -109,7 +109,7 @@ const ui = {
   lv: {
     brand: 'NSRD / SEQUE', product: 'NSRD un Seque ierakstu un personu tīkla vizualizācija', explore: 'Saikņu izpēte', networkLayers: 'Tīkla slāņi', showInNetwork: 'Rādīt tīklā',
     searchPerson: 'Meklēt personu', personPlaceholder: 'Sāc rakstīt vārdu…', clearPerson: 'Notīrīt personas meklējumu', searchArtifact: 'Meklēt artefaktu', artifactPlaceholder: 'Sāc rakstīt nosaukumu…', clearArtifact: 'Notīrīt artefakta meklējumu',
-    years: 'Laika diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', multiHelp: 'Klikšķini, lai pievienotu vai noņemtu', clearFilters: 'Notīrīt filtrus',
+    years: 'Laika diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', clearFilters: 'Notīrīt filtrus',
     view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', distance: 'Tīkla mērogs', legend: 'Leģenda',
     labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', graphTextSize: 'Tīkla nosaukumu izmērs', nodeSize: 'Mezglu izmērs', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
@@ -122,7 +122,7 @@ const ui = {
   en: {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
     searchPerson: 'Search for a person', personPlaceholder: 'Start typing a name…', clearPerson: 'Clear person search', searchArtifact: 'Search for an artifact', artifactPlaceholder: 'Start typing a title…', clearArtifact: 'Clear artifact search',
-    years: 'Year range', format: 'Format', allFormats: 'All formats', multi: 'Select multiple nodes', multiHelp: 'Click to add or remove', clearFilters: 'Clear filters',
+    years: 'Year range', format: 'Format', allFormats: 'All formats', multi: 'Select multiple nodes', clearFilters: 'Clear filters',
     view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', distance: 'Network scale', legend: 'Legend',
     labels: 'Labels', labelClick: 'Click to change mode.', graphTextSize: 'Network label size', nodeSize: 'Node size', networkAria: 'NSRD and Seque multilayer network', links: 'links', nodes: 'nodes', artifacts: 'artifacts',
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
@@ -408,7 +408,7 @@ export default function Home() {
   const [networkMotionIntensity, setNetworkMotionIntensity] = useState(100);
   const [animationStyle, setAnimationStyle] = useState<AnimationStyle>('none');
   const [visualizationStyle, setVisualizationStyle] = useState<VisualizationStyle>('standard');
-  const [nodeShapeMode, setNodeShapeMode] = useState<NodeShapeMode>('category');
+  const [nodeShapeMode, setNodeShapeMode] = useState<NodeShapeMode>('circle');
   const [appView, setAppView] = useState<AppView>('network');
   const [labelMode, setLabelMode] = useState<LabelMode>('active');
   const [graphLabelScale, setGraphLabelScale] = useState(1);
@@ -477,7 +477,7 @@ export default function Home() {
     setNetworkMotionIntensity(savedNetworkMotionIntensity >= 10 && savedNetworkMotionIntensity <= 200 ? savedNetworkMotionIntensity : 100);
     setAnimationStyle(initialAnimationStyle);
     setVisualizationStyle(initialVisualizationStyle);
-    setNodeShapeMode(savedNodeShapeMode === 'circle' ? 'circle' : 'category');
+    setNodeShapeMode(savedNodeShapeMode === 'category' ? 'category' : 'circle');
     setNodeScale(savedNodeScale >= .1 && savedNodeScale <= 2 ? savedNodeScale : 1);
     setGraphLabelScale(savedGraphLabelScale >= .5 && savedGraphLabelScale <= 3 ? savedGraphLabelScale : 1);
     document.documentElement.lang = initialLocale;
@@ -1025,7 +1025,7 @@ export default function Home() {
           <datalist id="artifact-suggestions">{artifactSuggestions.map((item) => <option key={item.id} value={item.value} />)}</datalist>
           <label className="field-label">{t.years} <b>{yearRange[0]}–{yearRange[1]}</b><Slider min={dataset.meta.yearStart} max={dataset.meta.yearEnd} value={yearRange} onValueChange={(value) => setYearRange(value as number[])} /></label>
           <div className="field-label format-label"><span>{t.format}</span><Select value={format} onValueChange={(value) => setFormat(value ?? 'all')}><SelectTrigger aria-label={t.format}><SelectValue>{format === 'all' ? t.allFormats : format}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start"><SelectItem value="all">{t.allFormats}</SelectItem>{formats.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div>
-          {appView === 'network' && <label className="selection-toggle"><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong><small>{t.multiHelp}</small></span></label>}
+          {appView === 'network' && <label className="selection-toggle"><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong></span></label>}
           <Button variant="outline" className="clear-filters-button w-full" onClick={clearFilters}><RotateCcw aria-hidden="true" /> {t.clearFilters}</Button>
           {compactPanels && <div className="mobile-panel-actions"><Button className="w-full" onClick={() => setControlsPanelOpen(false)}>{t.showRecords} · {resultEvents.length}</Button></div>}
         </aside>
