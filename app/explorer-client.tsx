@@ -1026,7 +1026,7 @@ export default function Home() {
           <label className="field-label">{t.years} <b>{yearRange[0]}–{yearRange[1]}</b><Slider min={dataset.meta.yearStart} max={dataset.meta.yearEnd} value={yearRange} onValueChange={(value) => setYearRange(value as number[])} /></label>
           <div className="field-label format-label"><span>{t.format}</span><Select value={format} onValueChange={(value) => setFormat(value ?? 'all')}><SelectTrigger aria-label={t.format}><SelectValue>{format === 'all' ? t.allFormats : format}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start"><SelectItem value="all">{t.allFormats}</SelectItem>{formats.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div>
           {appView === 'network' && <label className="selection-toggle"><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong><small>{t.multiHelp}</small></span></label>}
-          <Button variant="outline" className="w-full" onClick={clearFilters}><RotateCcw aria-hidden="true" /> {t.clearFilters}</Button>
+          <Button variant="outline" className="clear-filters-button w-full" onClick={clearFilters}><RotateCcw aria-hidden="true" /> {t.clearFilters}</Button>
           {compactPanels && <div className="mobile-panel-actions"><Button className="w-full" onClick={() => setControlsPanelOpen(false)}>{t.showRecords} · {resultEvents.length}</Button></div>}
         </aside>
 
