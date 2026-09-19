@@ -714,10 +714,10 @@ export default function Home() {
       x = base.x + Math.sin(driftClock * speed + phase) * amplitude + Math.sin(driftClock * speed * 2.17 + phase * .43) * amplitude * .28;
       y = base.y + Math.cos(driftClock * speed * 1.31 + phase * 1.27) * amplitude * .78 + Math.sin(driftClock * speed * 1.83 + phase) * amplitude * .24;
     } else {
-      const amplitude = (6 + (Math.abs(hash(`${node.id}:drift`)) % 35) / 10) * intensity;
-      const orbit = driftClock * .00013 * Math.max(.25, intensity) + phase;
-      const sharedX = Math.sin(driftClock * .000065 * Math.max(.25, intensity)) * 4 * intensity;
-      const sharedY = Math.cos(driftClock * .000055 * Math.max(.25, intensity)) * 3 * intensity;
+      const amplitude = (8 + (Math.abs(hash(`${node.id}:drift`)) % 45) / 10) * intensity;
+      const orbit = driftClock * .00022 * Math.max(.25, intensity) + phase;
+      const sharedX = Math.sin(driftClock * .00011 * Math.max(.25, intensity)) * 5.5 * intensity;
+      const sharedY = Math.cos(driftClock * .00009 * Math.max(.25, intensity)) * 4 * intensity;
       x = base.x + sharedX + Math.sin(orbit) * amplitude;
       y = base.y + sharedY + Math.cos(orbit) * amplitude * .76;
     }
