@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type TouchEvent as ReactTouchEvent, type WheelEvent as ReactWheelEvent } from 'react';
 import {
   BarChart3,
   Check,
@@ -70,6 +70,7 @@ const typeLabels: Record<Locale, Record<NodeType, string>> = {
 
 const optionalTypes: NodeType[] = ['person', 'format', 'group', 'institution'];
 const nodeTypeOrder: NodeType[] = ['person', 'group', 'artifact', 'format', 'institution'];
+const mobileVisibleTypes = new Set<NodeType>(['person', 'artifact']);
 const layoutLabels: Record<Locale, Record<LayoutMode, string>> = {
   lv: { force: 'Brīvais', hierarchical: 'Hierarhisks', bipartite: 'Divdaļīgs' },
   en: { force: 'Free', hierarchical: 'Hierarchical', bipartite: 'Bipartite' },
@@ -117,7 +118,7 @@ const ui = {
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
     choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', about: 'Par projektu', closeAbout: 'Aizvērt informāciju par projektu', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', networkMotion: 'Tīkla kustība', movementIntensity: 'Kustības intensitāte', movementHelpDrift: 'Mezgli lēni un viegli dreifē ap savu vietu.', movementHelpOrbit: 'Viss tīkls lēni riņķo ap centru, bet katram mezglam ir arī sava orbīta, ātrums un virziens.', movementHelpChaos: 'Mezgli kustas aktīvāk un neregulārāk, nezaudējot tīkla pamatstruktūru.', movementFreeOnly: 'Kustība darbojas brīvajā tīkla skatā.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', visualizationStyle: 'Vizualizācijas stils', visualizationHelpStandard: 'Standarta noformējums ar vienmērīgi aizpildītiem krāsu laukumiem.', visualizationHelpPencil: 'Plānas skices līnijas un krāsains zīmuļa šrafējums uz papīra fona.', nodeShape: 'Mezglu forma', categoryShapes: 'Pēc kategorijas', circleShapes: 'Visi apļi', nodeShapeHelp: 'Kategorijas var atšķirt pēc formas un krāsas vai tikai pēc krāsas.', inDevelopment: 'Izstrādes procesā',
-    filters: 'Filtri', filterViews: 'Filtrēt skatus', details: 'Detaļas', showRecords: 'Rādīt ierakstus', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
+    filters: 'Filtri', filterViews: 'Filtrēt skatus', details: 'Detaļas', showRecords: 'Rādīt ierakstus', showNetwork: 'Rādīt tīklu', mobileNote: 'Pilnā izpētes vide paredzēta datoram. Mobilajā skatā pieejams vienkāršots tīkls.', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
     records: 'Ieraksti', documentedPeople: 'Personas', relatedPeople: 'Līdzdalībnieki', visibleFormats: 'Formāti', formatChart: 'Ieraksti pēc formāta', peopleChart: 'Personas pēc ierakstu skaita', artifactChart: 'Ieraksti pēc dalībnieku skaita', collaborationMatrix: 'Kopīgo ierakstu matrica', collaborationMobile: 'Personu sadarbības', collaborationHelp: 'Klikšķini šūnā, lai atlasītu personu pāri un apskatītu kopīgos ierakstus.', topCollaborations: 'Biežākie sadarbību pāri', sharedRecords: 'kopīgi ieraksti', noCollaborations: 'Šai atlasei nav pietiekami daudz personu sadarbību.',
   },
   en: {
@@ -130,7 +131,7 @@ const ui = {
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
     choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', about: 'About the project', closeAbout: 'Close project information', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', networkMotion: 'Network motion', movementIntensity: 'Motion intensity', movementHelpDrift: 'Nodes drift slowly and gently around their positions.', movementHelpOrbit: 'The whole network revolves slowly around its center while every node follows its own orbit, speed, and direction.', movementHelpChaos: 'Nodes move more actively and irregularly without losing the underlying structure.', movementFreeOnly: 'Motion applies to the free network view.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', visualizationStyle: 'Visualization style', visualizationHelpStandard: 'Standard appearance with evenly filled color areas.', visualizationHelpPencil: 'Fine sketch lines and colored-pencil hatching on a paper background.', nodeShape: 'Node shape', categoryShapes: 'By category', circleShapes: 'All circles', nodeShapeHelp: 'Categories can be distinguished by shape and color or by color alone.', inDevelopment: 'In development',
-    filters: 'Filters', filterViews: 'Filter views', details: 'Details', showRecords: 'Show recordings', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
+    filters: 'Filters', filterViews: 'Filter views', details: 'Details', showRecords: 'Show recordings', showNetwork: 'Show network', mobileNote: 'The full exploration environment is designed for desktop. A simplified network is available on mobile.', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
     records: 'Recordings', documentedPeople: 'People', relatedPeople: 'Collaborators', visibleFormats: 'Formats', formatChart: 'Recordings by format', peopleChart: 'People by number of recordings', artifactChart: 'Recordings by number of participants', collaborationMatrix: 'Shared-recording matrix', collaborationMobile: 'Person collaborations', collaborationHelp: 'Click a cell to select a pair of people and inspect their shared recordings.', topCollaborations: 'Top collaboration pairs', sharedRecords: 'shared recordings', noCollaborations: 'There are not enough person collaborations in this selection.',
   },
 } as const;
@@ -392,6 +393,8 @@ export default function Home() {
   const [controlsPanelOpen, setControlsPanelOpen] = useState(true);
   const [inspectorPanelOpen, setInspectorPanelOpen] = useState(true);
   const [compactPanels, setCompactPanels] = useState(false);
+  const [mobileLite, setMobileLite] = useState(false);
+  const [pageVisible, setPageVisible] = useState(() => typeof document === 'undefined' || document.visibilityState === 'visible');
   const [preferencesReady, setPreferencesReady] = useState(false);
   const [personQuery, setPersonQuery] = useState('');
   const [artifactQuery, setArtifactQuery] = useState('');
@@ -432,9 +435,15 @@ export default function Home() {
   const elasticTargets = useRef<Record<string, Point>>({});
   const elasticVelocities = useRef<Record<string, Point>>({});
   const elasticFrame = useRef<number | null>(null);
+  const pinchStart = useRef<{ distance: number; zoom: number } | null>(null);
   const compactPanelsRef = useRef<boolean | null>(null);
   const t = ui[locale];
   const currentTypeLabels = typeLabels[locale];
+  const effectiveLayoutMode: LayoutMode = mobileLite ? 'force' : layoutMode;
+  const effectiveAnimationStyle: AnimationStyle = mobileLite ? 'none' : animationStyle;
+  const effectiveMotionFrozen = motionFrozen || mobileLite || !pageVisible;
+  const effectiveNodeShapeMode: NodeShapeMode = mobileLite ? 'circle' : nodeShapeMode;
+  const effectiveLabelMode: LabelMode = mobileLite ? 'active' : labelMode;
   const animationHelp = {
     none: t.animationHelpNone,
     rain: t.animationHelpRain,
@@ -570,9 +579,16 @@ export default function Home() {
   }, [aboutOpen, settingsOpen]);
   useEffect(() => {
     const media = window.matchMedia('(max-width: 1100px)');
+    const mobileMedia = window.matchMedia('(max-width: 720px)');
     const syncPanels = () => {
       const compact = media.matches;
+      const mobile = mobileMedia.matches;
       setCompactPanels(compact);
+      setMobileLite(mobile);
+      if (mobile) {
+        setSettingsOpen(false);
+        setActiveScaleControl(null);
+      }
       if (compactPanelsRef.current !== compact) {
         setControlsPanelOpen(!compact);
         setInspectorPanelOpen(!compact);
@@ -581,7 +597,16 @@ export default function Home() {
     };
     syncPanels();
     media.addEventListener('change', syncPanels);
-    return () => media.removeEventListener('change', syncPanels);
+    mobileMedia.addEventListener('change', syncPanels);
+    return () => {
+      media.removeEventListener('change', syncPanels);
+      mobileMedia.removeEventListener('change', syncPanels);
+    };
+  }, []);
+  useEffect(() => {
+    const syncVisibility = () => setPageVisible(document.visibilityState === 'visible');
+    document.addEventListener('visibilitychange', syncVisibility);
+    return () => document.removeEventListener('visibilitychange', syncVisibility);
   }, []);
   useEffect(() => {
     if (!compactPanels || !selectedIds.length) return;
@@ -618,23 +643,27 @@ export default function Home() {
   }), [format, yearRange]);
   const activeFilterCount = (personQuery ? 1 : 0) + (artifactQuery ? 1 : 0) + (format !== 'all' ? 1 : 0)
     + (yearRange[0] !== dataset.meta.yearStart || yearRange[1] !== dataset.meta.yearEnd ? 1 : 0)
-    + (visibleTypes.size !== nodeTypeOrder.length ? 1 : 0);
+    + (!mobileLite && visibleTypes.size !== nodeTypeOrder.length ? 1 : 0);
   const graph = useMemo(() => {
-    if (layoutMode === 'bipartite') return buildBipartiteGraph(filteredEvents, leftType, rightType);
-    const baseGraph = buildGraph(filteredEvents, visibleTypes);
-    return layoutMode === 'hierarchical' ? layoutHierarchically(baseGraph) : baseGraph;
-  }, [filteredEvents, layoutMode, leftType, rightType, visibleTypes]);
+    if (effectiveLayoutMode === 'bipartite') return buildBipartiteGraph(filteredEvents, leftType, rightType);
+    const baseGraph = buildGraph(filteredEvents, mobileLite ? mobileVisibleTypes : visibleTypes);
+    return effectiveLayoutMode === 'hierarchical' ? layoutHierarchically(baseGraph) : baseGraph;
+  }, [effectiveLayoutMode, filteredEvents, leftType, mobileLite, rightType, visibleTypes]);
   useEffect(() => {
     setManualPositions({});
     setPan({ x: 0, y: 0 });
-    setZoom(layoutMode === 'force' ? .84 : 1);
-  }, [layoutMode, leftType, rightType]);
+    setZoom(effectiveLayoutMode === 'force' ? .84 : 1);
+  }, [effectiveLayoutMode, leftType, mobileLite, rightType]);
   useEffect(() => {
     setManualPositions((current) => Object.fromEntries(Object.entries(current).filter(([id]) => graph.nodes.some((node) => node.id === id))));
   }, [graph]);
   useEffect(() => {
     const animateElasticPull = () => {
       const ids = Object.keys(elasticTargets.current);
+      if (!draggingId && !ids.length) {
+        elasticFrame.current = null;
+        return;
+      }
       if (ids.length) setManualPositions((current) => {
         const next = { ...current };
         ids.forEach((id) => {
@@ -662,7 +691,7 @@ export default function Home() {
     setDriftClock(0);
   }, [networkMotionStyle]);
   useEffect(() => {
-    if (motionFrozen || layoutMode !== 'force') { lastFrame.current = null; return; }
+    if (effectiveMotionFrozen || effectiveLayoutMode !== 'force') { lastFrame.current = null; return; }
     let lastPaint = 0;
     const animate = (time: number) => {
       if (lastFrame.current === null) lastFrame.current = time;
@@ -676,10 +705,10 @@ export default function Home() {
     };
     animationFrame.current = requestAnimationFrame(animate);
     return () => { if (animationFrame.current !== null) cancelAnimationFrame(animationFrame.current); lastFrame.current = null; };
-  }, [layoutMode, motionFrozen]);
+  }, [effectiveLayoutMode, effectiveMotionFrozen]);
   const positionedNodes = useMemo(() => graph.nodes.map((node) => {
     const base = manualPositions[node.id] ?? node;
-    if (layoutMode !== 'force' || draggingId === node.id) return { ...node, x: base.x, y: base.y };
+    if (effectiveLayoutMode !== 'force' || draggingId === node.id) return { ...node, x: base.x, y: base.y };
     const intensity = networkMotionIntensity / 100;
     const seed = Math.abs(hash(node.id));
     const phase = seed % 628 / 100;
@@ -723,28 +752,28 @@ export default function Home() {
     }
 
     return { ...node, x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000, depthScale, depthOpacity };
-  }), [draggingId, driftClock, graph.nodes, layoutMode, manualPositions, networkMotionIntensity, networkMotionStyle]);
+  }), [draggingId, driftClock, effectiveLayoutMode, graph.nodes, manualPositions, networkMotionIntensity, networkMotionStyle]);
   const driftPositionById = useMemo(() => new Map(positionedNodes.map((node) => [node.id, node])), [positionedNodes]);
   const displayNodes = useMemo(() => positionedNodes.map((node) => ({
     ...node,
     x: 450 + (node.x - 450) * zoom + pan.x,
     y: 285 + (node.y - 285) * zoom + pan.y,
   })), [pan, positionedNodes, zoom]);
-  const renderedNodes = useMemo(() => networkMotionStyle === 'orbit' && layoutMode === 'force'
+  const renderedNodes = useMemo(() => networkMotionStyle === 'orbit' && effectiveLayoutMode === 'force'
     ? [...displayNodes].sort((left, right) => (left.depthScale ?? 1) - (right.depthScale ?? 1))
-    : displayNodes, [displayNodes, layoutMode, networkMotionStyle]);
+    : displayNodes, [displayNodes, effectiveLayoutMode, networkMotionStyle]);
   const labelPlacementById = useMemo(() => {
     const placements = new Map<string, { x: number; y: number; textAnchor: 'start' | 'middle' | 'end'; rotation?: number }>();
-    if (layoutMode === 'force') return placements;
+    if (effectiveLayoutMode === 'force') return placements;
 
     const orderedTypes = nodeTypeOrder.filter((type) => displayNodes.some((node) => node.type === type));
     orderedTypes.forEach((type) => {
-      const sameType = displayNodes.filter((node) => node.type === type).sort((a, b) => layoutMode === 'bipartite'
+      const sameType = displayNodes.filter((node) => node.type === type).sort((a, b) => effectiveLayoutMode === 'bipartite'
         ? a.y - b.y || a.label.localeCompare(b.label, 'lv')
         : a.x - b.x || a.label.localeCompare(b.label, 'lv'));
       sameType.forEach((node) => {
-        const radius = nodeRadius(node, layoutMode) * nodeScale;
-        if (layoutMode === 'bipartite') {
+        const radius = nodeRadius(node, effectiveLayoutMode) * nodeScale;
+        if (effectiveLayoutMode === 'bipartite') {
           const leftColumn = node.x < 450;
           const direction = leftColumn ? -1 : 1;
           placements.set(node.id, {
@@ -766,7 +795,7 @@ export default function Home() {
       });
     });
     return placements;
-  }, [displayNodes, layoutMode, nodeScale]);
+  }, [displayNodes, effectiveLayoutMode, nodeScale]);
   const positionById = useMemo(() => new Map(displayNodes.map((node) => [node.id, node])), [displayNodes]);
   const selectedNodes = selectedIds.map((id) => graph.nodes.find((node) => node.id === id)).filter(Boolean) as GraphNode[];
   useEffect(() => setSelectedIds((current) => current.filter((id) => graph.nodes.some((node) => node.id === id))), [graph]);
@@ -827,17 +856,20 @@ export default function Home() {
   const pointerToGraph = (clientX: number, clientY: number): Point | null => {
     const svg = svgRef.current;
     if (!svg) return null;
-    const rect = svg.getBoundingClientRect();
-    const svgX = (clientX - rect.left) / rect.width * 900;
-    const svgY = (clientY - rect.top) / rect.height * 570;
-    return { x: 450 + (svgX - pan.x - 450) / zoom, y: 285 + (svgY - pan.y - 285) / zoom };
+    const matrix = svg.getScreenCTM();
+    if (!matrix) return null;
+    const pointer = svg.createSVGPoint();
+    pointer.x = clientX;
+    pointer.y = clientY;
+    const graphPoint = pointer.matrixTransform(matrix.inverse());
+    return { x: 450 + (graphPoint.x - pan.x - 450) / zoom, y: 285 + (graphPoint.y - pan.y - 285) / zoom };
   };
   const startDrag = (node: GraphNode, event: ReactPointerEvent<SVGGElement>) => {
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     const current = driftPositionById.get(node.id) ?? node;
     const pointer = pointerToGraph(event.clientX, event.clientY) ?? current;
-    const linkedEdges = layoutMode === 'force' ? graph.edges.filter((edge) => edge.source === node.id || edge.target === node.id) : [];
+    const linkedEdges = effectiveLayoutMode === 'force' ? graph.edges.filter((edge) => edge.source === node.id || edge.target === node.id) : [];
     const maxWeight = Math.max(1, ...linkedEdges.map((edge) => edge.weight));
     const positions: Record<string, Point> = { [node.id]: { x: current.x, y: current.y } };
     const strengths: Record<string, number> = { [node.id]: 1 };
@@ -855,6 +887,7 @@ export default function Home() {
     setDraggingId(node.id);
   };
   const moveDraggedNode = (event: ReactPointerEvent<SVGSVGElement>) => {
+    if (pinchStart.current) return;
     if (panning && panStart.current && svgRef.current) {
       const rect = svgRef.current.getBoundingClientRect();
       if (Math.hypot(event.clientX - panStart.current.clientX, event.clientY - panStart.current.clientY) > 4) panStart.current.moved = true;
@@ -926,8 +959,8 @@ export default function Home() {
             let dx = right.x - left.x;
             let dy = right.y - left.y;
             let distance = Math.hypot(dx, dy);
-            const minimumDistance = (nodeRadius(graph.nodes[leftIndex], layoutMode) + nodeRadius(graph.nodes[rightIndex], layoutMode)) * nodeScale + (layoutMode === 'force' ? 9 : 5);
-            const influenceDistance = minimumDistance + (layoutMode === 'force' ? 34 : 14);
+            const minimumDistance = (nodeRadius(graph.nodes[leftIndex], effectiveLayoutMode) + nodeRadius(graph.nodes[rightIndex], effectiveLayoutMode)) * nodeScale + (effectiveLayoutMode === 'force' ? 9 : 5);
+            const influenceDistance = minimumDistance + (effectiveLayoutMode === 'force' ? 34 : 14);
             if (distance >= influenceDistance) continue;
             if (distance < .01) {
               const angle = (Math.abs(hash(`${graph.nodes[leftIndex].id}:${graph.nodes[rightIndex].id}`)) % 628) / 100;
@@ -990,23 +1023,48 @@ export default function Home() {
     event.preventDefault();
     changeZoom(zoom * (event.deltaY > 0 ? .86 : 1.16));
   };
+  const startPinch = (event: ReactTouchEvent<SVGSVGElement>) => {
+    if (event.touches.length !== 2) return;
+    const first = event.touches[0];
+    const second = event.touches[1];
+    pinchStart.current = {
+      distance: Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY),
+      zoom,
+    };
+    setDraggingId(null);
+    setPanning(false);
+    panStart.current = null;
+    nodePointerStart.current = null;
+    dragCluster.current = null;
+  };
+  const movePinch = (event: ReactTouchEvent<SVGSVGElement>) => {
+    if (!pinchStart.current || event.touches.length !== 2) return;
+    event.preventDefault();
+    const first = event.touches[0];
+    const second = event.touches[1];
+    const distance = Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+    changeZoom(pinchStart.current.zoom * distance / Math.max(1, pinchStart.current.distance));
+  };
+  const stopPinch = (event: ReactTouchEvent<SVGSVGElement>) => {
+    if (event.touches.length < 2) pinchStart.current = null;
+  };
   const enterPresentationMode = () => {
     setActiveScaleControl(null);
     setPresentationMode(true);
   };
 
   return (
-    <main className={`prototype-shell ${nodeShapeMode === 'circle' ? 'node-shape-circles' : ''}`}>
+    <main className={`prototype-shell ${effectiveNodeShapeMode === 'circle' ? 'node-shape-circles' : ''}`}>
       <PencilFilterDefs />
       <header className="topbar">
         <a className="brand" href="#network" aria-label={`${t.brand} — ${t.product}`}><span className="brand-symbol" aria-hidden="true"><i /><i /><i /></span><span><strong>{t.brand}</strong><small>{t.product}</small></span></a>
         <div className="header-utilities">
           <button type="button" className="language-switch" onClick={() => setLocale((current) => current === 'lv' ? 'en' : 'lv')} aria-label={t.language}>{locale === 'lv' ? 'EN' : 'LV'}</button>
-          <button type="button" className="text-size-switch" onClick={() => setTextSize((current) => nextTextSize[current])} aria-label={t.textSize} aria-pressed={textSize !== 16} title={`${t.textSize}: ${textSize}px`}>A+</button>
-          <span className="utility-divider" aria-hidden="true" />
+          {!mobileLite && <button type="button" className="text-size-switch" onClick={() => setTextSize((current) => nextTextSize[current])} aria-label={t.textSize} aria-pressed={textSize !== 16} title={`${t.textSize}: ${textSize}px`}>A+</button>}
+          {!mobileLite && <span className="utility-divider" aria-hidden="true" />}
           <button type="button" className="theme-switch" onClick={() => setTheme((current) => current === 'light' ? 'dark' : 'light')} aria-label={theme === 'dark' ? t.light : t.dark} title={theme === 'dark' ? t.light : t.dark}>{theme === 'dark' ? <Sun /> : <Moon />}</button>
           <button type="button" className="about-switch" onClick={() => { setSettingsOpen(false); setAboutOpen((current) => !current); }} aria-label={t.about} aria-expanded={aboutOpen} aria-controls="about-panel" title={t.about}><Info /></button>
-          <button type="button" className="settings-switch" onClick={() => { setAboutOpen(false); setSettingsOpen((current) => !current); }} aria-label={t.settings} aria-expanded={settingsOpen} aria-controls="settings-panel"><Settings2 /></button>
+          {!mobileLite && <button type="button" className="settings-switch" onClick={() => { setAboutOpen(false); setSettingsOpen((current) => !current); }} aria-label={t.settings} aria-expanded={settingsOpen} aria-controls="settings-panel"><Settings2 /></button>}
         </div>
       </header>
       {aboutOpen && <>
@@ -1030,11 +1088,12 @@ export default function Home() {
           <fieldset className="settings-section"><legend>{t.nodeShape}</legend><div className="node-shape-options"><button type="button" aria-pressed={nodeShapeMode === 'category'} onClick={() => setNodeShapeMode('category')}>{t.categoryShapes}</button><button type="button" aria-pressed={nodeShapeMode === 'circle'} onClick={() => setNodeShapeMode('circle')}>{t.circleShapes}</button></div><p>{t.nodeShapeHelp}</p></fieldset>
         </section>
       </>}
-      <div className={`workspace ${compactPanels ? 'is-compact' : ''} ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
+      <div className={`workspace ${compactPanels ? 'is-compact' : ''} ${mobileLite ? 'is-mobile-lite' : ''} ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
         {compactPanels && (controlsPanelOpen || inspectorPanelOpen) && <button type="button" className="panel-scrim" aria-label={controlsPanelOpen ? t.hideFilters : t.hideDetails} onClick={() => { setControlsPanelOpen(false); setInspectorPanelOpen(false); }} />}
         <aside id="network-layers-panel" className="controls-panel" aria-label={t.filters} hidden={!controlsPanelOpen}>
           <div className="panel-title"><ListFilter aria-hidden="true" /><div><strong>{t.filters}</strong></div>{compactPanels && <button type="button" className="panel-drawer-close" aria-label={t.hideFilters} onClick={() => setControlsPanelOpen(false)}><X /></button>}</div>
-          {appView === 'network' && <fieldset className="node-type-options"><legend className="sr-only">{t.showInNetwork}</legend>
+          {mobileLite && <p className="mobile-lite-note">{t.mobileNote}</p>}
+          {appView === 'network' && !mobileLite && <fieldset className="node-type-options"><legend className="sr-only">{t.showInNetwork}</legend>
             <span className="layer-chip is-fixed"><i className="node-swatch artifact" />{currentTypeLabels.artifact}</span>
             {optionalTypes.map((type) => <button type="button" className="layer-chip" aria-pressed={visibleTypes.has(type)} key={type} onClick={() => toggleType(type, !visibleTypes.has(type))}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</button>)}
           </fieldset>}
@@ -1044,21 +1103,21 @@ export default function Home() {
           <datalist id="artifact-suggestions">{artifactSuggestions.map((item) => <option key={item.id} value={item.value} />)}</datalist>
           <label className="field-label">{t.years} <b>{yearRange[0]}–{yearRange[1]}</b><Slider min={dataset.meta.yearStart} max={dataset.meta.yearEnd} value={yearRange} onValueChange={(value) => setYearRange(value as number[])} /></label>
           <div className="field-label format-label"><span>{t.format}</span><Select value={format} onValueChange={(value) => setFormat(value ?? 'all')}><SelectTrigger aria-label={t.format}><SelectValue>{format === 'all' ? t.allFormats : format}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start"><SelectItem value="all">{t.allFormats}</SelectItem>{formats.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div>
-          {appView === 'network' && <label className="selection-toggle"><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong></span></label>}
+          {appView === 'network' && !mobileLite && <label className="selection-toggle"><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong></span></label>}
           <Button variant="outline" className="clear-filters-button w-full" onClick={clearFilters}><RotateCcw aria-hidden="true" /> {t.clearFilters}</Button>
-          {compactPanels && <div className="mobile-panel-actions"><Button className="w-full" onClick={() => setControlsPanelOpen(false)}>{t.showRecords} · {resultEvents.length}</Button></div>}
+          {compactPanels && <div className="mobile-panel-actions"><Button className="w-full" onClick={() => setControlsPanelOpen(false)}>{mobileLite ? t.showNetwork : `${t.showRecords} · ${resultEvents.length}`}</Button></div>}
         </aside>
 
         <section id="network" className={`network-panel ${presentationMode ? 'is-presentation' : ''}`} aria-label={appView === 'network' ? t.networkAria : t.overviewAria}>
-          <div className="view-mode-bar">
+          <div className={`view-mode-bar ${mobileLite ? 'is-mobile-lite' : ''} ${selectedIds.length ? 'has-selection' : ''}`}>
             <button type="button" className="panel-visibility-toggle" onClick={() => { const next = !controlsPanelOpen; setControlsPanelOpen(next); if (compactPanels && next) setInspectorPanelOpen(false); }} aria-label={controlsPanelOpen ? t.hideFilters : t.showFilters} aria-controls="network-layers-panel" aria-expanded={controlsPanelOpen} title={controlsPanelOpen ? t.hideFilters : t.showFilters}>{compactPanels ? <ListFilter /> : controlsPanelOpen ? <PanelLeftClose /> : <PanelLeftOpen />}<span className="mobile-toggle-label">{t.filters}</span>{activeFilterCount > 0 && <b className="mobile-toggle-badge">{activeFilterCount}</b>}</button>
             <div className="app-view-switcher" role="tablist" aria-label={t.visualization}>
               {appViewOptions.map((option) => <button type="button" role="tab" aria-selected={appView === option.id} key={option.id} onClick={() => setAppView(option.id)}>{option.id === 'network' ? <Network aria-hidden="true" /> : <BarChart3 aria-hidden="true" />}<span>{option[locale]}</span></button>)}
             </div>
-            <button type="button" className="panel-visibility-toggle" onClick={() => { const next = !inspectorPanelOpen; setInspectorPanelOpen(next); if (compactPanels && next) setControlsPanelOpen(false); }} aria-label={inspectorPanelOpen ? t.hideDetails : t.showDetails} aria-controls="selection-details-panel" aria-expanded={inspectorPanelOpen} title={inspectorPanelOpen ? t.hideDetails : t.showDetails}>{compactPanels ? <Info /> : inspectorPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}<span className="mobile-toggle-label">{t.details}</span>{selectedIds.length > 0 && <b className="mobile-toggle-badge">{selectedIds.length}</b>}</button>
+            {(!mobileLite || selectedIds.length > 0) && <button type="button" className="panel-visibility-toggle" onClick={() => { const next = !inspectorPanelOpen; setInspectorPanelOpen(next); if (compactPanels && next) setControlsPanelOpen(false); }} aria-label={inspectorPanelOpen ? t.hideDetails : t.showDetails} aria-controls="selection-details-panel" aria-expanded={inspectorPanelOpen} title={inspectorPanelOpen ? t.hideDetails : t.showDetails}>{compactPanels ? <Info /> : inspectorPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}<span className="mobile-toggle-label">{t.details}</span>{selectedIds.length > 0 && <b className="mobile-toggle-badge">{selectedIds.length}</b>}</button>}
           </div>
           {appView === 'network' && <>
-          <div className="network-toolbar network-toolbar-secondary">
+          {!mobileLite && <div className="network-toolbar network-toolbar-secondary">
             <div className="toolbar-tools">
               <div className="network-view-options">
                 <div className="network-select"><Select value={layoutMode} onValueChange={(value) => changeLayoutMode(value as LayoutMode)}><SelectTrigger aria-label={t.view}><SelectValue>{layoutLabels[locale][layoutMode]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{(Object.keys(layoutLabels[locale]) as LayoutMode[]).map((mode) => <SelectItem key={mode} value={mode}>{layoutLabels[locale][mode]}</SelectItem>)}</SelectContent></Select></div>
@@ -1086,9 +1145,9 @@ export default function Home() {
               </div>
             </div>
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>
-          </div>
+          </div>}
           {graph.nodes.length ? <div className="network-stage">
-            <svg ref={svgRef} className={`network-canvas ${layoutMode !== 'force' ? 'is-structured' : ''} ${layoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} animation-${animationStyle} style-${visualizationStyle} ${motionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
+            <svg ref={svgRef} className={`network-canvas ${effectiveLayoutMode !== 'force' ? 'is-structured' : ''} ${effectiveLayoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} animation-${effectiveAnimationStyle} style-${visualizationStyle} ${effectiveMotionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" preserveAspectRatio={mobileLite ? 'xMidYMid slice' : 'xMidYMid meet'} role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel} onTouchStart={startPinch} onTouchMove={movePinch} onTouchEnd={stopPinch} onTouchCancel={stopPinch}>
               <rect className="network-hit-area" x="0" y="0" width="900" height="570" onPointerDown={startPanning} />
               <g>
                 <g className="network-edges">{graph.edges.map((edge, edgeIndex) => {
@@ -1098,27 +1157,27 @@ export default function Home() {
                   const targetSelected = selectedIds.includes(edge.target);
                   const active = selectedIds.length > 0 && (sourceSelected || targetSelected);
                   const threadType = source.type === 'artifact' ? target.type : target.type === 'artifact' ? source.type : target.type;
-                  const reverseFlow = sourceSelected !== targetSelected ? targetSelected : layoutMode === 'hierarchical' && source.y > target.y;
+                  const reverseFlow = sourceSelected !== targetSelected ? targetSelected : effectiveLayoutMode === 'hierarchical' && source.y > target.y;
                   const start = reverseFlow ? target : source;
                   const end = reverseFlow ? source : target;
                   const baseWidth = active ? Math.min(1.65, .45 + Math.sqrt(edge.weight) * .32) : .48;
-                  const showFlow = animationStyle === 'rain' || selectedIds.length === 0 || active;
+                  const showFlow = effectiveAnimationStyle === 'rain' || selectedIds.length === 0 || active;
                   const flowStyle = {
-                    strokeWidth: active ? Math.min(1.9, baseWidth + .25) : animationStyle === 'rain' ? .9 : .72,
+                    strokeWidth: active ? Math.min(1.9, baseWidth + .25) : effectiveAnimationStyle === 'rain' ? .9 : .72,
                     '--arrival-duration': `${active ? 1.05 + (edgeIndex % 3) * .08 : 1.4 + (edgeIndex % 5) * .08}s`,
                     '--flow-delay': `${(edgeIndex % 9) * .035}s`,
                     '--rain-duration': `${4.4 + (edgeIndex % 5) * .32}s`,
                     '--rain-delay': `${-(edgeIndex % 9) * .43}s`,
                   } as CSSProperties;
                   const baseStyle = { strokeWidth: baseWidth, '--wave-delay': `${-(((start.x + end.x) / 2) / 900) * 4.8}s` } as CSSProperties;
-                  const flowKey = `${layoutMode}-${animationStyle}-${selectedIds.join('|') || 'intro'}`;
-                  return <g key={`${edge.source}-${edge.target}`} className={`edge-${threadType} ${active ? 'is-active' : ''}`}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />{visualizationStyle === 'pencil' && <line className="network-edge-pencil" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />}{layoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>;
+                  const flowKey = `${effectiveLayoutMode}-${effectiveAnimationStyle}-${selectedIds.join('|') || 'intro'}`;
+                  return <g key={`${edge.source}-${edge.target}`} className={`edge-${threadType} ${active ? 'is-active' : ''}`}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />{visualizationStyle === 'pencil' && <line className="network-edge-pencil" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />}{effectiveLayoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>;
                 })}</g>
                 <g className="network-nodes">{renderedNodes.map((node) => {
                   const selected = selectedIds.includes(node.id);
                   const active = !selectedIds.length || activeIds.has(node.id);
-                  const radius = nodeRadius(node, layoutMode) * nodeScale * (node.depthScale ?? 1);
-                  const showLabel = labelMode === 'all' || (labelMode === 'active' && selectedIds.length > 0 && active);
+                  const radius = nodeRadius(node, effectiveLayoutMode) * nodeScale * (node.depthScale ?? 1);
+                  const showLabel = mobileLite ? selected : effectiveLabelMode === 'all' || (effectiveLabelMode === 'active' && selectedIds.length > 0 && active);
                   const emphasisClass = selectedIds.length ? (active ? 'is-active' : 'is-dimmed') : 'is-ambient';
                   const structuredLabel = labelPlacementById.get(node.id);
                   const labelX = structuredLabel?.x ?? (node.x < 450 ? radius + 7 : -radius - 7);
@@ -1131,15 +1190,15 @@ export default function Home() {
                     '--echo-delay': `${Math.min(echoDistance ?? 0, 6) * .14}s`,
                     opacity: selected ? Math.max(.82, node.depthOpacity ?? 1) : active && selectedIds.length ? Math.max(.65, node.depthOpacity ?? 1) : node.depthOpacity ?? 1,
                   } as CSSProperties;
-                  return <g key={`${node.id}-${animationStyle === 'echo' ? selectedIds.join('|') : ''}`} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass} ${echoDistance !== undefined ? 'has-echo-path' : ''}`} style={nodeAnimationStyle} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><circle className="node-hit-target" r={Math.max(radius, 7)} /><NodeShape type={node.type} radius={radius} mode={nodeShapeMode} />{visualizationStyle === 'pencil' && <NodeShape type={node.type} radius={radius} mode={nodeShapeMode} className="pencil-node-outline" />}{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>;
+                  return <g key={`${node.id}-${effectiveAnimationStyle === 'echo' ? selectedIds.join('|') : ''}`} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass} ${echoDistance !== undefined ? 'has-echo-path' : ''}`} style={nodeAnimationStyle} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><circle className="node-hit-target" r={Math.max(radius, 7)} /><NodeShape type={node.type} radius={radius} mode={effectiveNodeShapeMode} />{visualizationStyle === 'pencil' && <NodeShape type={node.type} radius={radius} mode={effectiveNodeShapeMode} className="pencil-node-outline" />}{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>;
                 })}</g>
               </g>
             </svg>
           </div> : <div className="graph-empty"><FilterX /><h3>{t.noData}</h3><p>{t.noDataHelp}</p><Button variant="outline" onClick={clearFilters}>{t.clearFilters}</Button></div>}
-          <div className="network-hint"><div><strong>{graph.nodes.length} {t.nodes} · {graph.edges.length} {t.links} · {filteredEvents.length} {t.artifacts}</strong><span>{t.dragHelp}</span></div>{selectedIds.length > 0 && <button onClick={() => setSelectedIds([])}>{t.clearSelection}</button>}</div>
-          <ResultList locale={locale} resultEvents={resultEvents} selectedCount={selectedIds.length} onSelect={(event) => setSelectedIds([`artifact:${event.id}`])} />
+          {!mobileLite && <div className="network-hint"><div><strong>{graph.nodes.length} {t.nodes} · {graph.edges.length} {t.links} · {filteredEvents.length} {t.artifacts}</strong><span>{t.dragHelp}</span></div>{selectedIds.length > 0 && <button onClick={() => setSelectedIds([])}>{t.clearSelection}</button>}</div>}
+          {!mobileLite && <ResultList locale={locale} resultEvents={resultEvents} selectedCount={selectedIds.length} onSelect={(event) => setSelectedIds([`artifact:${event.id}`])} />}
           </>}
-          {appView === 'dashboard' && <OverviewDashboard locale={locale} resultEvents={resultEvents} selectedIds={selectedIds} animationStyle={animationStyle} visualizationStyle={visualizationStyle} motionFrozen={motionFrozen} onSelectPerson={(name) => { setSelectionLogic('any'); setSelectedIds([`person:${name}`]); }} onSelectPair={(left, right) => { setSelectionLogic('all'); setSelectedIds([`person:${left}`, `person:${right}`]); }} onSelectArtifact={(id) => setSelectedIds([`artifact:${id}`])} onSelectFormat={(name) => { setFormat(name); setSelectedIds([]); }} onClearSelection={() => setSelectedIds([])} />}
+          {appView === 'dashboard' && <OverviewDashboard locale={locale} resultEvents={resultEvents} selectedIds={selectedIds} animationStyle={effectiveAnimationStyle} visualizationStyle={visualizationStyle} motionFrozen={effectiveMotionFrozen} onSelectPerson={(name) => { setSelectionLogic('any'); setSelectedIds([`person:${name}`]); }} onSelectPair={(left, right) => { setSelectionLogic('all'); setSelectedIds([`person:${left}`, `person:${right}`]); }} onSelectArtifact={(id) => setSelectedIds([`artifact:${id}`])} onSelectFormat={(name) => { setFormat(name); setSelectedIds([]); }} onClearSelection={() => setSelectedIds([])} />}
         </section>
 
         <aside id="selection-details-panel" className="inspector-panel" aria-label={t.selection} hidden={!inspectorPanelOpen}>
