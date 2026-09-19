@@ -13,6 +13,7 @@ import {
   FilterX,
   Info,
   ListFilter,
+  Maximize2,
   Moon,
   Network,
   PanelLeftClose,
@@ -110,7 +111,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'NSRD un Seque ierakstu un personu tīkla vizualizācija', explore: 'Saikņu izpēte', networkLayers: 'Tīkla slāņi', showInNetwork: 'Rādīt tīklā',
     searchPerson: 'Meklēt personu', personPlaceholder: 'Sāc rakstīt vārdu…', clearPerson: 'Notīrīt personas meklējumu', searchArtifact: 'Meklēt artefaktu', artifactPlaceholder: 'Sāc rakstīt nosaukumu…', clearArtifact: 'Notīrīt artefakta meklējumu',
     years: 'Laika diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', clearFilters: 'Notīrīt filtrus',
-    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', distance: 'Tīkla mērogs', legend: 'Leģenda',
+    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', fullscreen: 'Rādīt tikai tīklu pilnekrānā', distance: 'Tīkla mērogs', legend: 'Leģenda',
     labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', graphTextSize: 'Tīkla nosaukumu izmērs', nodeSize: 'Mezglu izmērs', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
@@ -123,7 +124,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
     searchPerson: 'Search for a person', personPlaceholder: 'Start typing a name…', clearPerson: 'Clear person search', searchArtifact: 'Search for an artifact', artifactPlaceholder: 'Start typing a title…', clearArtifact: 'Clear artifact search',
     years: 'Year range', format: 'Format', allFormats: 'All formats', multi: 'Select multiple nodes', clearFilters: 'Clear filters',
-    view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', distance: 'Network scale', legend: 'Legend',
+    view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', fullscreen: 'Show only the network in fullscreen', distance: 'Network scale', legend: 'Legend',
     labels: 'Labels', labelClick: 'Click to change mode.', graphTextSize: 'Network label size', nodeSize: 'Node size', networkAria: 'NSRD and Seque multilayer network', links: 'links', nodes: 'nodes', artifacts: 'artifacts',
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
@@ -410,6 +411,7 @@ export default function Home() {
   const [visualizationStyle, setVisualizationStyle] = useState<VisualizationStyle>('standard');
   const [nodeShapeMode, setNodeShapeMode] = useState<NodeShapeMode>('circle');
   const [appView, setAppView] = useState<AppView>('network');
+  const [presentationMode, setPresentationMode] = useState(false);
   const [labelMode, setLabelMode] = useState<LabelMode>('active');
   const [graphLabelScale, setGraphLabelScale] = useState(1);
   const [nodeScale, setNodeScale] = useState(1);
@@ -596,6 +598,19 @@ export default function Home() {
     window.addEventListener('keydown', closeOnEscape);
     return () => { document.body.style.overflow = previousOverflow; window.removeEventListener('keydown', closeOnEscape); };
   }, [compactPanels, controlsPanelOpen, inspectorPanelOpen]);
+  useEffect(() => {
+    if (!presentationMode) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const closePresentation = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setPresentationMode(false);
+    };
+    window.addEventListener('keydown', closePresentation);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closePresentation);
+    };
+  }, [presentationMode]);
 
   const filteredEvents = useMemo(() => events.filter((event) => {
     return event.year >= yearRange[0] && event.year <= yearRange[1]
@@ -975,6 +990,10 @@ export default function Home() {
     event.preventDefault();
     changeZoom(zoom * (event.deltaY > 0 ? .86 : 1.16));
   };
+  const enterPresentationMode = () => {
+    setActiveScaleControl(null);
+    setPresentationMode(true);
+  };
 
   return (
     <main className={`prototype-shell ${nodeShapeMode === 'circle' ? 'node-shape-circles' : ''}`}>
@@ -1030,7 +1049,7 @@ export default function Home() {
           {compactPanels && <div className="mobile-panel-actions"><Button className="w-full" onClick={() => setControlsPanelOpen(false)}>{t.showRecords} · {resultEvents.length}</Button></div>}
         </aside>
 
-        <section id="network" className="network-panel" aria-label={appView === 'network' ? t.networkAria : t.overviewAria}>
+        <section id="network" className={`network-panel ${presentationMode ? 'is-presentation' : ''}`} aria-label={appView === 'network' ? t.networkAria : t.overviewAria}>
           <div className="view-mode-bar">
             <button type="button" className="panel-visibility-toggle" onClick={() => { const next = !controlsPanelOpen; setControlsPanelOpen(next); if (compactPanels && next) setInspectorPanelOpen(false); }} aria-label={controlsPanelOpen ? t.hideFilters : t.showFilters} aria-controls="network-layers-panel" aria-expanded={controlsPanelOpen} title={controlsPanelOpen ? t.hideFilters : t.showFilters}>{compactPanels ? <ListFilter /> : controlsPanelOpen ? <PanelLeftClose /> : <PanelLeftOpen />}<span className="mobile-toggle-label">{t.filters}</span>{activeFilterCount > 0 && <b className="mobile-toggle-badge">{activeFilterCount}</b>}</button>
             <div className="app-view-switcher" role="tablist" aria-label={t.visualization}>
@@ -1063,6 +1082,7 @@ export default function Home() {
                 <button type="button" onClick={() => changeZoom(zoom / 1.35)} aria-label={t.compact} title={t.compact}><ZoomOut /></button>
                 <output aria-label={t.distance}>{Math.round(zoom * 100)}%</output>
                 <button type="button" onClick={() => changeZoom(zoom * 1.35)} aria-label={t.spread} title={t.spread}><ZoomIn /></button>
+                <button type="button" className="fullscreen-network-button" onClick={enterPresentationMode} aria-label={t.fullscreen} title={t.fullscreen}><Maximize2 /></button>
               </div>
             </div>
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>

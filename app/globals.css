@@ -221,6 +221,9 @@ body {
 .filter-placeholder > span { display: inline-block; width: 50%; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: .6875rem; }
 .filter-placeholder > span:nth-child(even) { text-align: right; font-weight: 600; color: var(--foreground); }
 .network-panel { min-width: 0; padding: 18px 22px 10px; display: flex; flex-direction: column; }
+.network-panel.is-presentation { position: fixed; inset: 0; z-index: 100; width: 100vw; height: 100dvh; min-width: 0; padding: 0; overflow: hidden; background: var(--background); }
+.network-panel.is-presentation > :not(.network-stage) { display: none !important; }
+.network-panel.is-presentation .network-stage { width: 100%; height: 100%; flex: 1; }
 .view-mode-bar { display: grid; grid-template-columns: 30px minmax(0, 1fr) 30px; align-items: center; gap: 12px; min-height: 42px; margin-bottom: 12px; }
 .app-view-switcher { justify-self: center; display: inline-flex; min-width: 0; padding: 3px; border: 1px solid var(--border); background: color-mix(in srgb, var(--card) 90%, transparent); }
 .app-view-switcher button { display: inline-flex; min-height: 32px; align-items: center; justify-content: center; gap: 6px; padding: 0 14px; color: var(--muted-foreground); font-size: .625rem; font-weight: 650; transition: color .18s ease, background-color .18s ease; }
