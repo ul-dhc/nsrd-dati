@@ -50,6 +50,7 @@ type LabelMode = 'active' | 'all' | 'none';
 type GraphLabelScale = 1 | 1.25 | 1.5;
 type AnimationStyle = 'none' | 'rain' | 'echo' | 'wave';
 type VisualizationStyle = 'standard' | 'pencil';
+type NodeShapeMode = 'category' | 'circle';
 type AppView = 'network' | 'dashboard';
 type GraphNode = { id: string; payloadId: string; label: string; type: NodeType; degree: number; x: number; y: number };
 type GraphEdge = { source: string; target: string; weight: number; contexts: string[] };
@@ -108,7 +109,7 @@ const ui = {
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
-    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', about: 'Par projektu', closeAbout: 'Aizvērt informāciju par projektu', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', visualizationStyle: 'Vizualizācijas stils', visualizationHelpStandard: 'Standarta noformējums ar vienmērīgi aizpildītiem krāsu laukumiem.', visualizationHelpPencil: 'Plānas skices līnijas un krāsains zīmuļa šrafējums uz papīra fona.', inDevelopment: 'Izstrādes procesā',
+    choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', about: 'Par projektu', closeAbout: 'Aizvērt informāciju par projektu', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', visualizationStyle: 'Vizualizācijas stils', visualizationHelpStandard: 'Standarta noformējums ar vienmērīgi aizpildītiem krāsu laukumiem.', visualizationHelpPencil: 'Plānas skices līnijas un krāsains zīmuļa šrafējums uz papīra fona.', nodeShape: 'Mezglu forma', categoryShapes: 'Pēc kategorijas', circleShapes: 'Visi apļi', nodeShapeHelp: 'Kategorijas var atšķirt pēc formas un krāsas vai tikai pēc krāsas.', inDevelopment: 'Izstrādes procesā',
     filters: 'Filtri', filterViews: 'Filtrēt skatus', details: 'Detaļas', showRecords: 'Rādīt ierakstus', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
     records: 'Ieraksti', documentedPeople: 'Personas', relatedPeople: 'Līdzdalībnieki', visibleFormats: 'Formāti', formatChart: 'Ieraksti pēc formāta', peopleChart: 'Personas pēc ierakstu skaita', artifactChart: 'Ieraksti pēc dalībnieku skaita', collaborationMatrix: 'Kopīgo ierakstu matrica', collaborationMobile: 'Personu sadarbības', collaborationHelp: 'Klikšķini šūnā, lai atlasītu personu pāri un apskatītu kopīgos ierakstus.', topCollaborations: 'Biežākie sadarbību pāri', sharedRecords: 'kopīgi ieraksti', noCollaborations: 'Šai atlasei nav pietiekami daudz personu sadarbību.',
   },
@@ -121,7 +122,7 @@ const ui = {
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
-    choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', about: 'About the project', closeAbout: 'Close project information', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', visualizationStyle: 'Visualization style', visualizationHelpStandard: 'Standard appearance with evenly filled color areas.', visualizationHelpPencil: 'Fine sketch lines and colored-pencil hatching on a paper background.', inDevelopment: 'In development',
+    choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', about: 'About the project', closeAbout: 'Close project information', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', visualizationStyle: 'Visualization style', visualizationHelpStandard: 'Standard appearance with evenly filled color areas.', visualizationHelpPencil: 'Fine sketch lines and colored-pencil hatching on a paper background.', nodeShape: 'Node shape', categoryShapes: 'By category', circleShapes: 'All circles', nodeShapeHelp: 'Categories can be distinguished by shape and color or by color alone.', inDevelopment: 'In development',
     filters: 'Filters', filterViews: 'Filter views', details: 'Details', showRecords: 'Show recordings', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
     records: 'Recordings', documentedPeople: 'People', relatedPeople: 'Collaborators', visibleFormats: 'Formats', formatChart: 'Recordings by format', peopleChart: 'People by number of recordings', artifactChart: 'Recordings by number of participants', collaborationMatrix: 'Shared-recording matrix', collaborationMobile: 'Person collaborations', collaborationHelp: 'Click a cell to select a pair of people and inspect their shared recordings.', topCollaborations: 'Top collaboration pairs', sharedRecords: 'shared recordings', noCollaborations: 'There are not enough person collaborations in this selection.',
   },
@@ -287,8 +288,8 @@ function eventIdsForNode(node: GraphNode): Set<string> {
   return new Set(events.filter((event) => (event.institutions as string[]).includes(node.payloadId)).map((event) => event.id));
 }
 
-function NodeShape({ type, radius, className = 'node-shape' }: { type: NodeType; radius: number; className?: string }) {
-  if (type === 'person') return <circle className={className} r={radius} />;
+function NodeShape({ type, radius, mode, className = 'node-shape' }: { type: NodeType; radius: number; mode: NodeShapeMode; className?: string }) {
+  if (mode === 'circle' || type === 'person') return <circle className={className} r={radius} />;
   if (type === 'artifact') return <polygon className={className} points={`0,${-radius} ${radius},0 0,${radius} ${-radius},0`} />;
   if (type === 'format') return <rect className={className} x={-radius} y={-radius} width={radius * 2} height={radius * 2} rx={Math.max(2, radius * .2)} />;
   if (type === 'group') return <polygon className={className} points={`0,${-radius} ${radius * .92},${radius * .82} ${-radius * .92},${radius * .82}`} />;
@@ -398,6 +399,7 @@ export default function Home() {
   const [motionFrozen, setMotionFrozen] = useState(false);
   const [animationStyle, setAnimationStyle] = useState<AnimationStyle>('none');
   const [visualizationStyle, setVisualizationStyle] = useState<VisualizationStyle>('standard');
+  const [nodeShapeMode, setNodeShapeMode] = useState<NodeShapeMode>('category');
   const [appView, setAppView] = useState<AppView>('network');
   const [labelMode, setLabelMode] = useState<LabelMode>('active');
   const [graphLabelScale, setGraphLabelScale] = useState<GraphLabelScale>(1);
@@ -436,6 +438,7 @@ export default function Home() {
     const savedMotion = window.localStorage.getItem('nsrd-motion');
     const savedAnimationStyle = window.localStorage.getItem('nsrd-animation-style');
     const savedVisualizationStyle = window.localStorage.getItem('nsrd-visualization-style');
+    const savedNodeShapeMode = window.localStorage.getItem('nsrd-node-shape');
     const savedRainAnimation = window.localStorage.getItem('nsrd-rain-animation');
     const initialLocale = savedLocale === 'lv' || savedLocale === 'en' ? savedLocale : 'lv';
     const initialTheme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -452,6 +455,7 @@ export default function Home() {
     setMotionFrozen(savedMotion === 'static');
     setAnimationStyle(initialAnimationStyle);
     setVisualizationStyle(initialVisualizationStyle);
+    setNodeShapeMode(savedNodeShapeMode === 'circle' ? 'circle' : 'category');
     document.documentElement.lang = initialLocale;
     document.documentElement.classList.toggle('dark', initialTheme === 'dark');
     document.documentElement.style.colorScheme = initialTheme;
@@ -492,6 +496,10 @@ export default function Home() {
     if (!preferencesReady) return;
     window.localStorage.setItem('nsrd-visualization-style', visualizationStyle);
   }, [preferencesReady, visualizationStyle]);
+  useEffect(() => {
+    if (!preferencesReady) return;
+    window.localStorage.setItem('nsrd-node-shape', nodeShapeMode);
+  }, [nodeShapeMode, preferencesReady]);
   useEffect(() => {
     if (!settingsOpen && !aboutOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -849,7 +857,7 @@ export default function Home() {
   };
 
   return (
-    <main className="prototype-shell">
+    <main className={`prototype-shell ${nodeShapeMode === 'circle' ? 'node-shape-circles' : ''}`}>
       <PencilFilterDefs />
       <header className="topbar">
         <a className="brand" href="#network" aria-label={`${t.brand} — ${t.product}`}><span className="brand-symbol" aria-hidden="true"><i /><i /><i /></span><span><strong>{t.brand}</strong><small>{t.product}</small></span></a>
@@ -879,6 +887,7 @@ export default function Home() {
           <fieldset className="settings-section"><legend>{t.graphMotion}</legend><div className="motion-options"><button type="button" aria-pressed={!motionFrozen} onClick={() => setMotionFrozen(false)}><Play />{t.dynamic}</button><button type="button" aria-pressed={motionFrozen} onClick={() => setMotionFrozen(true)}><Pause />{t.static}</button></div><p>{t.motionHelp}</p></fieldset>
           <fieldset className="settings-section"><legend>{t.animationStyle}</legend><div className="animation-style-field"><Select value={animationStyle} onValueChange={(value) => setAnimationStyle(value as AnimationStyle)}><SelectTrigger aria-label={t.animationStyle}><SelectValue>{animationStyleOptions.find((option) => option.id === animationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{animationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{animationHelp}</p></fieldset>
           <fieldset className="settings-section"><legend>{t.visualizationStyle}</legend><div className="visualization-style-field"><Select value={visualizationStyle} onValueChange={(value) => setVisualizationStyle(value as VisualizationStyle)}><SelectTrigger aria-label={t.visualizationStyle}><SelectValue>{visualizationStyleOptions.find((option) => option.id === visualizationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{visualizationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{visualizationHelp}</p></fieldset>
+          <fieldset className="settings-section"><legend>{t.nodeShape}</legend><div className="node-shape-options"><button type="button" aria-pressed={nodeShapeMode === 'category'} onClick={() => setNodeShapeMode('category')}>{t.categoryShapes}</button><button type="button" aria-pressed={nodeShapeMode === 'circle'} onClick={() => setNodeShapeMode('circle')}>{t.circleShapes}</button></div><p>{t.nodeShapeHelp}</p></fieldset>
         </section>
       </>}
       <div className={`workspace ${compactPanels ? 'is-compact' : ''} ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
@@ -973,7 +982,7 @@ export default function Home() {
                     '--wave-delay': `${-(node.x / 900) * 4.8}s`,
                     '--echo-delay': `${Math.min(echoDistance ?? 0, 6) * .14}s`,
                   } as CSSProperties;
-                  return <g key={`${node.id}-${animationStyle === 'echo' ? selectedIds.join('|') : ''}`} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass} ${echoDistance !== undefined ? 'has-echo-path' : ''}`} style={nodeAnimationStyle} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><NodeShape type={node.type} radius={radius} />{visualizationStyle === 'pencil' && <NodeShape type={node.type} radius={radius} className="pencil-node-outline" />}{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>;
+                  return <g key={`${node.id}-${animationStyle === 'echo' ? selectedIds.join('|') : ''}`} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass} ${echoDistance !== undefined ? 'has-echo-path' : ''}`} style={nodeAnimationStyle} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><NodeShape type={node.type} radius={radius} mode={nodeShapeMode} />{visualizationStyle === 'pencil' && <NodeShape type={node.type} radius={radius} mode={nodeShapeMode} className="pencil-node-outline" />}{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>;
                 })}</g>
               </g>
             </svg>
