@@ -54,7 +54,7 @@ type VisualizationStyle = 'standard' | 'pencil';
 type NodeShapeMode = 'category' | 'circle';
 type NetworkMotionStyle = 'drift' | 'orbit' | 'chaos';
 type AppView = 'network' | 'dashboard';
-type GraphNode = { id: string; payloadId: string; label: string; type: NodeType; degree: number; x: number; y: number; depthScale?: number };
+type GraphNode = { id: string; payloadId: string; label: string; type: NodeType; degree: number; x: number; y: number; depthScale?: number; depthOpacity?: number };
 type GraphEdge = { source: string; target: string; weight: number; contexts: string[] };
 type Graph = { nodes: GraphNode[]; edges: GraphEdge[]; types: NodeType[] };
 type Point = { x: number; y: number };
@@ -671,6 +671,7 @@ export default function Home() {
     let x = base.x;
     let y = base.y;
     let depthScale = 1;
+    let depthOpacity = 1;
 
     if (networkMotionStyle === 'orbit') {
       const angle = driftClock * .000018 * intensity;
@@ -679,13 +680,19 @@ export default function Home() {
       const sharedX = 450 + dx * Math.cos(angle) - dy * Math.sin(angle);
       const sharedY = 285 + (dx * Math.sin(angle) + dy * Math.cos(angle)) * .92;
       const direction = seed % 2 === 0 ? 1 : -1;
-      const localSpeed = (.00011 + (seed % 13) * .000006) * intensity * direction;
+      const localSpeed = (.00016 + (seed % 13) * .000009) * intensity * direction;
       const localAngle = phase + driftClock * localSpeed;
       const localRadius = (6 + seed % 13) * Math.min(1.6, intensity);
-      x = sharedX + (Math.cos(localAngle) - Math.cos(phase)) * localRadius;
-      y = sharedY + (Math.sin(localAngle) - Math.sin(phase)) * localRadius * .62;
+      const orbitX = sharedX + (Math.cos(localAngle) - Math.cos(phase)) * localRadius;
+      const orbitY = sharedY + (Math.sin(localAngle) - Math.sin(phase)) * localRadius * .62;
       const depth = Math.sin(localAngle + phase * .37);
-      depthScale = Math.max(.55, Math.min(1.45, 1 + depth * .24 * Math.min(1.6, intensity)));
+      const depthStrength = Math.min(1.65, intensity);
+      const perspective = 1 + depth * .3 * Math.min(1.4, depthStrength);
+      x = 450 + (orbitX - 450) * perspective;
+      y = 285 + (orbitY - 285) * perspective;
+      depthScale = Math.max(.18, Math.min(2.25, 1 + depth * .82 * Math.min(1.5, intensity)));
+      const farOpacity = .26 + ((depth + 1) / 2) * .74;
+      depthOpacity = 1 - (1 - farOpacity) * Math.min(1, intensity);
     } else if (networkMotionStyle === 'chaos') {
       const amplitude = (15 + seed % 16) * intensity;
       const speed = .00045 + (seed % 11) * .000018;
@@ -700,7 +707,7 @@ export default function Home() {
       y = base.y + sharedY + Math.cos(orbit) * amplitude * .76;
     }
 
-    return { ...node, x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000, depthScale };
+    return { ...node, x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000, depthScale, depthOpacity };
   }), [draggingId, driftClock, graph.nodes, layoutMode, manualPositions, networkMotionIntensity, networkMotionStyle]);
   const driftPositionById = useMemo(() => new Map(positionedNodes.map((node) => [node.id, node])), [positionedNodes]);
   const displayNodes = useMemo(() => positionedNodes.map((node) => ({
@@ -1077,6 +1084,7 @@ export default function Home() {
                   const nodeAnimationStyle = {
                     '--wave-delay': `${-(node.x / 900) * 4.8}s`,
                     '--echo-delay': `${Math.min(echoDistance ?? 0, 6) * .14}s`,
+                    opacity: selected ? Math.max(.82, node.depthOpacity ?? 1) : active && selectedIds.length ? Math.max(.65, node.depthOpacity ?? 1) : node.depthOpacity ?? 1,
                   } as CSSProperties;
                   return <g key={`${node.id}-${animationStyle === 'echo' ? selectedIds.join('|') : ''}`} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass} ${echoDistance !== undefined ? 'has-echo-path' : ''}`} style={nodeAnimationStyle} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><circle className="node-hit-target" r={Math.max(radius, 7)} /><NodeShape type={node.type} radius={radius} mode={nodeShapeMode} />{visualizationStyle === 'pencil' && <NodeShape type={node.type} radius={radius} mode={nodeShapeMode} className="pencil-node-outline" />}{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>;
                 })}</g>
