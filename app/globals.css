@@ -152,6 +152,7 @@ body {
 .settings-section { margin-top: 18px; }
 .settings-section legend { margin-bottom: 9px; color: var(--muted-foreground); font-size: .625rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .palette-options { display: grid; gap: 7px; }
+.palette-options-more { margin-top: 7px; }
 .palette-option { display: grid; grid-template-columns: 76px minmax(0, 1fr) 18px; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 7px; text-align: left; transition: border-color .15s, background .15s; }
 .palette-option:hover { background: var(--muted); }
 .palette-option[aria-pressed="true"] { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 8%, var(--card)); }
@@ -159,6 +160,8 @@ body {
 .palette-option strong { font-size: .6875rem; font-weight: 650; }
 .palette-option small { color: var(--muted-foreground); font-size: .5625rem; }
 .palette-option > svg { width: 15px; color: var(--primary); }
+.palette-current > svg { color: var(--muted-foreground); transition: transform .15s ease; }
+.palette-picker.is-open .palette-current > svg { transform: rotate(180deg); }
 .palette-swatches { display: flex; align-items: center; }
 .palette-swatches i { width: 18px; height: 18px; margin-left: -4px; border: 2px solid var(--card); border-radius: 50%; box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 12%, transparent); }
 .palette-swatches i:first-child { margin-left: 0; }
