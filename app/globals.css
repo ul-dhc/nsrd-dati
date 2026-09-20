@@ -2,6 +2,24 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
+@font-face {
+  font-family: 'Yuyu';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/nsrd-dati/fonts/yuyu-latin-ext.woff2') format('woff2'), url('/fonts/yuyu-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Yuyu';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/nsrd-dati/fonts/yuyu-latin.woff2') format('woff2'), url('/fonts/yuyu-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -355,7 +373,7 @@ body {
 .analytics-surface.animation-rain .matrix-cell:not(.is-diagonal):not(:disabled) { animation: analytics-rain-cell 3.8s ease-in-out calc(var(--animation-index) * -.12s) infinite; }
 .analytics-surface.animation-wave .analytics-bar > i > b, .analytics-surface.animation-wave .artifact-column > i > b, .analytics-surface.animation-wave .donut-segment, .analytics-surface.animation-wave .matrix-cell:not(.is-diagonal):not(:disabled) { animation: analytics-wave 4.8s ease-in-out calc(var(--animation-index) * -.13s) infinite; }
 .analytics-surface.animation-echo.has-selection .analytics-bar.is-active > i > b, .analytics-surface.animation-echo.has-selection .artifact-column.is-active > i > b, .analytics-surface.animation-echo.has-selection .matrix-cell.is-active { animation: analytics-echo 1.4s cubic-bezier(.2,.72,.28,1) 1 both; }
-.analytics-surface.style-pencil { --foreground: #292724; --muted-foreground: #6b665e; --background: #fffdf7; --card: #fffdf7; --border: #9d978e; color: var(--foreground); font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; }
+.analytics-surface.style-pencil { --foreground: #292724; --muted-foreground: #6b665e; --background: #fffdf7; --card: #fffdf7; --border: #9d978e; color: var(--foreground); font-family: 'Yuyu', cursive; font-weight: 400; }
 .analytics-surface.style-pencil .analytics-summary > div, .analytics-surface.style-pencil .analytics-chart { border-color: color-mix(in srgb, var(--foreground) 68%, transparent); border-radius: 3px; background-color: #fffdf7; background-image: radial-gradient(circle, color-mix(in srgb, var(--foreground) 11%, transparent) .55px, transparent .7px); background-size: 12px 12px; box-shadow: 1px 1px 0 color-mix(in srgb, var(--foreground) 20%, transparent); }
 .analytics-surface.style-pencil .analytics-chart:nth-child(even) { transform: rotate(.08deg); }
 .analytics-surface.style-pencil .analytics-chart:nth-child(odd) { transform: rotate(-.08deg); }
@@ -435,7 +453,7 @@ body {
 .network-canvas.style-pencil .graph-node.institution .node-shape { fill: url(#pencil-institution); }
 .network-canvas.style-pencil .graph-node .pencil-node-outline { fill: none; stroke: var(--foreground); stroke-width: .52px; stroke-dasharray: 2.1 .7; opacity: .7; transform: translate(.72px, -.5px) scale(1.04); filter: url(#pencil-wobble); vector-effect: non-scaling-stroke; pointer-events: none; }
 .network-canvas.style-pencil .graph-node.is-selected .node-shape { opacity: 1; stroke: var(--palette-magenta) !important; stroke-width: 1.5px !important; }
-.network-canvas.style-pencil .graph-node text { fill: var(--foreground); stroke: #fffdf7; font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; font-weight: 600; letter-spacing: .015em; }
+.network-canvas.style-pencil .graph-node text { fill: var(--foreground); stroke: #fffdf7; font-family: 'Yuyu', cursive; font-weight: 400; letter-spacing: .015em; }
 .graph-node.is-dimmed { opacity: .52; }
 .dark .graph-node.is-ambient .node-shape { opacity: .46; }
 .dark .graph-node.is-dimmed { opacity: .58; }
