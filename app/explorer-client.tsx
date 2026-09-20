@@ -49,7 +49,7 @@ type LayoutMode = 'force' | 'hierarchical' | 'bipartite';
 type Locale = 'lv' | 'en';
 type Theme = 'light' | 'dark';
 type TextSize = 16 | 18 | 20;
-type PaletteId = 'archive' | 'neon' | 'autumn' | 'pastel' | 'vivid';
+type PaletteId = 'archive' | 'neon' | 'autumn' | 'pastel' | 'vivid' | 'bolderaja';
 type SelectionLogic = 'any' | 'all';
 type LabelMode = 'active' | 'all' | 'none';
 type AnimationStyle = 'none' | 'rain' | 'echo' | 'wave';
@@ -99,11 +99,12 @@ const appViewOptions: Array<{ id: AppView; lv: string; en: string }> = [
   { id: 'dashboard', lv: 'Pārskats', en: 'Data overview' },
 ];
 const paletteOptions: Array<{ id: PaletteId; lv: string; en: string; colors: string[] }> = [
-  { id: 'archive', lv: 'Arhīvs', en: 'Archive', colors: ['#c83f00', '#f4a000', '#cf0060', '#114b94', '#02a49f'] },
-  { id: 'neon', lv: 'Neons', en: 'Neon', colors: ['#0D0D0D', '#00FF85', '#1E90FF', '#FF0099', '#FFFFFF'] },
-  { id: 'autumn', lv: 'Dzintars', en: 'Amber', colors: ['#1C1C1C', '#FF6F61', '#DAA520', '#FF4500', '#F5E8D8'] },
-  { id: 'pastel', lv: 'Pastelis', en: 'Pastel', colors: ['#2C2C2C', '#A8DADC', '#FFC1CC', '#B39CD0', '#E4E4E4'] },
-  { id: 'vivid', lv: 'Košums', en: 'Vivid', colors: ['#181818', '#FF5722', '#673AB7', '#FFEB3B', '#F7F7F7'] },
+  { id: 'archive', lv: 'Seque', en: 'Seque', colors: ['#c83f00', '#f4a000', '#cf0060', '#114b94', '#02a49f'] },
+  { id: 'neon', lv: 'Telefons', en: 'Telephone', colors: ['#0D0D0D', '#00FF85', '#1E90FF', '#FF0099', '#FFFFFF'] },
+  { id: 'autumn', lv: 'Karstvīns', en: 'Mulled Wine', colors: ['#1C1C1C', '#FF6F61', '#DAA520', '#FF4500', '#F5E8D8'] },
+  { id: 'pastel', lv: 'Binoklis', en: 'Binoculars', colors: ['#2C2C2C', '#A8DADC', '#FFC1CC', '#B39CD0', '#E4E4E4'] },
+  { id: 'vivid', lv: 'Pankūkas', en: 'Pancakes', colors: ['#181818', '#FF5722', '#673AB7', '#FFEB3B', '#F7F7F7'] },
+  { id: 'bolderaja', lv: 'Bolderāja', en: 'Bolderāja', colors: ['#2F725F', '#A34D42', '#8E6C2E', '#6670A3'] },
 ];
 const labelModeNames: Record<Locale, Record<LabelMode, string>> = {
   lv: { none: 'nosaukumi paslēpti', active: 'nosaukumi aktīvajiem mezgliem', all: 'visu mezglu nosaukumi' },
@@ -1146,8 +1147,8 @@ export default function Home() {
             <button type="button" className="mobile-motion-toggle" aria-pressed={mobileMotionEnabled} aria-label={mobileMotionEnabled ? t.mobilePause : t.mobilePlay} title={mobileMotionEnabled ? t.mobilePause : t.mobilePlay} onClick={() => setMobileMotionEnabled((current) => !current)}>{mobileMotionEnabled ? <Pause /> : <Play />}</button>
             <label className="mobile-orbit-speed"><span><Orbit aria-hidden="true" />{t.mobileOrbit}<output>{mobileOrbitSpeed}%</output></span><Slider min={30} max={180} step={10} value={[mobileOrbitSpeed]} onValueChange={(value) => setMobileOrbitSpeed(singleSliderValue(value))} aria-label={t.mobileSpeed} /></label>
             <div className="mobile-palette-control">
-              <button type="button" className="mobile-palette-toggle" aria-label={t.mobileColors} aria-expanded={mobilePaletteOpen} aria-controls="mobile-palette-menu" onClick={() => setMobilePaletteOpen((current) => !current)}><Palette /><span className="mobile-current-color" style={{ backgroundColor: paletteOptions.find((option) => option.id === palette)?.colors[1] }} /></button>
-              {mobilePaletteOpen && <div id="mobile-palette-menu" className="mobile-palette-menu">{paletteOptions.map((option) => <button type="button" key={option.id} aria-pressed={palette === option.id} onClick={() => { setPalette(option.id); setMobilePaletteOpen(false); }}><span aria-hidden="true">{option.colors.slice(1, 4).map((color) => <i key={color} style={{ backgroundColor: color }} />)}</span><small>{option[locale]}</small></button>)}</div>}
+              <button type="button" className="mobile-palette-toggle" aria-label={t.mobileColors} aria-expanded={mobilePaletteOpen} aria-controls="mobile-palette-menu" onClick={() => setMobilePaletteOpen((current) => !current)}><Palette /><span className="mobile-current-color" style={{ backgroundColor: paletteOptions.find((option) => option.id === palette)?.colors[palette === 'bolderaja' ? 0 : 1] }} /></button>
+              {mobilePaletteOpen && <div id="mobile-palette-menu" className="mobile-palette-menu">{paletteOptions.map((option) => <button type="button" key={option.id} aria-pressed={palette === option.id} onClick={() => { setPalette(option.id); setMobilePaletteOpen(false); }}><span aria-hidden="true">{(option.id === 'bolderaja' ? option.colors : option.colors.slice(1, 4)).map((color) => <i key={color} style={{ backgroundColor: color }} />)}</span><small>{option[locale]}</small></button>)}</div>}
             </div>
           </div>}
           {appView === 'network' && <>
