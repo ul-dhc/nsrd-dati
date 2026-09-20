@@ -16,6 +16,8 @@ import {
   Maximize2,
   Moon,
   Network,
+  Orbit,
+  Palette,
   PanelLeftClose,
   PanelLeftOpen,
   PanelRightClose,
@@ -118,7 +120,7 @@ const ui = {
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
     selection: 'Atlase', selectedSet: 'Izvēlētā kopa', any: 'Vismaz viens', all: 'Visi izvēlētie', persons: 'Personas', period: 'Periods', formats: 'Formāti', frequent: 'Biežākie līdzdalībnieki', formatDistribution: 'Formātu sadalījums', related: 'Saistītie artefakti', artifactInfo: 'Artefakta informācija', place: 'Vieta', participants: 'Dalībnieki', missing: 'Nav norādīta',
     choose: 'Izvēlies mezglu', chooseHelp: 'Klikšķini vizualizācijā, lai izgaismotu saites un saņemtu atlasīto datu kopsavilkumu.', currently: 'Pašlaik filtrā', hideFilters: 'Paslēpt filtru paneli', showFilters: 'Parādīt filtru paneli', hideDetails: 'Paslēpt detaļu paneli', showDetails: 'Parādīt detaļu paneli', light: 'Ieslēgt gaišo režīmu', dark: 'Ieslēgt tumšo režīmu', language: 'Switch to English', textSize: 'Mainīt teksta izmēru', settings: 'Iestatījumi', closeSettings: 'Aizvērt iestatījumus', about: 'Par projektu', closeAbout: 'Aizvērt informāciju par projektu', palette: 'Krāsu palete', graphMotion: 'Vizualizāciju kustība', dynamic: 'Kustīgs', static: 'Statisks', motionHelp: 'Statiskais režīms aptur tīkla un analītisko grafu animācijas.', networkMotion: 'Tīkla kustība', movementIntensity: 'Kustības intensitāte', movementHelpDrift: 'Mezgli lēni un viegli dreifē ap savu vietu.', movementHelpOrbit: 'Viss tīkls lēni riņķo ap centru, bet katram mezglam ir arī sava orbīta, ātrums un virziens.', movementHelpChaos: 'Mezgli kustas aktīvāk un neregulārāk, nezaudējot tīkla pamatstruktūru.', movementFreeOnly: 'Kustība darbojas brīvajā tīkla skatā.', animationStyle: 'Animācijas stils', animationHelpNone: 'Bez papildu nepārtrauktas animācijas.', animationHelpRain: 'Plūstoša saišu un grafu elementu kustība.', animationHelpEcho: 'Atlase rada vienreizēju impulsu saistītajos elementos.', animationHelpWave: 'Gaismas vilnis periodiski pāriet pāri vizualizācijai.', visualizationStyle: 'Vizualizācijas stils', visualizationHelpStandard: 'Standarta noformējums ar vienmērīgi aizpildītiem krāsu laukumiem.', visualizationHelpPencil: 'Plānas skices līnijas un krāsains zīmuļa šrafējums uz papīra fona.', nodeShape: 'Mezglu forma', categoryShapes: 'Pēc kategorijas', circleShapes: 'Visi apļi', nodeShapeHelp: 'Kategorijas var atšķirt pēc formas un krāsas vai tikai pēc krāsas.', inDevelopment: 'Izstrādes procesā',
-    filters: 'Filtri', filterViews: 'Filtrēt skatus', details: 'Detaļas', showRecords: 'Rādīt ierakstus', showNetwork: 'Rādīt tīklu', mobileNote: 'Pilnā izpētes vide paredzēta datoram. Mobilajā skatā pieejams vienkāršots tīkls.', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
+    filters: 'Filtri', filterViews: 'Filtrēt skatus', details: 'Detaļas', showRecords: 'Rādīt ierakstus', showNetwork: 'Rādīt tīklu', mobileNote: 'Pilnā izpētes vide paredzēta datoram. Mobilajā skatā pieejams kompakts personu un ierakstu tīkls.', mobileOrbit: 'Orbīta', mobileSpeed: 'Orbītas ātrums', mobilePause: 'Apturēt tīkla kustību', mobilePlay: 'Ieslēgt tīkla kustību', mobileColors: 'Krāsu palete', visualization: 'Vizualizācija', overviewAria: 'NSRD un Seque datu analītiskais pārskats', collaborationAria: 'NSRD un Seque personu sadarbību matrica',
     records: 'Ieraksti', documentedPeople: 'Personas', relatedPeople: 'Līdzdalībnieki', visibleFormats: 'Formāti', formatChart: 'Ieraksti pēc formāta', peopleChart: 'Personas pēc ierakstu skaita', artifactChart: 'Ieraksti pēc dalībnieku skaita', collaborationMatrix: 'Kopīgo ierakstu matrica', collaborationMobile: 'Personu sadarbības', collaborationHelp: 'Klikšķini šūnā, lai atlasītu personu pāri un apskatītu kopīgos ierakstus.', topCollaborations: 'Biežākie sadarbību pāri', sharedRecords: 'kopīgi ieraksti', noCollaborations: 'Šai atlasei nav pietiekami daudz personu sadarbību.',
   },
   en: {
@@ -131,7 +133,7 @@ const ui = {
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
     selection: 'Selection', selectedSet: 'Selected set', any: 'At least one', all: 'All selected', persons: 'People', period: 'Period', formats: 'Formats', frequent: 'Frequent collaborators', formatDistribution: 'Format distribution', related: 'Related artifacts', artifactInfo: 'Artifact information', place: 'Place', participants: 'Participants', missing: 'Not specified',
     choose: 'Choose a node or set', chooseHelp: 'Click in a visualization to highlight connections and see a summary of the selected data.', currently: 'Currently filtered', hideFilters: 'Hide filters panel', showFilters: 'Show filters panel', hideDetails: 'Hide details panel', showDetails: 'Show details panel', light: 'Use light mode', dark: 'Use dark mode', language: 'Pārslēgt uz latviešu valodu', textSize: 'Change text size', settings: 'Settings', closeSettings: 'Close settings', about: 'About the project', closeAbout: 'Close project information', palette: 'Color palette', graphMotion: 'Visualization motion', dynamic: 'Dynamic', static: 'Static', motionHelp: 'Static mode pauses network and analytical chart animations.', networkMotion: 'Network motion', movementIntensity: 'Motion intensity', movementHelpDrift: 'Nodes drift slowly and gently around their positions.', movementHelpOrbit: 'The whole network revolves slowly around its center while every node follows its own orbit, speed, and direction.', movementHelpChaos: 'Nodes move more actively and irregularly without losing the underlying structure.', movementFreeOnly: 'Motion applies to the free network view.', animationStyle: 'Animation style', animationHelpNone: 'No additional continuous animation.', animationHelpRain: 'A flowing motion moves through links and chart elements.', animationHelpEcho: 'A selection sends a single pulse through related elements.', animationHelpWave: 'A light wave periodically travels across the visualization.', visualizationStyle: 'Visualization style', visualizationHelpStandard: 'Standard appearance with evenly filled color areas.', visualizationHelpPencil: 'Fine sketch lines and colored-pencil hatching on a paper background.', nodeShape: 'Node shape', categoryShapes: 'By category', circleShapes: 'All circles', nodeShapeHelp: 'Categories can be distinguished by shape and color or by color alone.', inDevelopment: 'In development',
-    filters: 'Filters', filterViews: 'Filter views', details: 'Details', showRecords: 'Show recordings', showNetwork: 'Show network', mobileNote: 'The full exploration environment is designed for desktop. A simplified network is available on mobile.', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
+    filters: 'Filters', filterViews: 'Filter views', details: 'Details', showRecords: 'Show recordings', showNetwork: 'Show network', mobileNote: 'The full exploration environment is designed for desktop. A compact people and recordings network is available on mobile.', mobileOrbit: 'Orbit', mobileSpeed: 'Orbit speed', mobilePause: 'Pause network motion', mobilePlay: 'Start network motion', mobileColors: 'Color palette', visualization: 'Visualization', overviewAria: 'Analytical overview of NSRD and Seque data', collaborationAria: 'NSRD and Seque person collaboration matrix',
     records: 'Recordings', documentedPeople: 'People', relatedPeople: 'Collaborators', visibleFormats: 'Formats', formatChart: 'Recordings by format', peopleChart: 'People by number of recordings', artifactChart: 'Recordings by number of participants', collaborationMatrix: 'Shared-recording matrix', collaborationMobile: 'Person collaborations', collaborationHelp: 'Click a cell to select a pair of people and inspect their shared recordings.', topCollaborations: 'Top collaboration pairs', sharedRecords: 'shared recordings', noCollaborations: 'There are not enough person collaborations in this selection.',
   },
 } as const;
@@ -394,6 +396,9 @@ export default function Home() {
   const [inspectorPanelOpen, setInspectorPanelOpen] = useState(true);
   const [compactPanels, setCompactPanels] = useState(false);
   const [mobileLite, setMobileLite] = useState(false);
+  const [mobileMotionEnabled, setMobileMotionEnabled] = useState(true);
+  const [mobileOrbitSpeed, setMobileOrbitSpeed] = useState(80);
+  const [mobilePaletteOpen, setMobilePaletteOpen] = useState(false);
   const [pageVisible, setPageVisible] = useState(() => typeof document === 'undefined' || document.visibilityState === 'visible');
   const [preferencesReady, setPreferencesReady] = useState(false);
   const [personQuery, setPersonQuery] = useState('');
@@ -441,7 +446,9 @@ export default function Home() {
   const currentTypeLabels = typeLabels[locale];
   const effectiveLayoutMode: LayoutMode = mobileLite ? 'force' : layoutMode;
   const effectiveAnimationStyle: AnimationStyle = mobileLite ? 'none' : animationStyle;
-  const effectiveMotionFrozen = motionFrozen || mobileLite || !pageVisible;
+  const effectiveMotionFrozen = (mobileLite ? !mobileMotionEnabled || controlsPanelOpen || appView !== 'network' : motionFrozen) || !pageVisible;
+  const effectiveNetworkMotionStyle: NetworkMotionStyle = mobileLite ? 'orbit' : networkMotionStyle;
+  const effectiveNetworkMotionIntensity = mobileLite ? mobileOrbitSpeed : networkMotionIntensity;
   const effectiveNodeShapeMode: NodeShapeMode = mobileLite ? 'circle' : nodeShapeMode;
   const effectiveLabelMode: LabelMode = mobileLite ? 'active' : labelMode;
   const animationHelp = {
@@ -465,6 +472,8 @@ export default function Home() {
     const savedMotion = window.localStorage.getItem('nsrd-motion');
     const savedNetworkMotionStyle = window.localStorage.getItem('nsrd-network-motion-style');
     const savedNetworkMotionIntensity = Number(window.localStorage.getItem('nsrd-network-motion-intensity'));
+    const savedMobileMotion = window.localStorage.getItem('nsrd-mobile-motion');
+    const savedMobileOrbitSpeed = Number(window.localStorage.getItem('nsrd-mobile-orbit-speed'));
     const savedAnimationStyle = window.localStorage.getItem('nsrd-animation-style');
     const savedVisualizationStyle = window.localStorage.getItem('nsrd-visualization-style');
     const savedNodeShapeMode = window.localStorage.getItem('nsrd-node-shape');
@@ -486,6 +495,8 @@ export default function Home() {
     setMotionFrozen(savedMotion === 'static');
     setNetworkMotionStyle(networkMotionStyleOptions.some((option) => option.id === savedNetworkMotionStyle) ? savedNetworkMotionStyle as NetworkMotionStyle : 'drift');
     setNetworkMotionIntensity(savedNetworkMotionIntensity >= 10 && savedNetworkMotionIntensity <= 200 ? savedNetworkMotionIntensity : 100);
+    setMobileMotionEnabled(savedMobileMotion !== 'paused');
+    setMobileOrbitSpeed(savedMobileOrbitSpeed >= 30 && savedMobileOrbitSpeed <= 180 ? savedMobileOrbitSpeed : 80);
     setAnimationStyle(initialAnimationStyle);
     setVisualizationStyle(initialVisualizationStyle);
     setNodeShapeMode(savedNodeShapeMode === 'category' ? 'category' : 'circle');
@@ -533,6 +544,11 @@ export default function Home() {
   }, [networkMotionIntensity, preferencesReady]);
   useEffect(() => {
     if (!preferencesReady) return;
+    window.localStorage.setItem('nsrd-mobile-motion', mobileMotionEnabled ? 'playing' : 'paused');
+    window.localStorage.setItem('nsrd-mobile-orbit-speed', String(mobileOrbitSpeed));
+  }, [mobileMotionEnabled, mobileOrbitSpeed, preferencesReady]);
+  useEffect(() => {
+    if (!preferencesReady) return;
     window.localStorage.setItem('nsrd-animation-style', animationStyle);
   }, [animationStyle, preferencesReady]);
   useEffect(() => {
@@ -567,6 +583,15 @@ export default function Home() {
       window.removeEventListener('keydown', closeScaleControlWithKeyboard);
     };
   }, [activeScaleControl]);
+  useEffect(() => {
+    if (!mobilePaletteOpen) return;
+    const closePalette = (event: PointerEvent) => {
+      if (event.target instanceof Element && event.target.closest('.mobile-palette-control')) return;
+      setMobilePaletteOpen(false);
+    };
+    document.addEventListener('pointerdown', closePalette);
+    return () => document.removeEventListener('pointerdown', closePalette);
+  }, [mobilePaletteOpen]);
   useEffect(() => {
     if (!settingsOpen && !aboutOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -614,7 +639,7 @@ export default function Home() {
     setInspectorPanelOpen(true);
   }, [compactPanels, selectedIds]);
   useEffect(() => {
-    if (!compactPanels || (!controlsPanelOpen && !inspectorPanelOpen)) return;
+    if (!compactPanels || (!controlsPanelOpen && (!inspectorPanelOpen || mobileLite))) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -622,7 +647,7 @@ export default function Home() {
     };
     window.addEventListener('keydown', closeOnEscape);
     return () => { document.body.style.overflow = previousOverflow; window.removeEventListener('keydown', closeOnEscape); };
-  }, [compactPanels, controlsPanelOpen, inspectorPanelOpen]);
+  }, [compactPanels, controlsPanelOpen, inspectorPanelOpen, mobileLite]);
   useEffect(() => {
     if (!presentationMode) return;
     const previousOverflow = document.body.style.overflow;
@@ -652,7 +677,7 @@ export default function Home() {
   useEffect(() => {
     setManualPositions({});
     setPan({ x: 0, y: 0 });
-    setZoom(effectiveLayoutMode === 'force' ? .84 : 1);
+    setZoom(effectiveLayoutMode === 'force' ? (mobileLite ? 1.05 : .84) : 1);
   }, [effectiveLayoutMode, leftType, mobileLite, rightType]);
   useEffect(() => {
     setManualPositions((current) => Object.fromEntries(Object.entries(current).filter(([id]) => graph.nodes.some((node) => node.id === id))));
@@ -689,14 +714,15 @@ export default function Home() {
   }, [draggingId]);
   useEffect(() => {
     setDriftClock(0);
-  }, [networkMotionStyle]);
+  }, [effectiveNetworkMotionStyle]);
   useEffect(() => {
     if (effectiveMotionFrozen || effectiveLayoutMode !== 'force') { lastFrame.current = null; return; }
     let lastPaint = 0;
     const animate = (time: number) => {
       if (lastFrame.current === null) lastFrame.current = time;
-      if (time - lastPaint >= 32) {
-        const delta = Math.min(50, time - lastFrame.current);
+      const frameInterval = mobileLite ? 66 : 32;
+      if (time - lastPaint >= frameInterval) {
+        const delta = Math.min(mobileLite ? 90 : 50, time - lastFrame.current);
         setDriftClock((current) => current + delta);
         lastFrame.current = time;
         lastPaint = time;
@@ -705,11 +731,11 @@ export default function Home() {
     };
     animationFrame.current = requestAnimationFrame(animate);
     return () => { if (animationFrame.current !== null) cancelAnimationFrame(animationFrame.current); lastFrame.current = null; };
-  }, [effectiveLayoutMode, effectiveMotionFrozen]);
+  }, [effectiveLayoutMode, effectiveMotionFrozen, mobileLite]);
   const positionedNodes = useMemo(() => graph.nodes.map((node) => {
     const base = manualPositions[node.id] ?? node;
     if (effectiveLayoutMode !== 'force' || draggingId === node.id) return { ...node, x: base.x, y: base.y };
-    const intensity = networkMotionIntensity / 100;
+    const intensity = effectiveNetworkMotionIntensity / 100;
     const seed = Math.abs(hash(node.id));
     const phase = seed % 628 / 100;
     let x = base.x;
@@ -717,7 +743,7 @@ export default function Home() {
     let depthScale = 1;
     let depthOpacity = 1;
 
-    if (networkMotionStyle === 'orbit') {
+    if (effectiveNetworkMotionStyle === 'orbit') {
       const angle = driftClock * .000018 * intensity;
       const dx = base.x - 450;
       const dy = base.y - 285;
@@ -737,7 +763,7 @@ export default function Home() {
       depthScale = Math.max(.18, Math.min(2.25, 1 + depth * .82 * Math.min(1.5, intensity)));
       const farOpacity = .26 + ((depth + 1) / 2) * .74;
       depthOpacity = 1 - (1 - farOpacity) * Math.min(1, intensity);
-    } else if (networkMotionStyle === 'chaos') {
+    } else if (effectiveNetworkMotionStyle === 'chaos') {
       const amplitude = (15 + seed % 16) * intensity;
       const speed = .00045 + (seed % 11) * .000018;
       x = base.x + Math.sin(driftClock * speed + phase) * amplitude + Math.sin(driftClock * speed * 2.17 + phase * .43) * amplitude * .28;
@@ -752,16 +778,16 @@ export default function Home() {
     }
 
     return { ...node, x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000, depthScale, depthOpacity };
-  }), [draggingId, driftClock, effectiveLayoutMode, graph.nodes, manualPositions, networkMotionIntensity, networkMotionStyle]);
+  }), [draggingId, driftClock, effectiveLayoutMode, effectiveNetworkMotionIntensity, effectiveNetworkMotionStyle, graph.nodes, manualPositions]);
   const driftPositionById = useMemo(() => new Map(positionedNodes.map((node) => [node.id, node])), [positionedNodes]);
   const displayNodes = useMemo(() => positionedNodes.map((node) => ({
     ...node,
     x: 450 + (node.x - 450) * zoom + pan.x,
     y: 285 + (node.y - 285) * zoom + pan.y,
   })), [pan, positionedNodes, zoom]);
-  const renderedNodes = useMemo(() => networkMotionStyle === 'orbit' && effectiveLayoutMode === 'force'
+  const renderedNodes = useMemo(() => effectiveNetworkMotionStyle === 'orbit' && effectiveLayoutMode === 'force'
     ? [...displayNodes].sort((left, right) => (left.depthScale ?? 1) - (right.depthScale ?? 1))
-    : displayNodes, [displayNodes, effectiveLayoutMode, networkMotionStyle]);
+    : displayNodes, [displayNodes, effectiveLayoutMode, effectiveNetworkMotionStyle]);
   const labelPlacementById = useMemo(() => {
     const placements = new Map<string, { x: number; y: number; textAnchor: 'start' | 'middle' | 'end'; rotation?: number }>();
     if (effectiveLayoutMode === 'force') return placements;
@@ -1089,7 +1115,7 @@ export default function Home() {
         </section>
       </>}
       <div className={`workspace ${compactPanels ? 'is-compact' : ''} ${mobileLite ? 'is-mobile-lite' : ''} ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
-        {compactPanels && (controlsPanelOpen || inspectorPanelOpen) && <button type="button" className="panel-scrim" aria-label={controlsPanelOpen ? t.hideFilters : t.hideDetails} onClick={() => { setControlsPanelOpen(false); setInspectorPanelOpen(false); }} />}
+        {compactPanels && (controlsPanelOpen || (!mobileLite && inspectorPanelOpen)) && <button type="button" className="panel-scrim" aria-label={controlsPanelOpen ? t.hideFilters : t.hideDetails} onClick={() => { setControlsPanelOpen(false); setInspectorPanelOpen(false); }} />}
         <aside id="network-layers-panel" className="controls-panel" aria-label={t.filters} hidden={!controlsPanelOpen}>
           <div className="panel-title"><ListFilter aria-hidden="true" /><div><strong>{t.filters}</strong></div>{compactPanels && <button type="button" className="panel-drawer-close" aria-label={t.hideFilters} onClick={() => setControlsPanelOpen(false)}><X /></button>}</div>
           {mobileLite && <p className="mobile-lite-note">{t.mobileNote}</p>}
@@ -1114,8 +1140,16 @@ export default function Home() {
             <div className="app-view-switcher" role="tablist" aria-label={t.visualization}>
               {appViewOptions.map((option) => <button type="button" role="tab" aria-selected={appView === option.id} key={option.id} onClick={() => setAppView(option.id)}>{option.id === 'network' ? <Network aria-hidden="true" /> : <BarChart3 aria-hidden="true" />}<span>{option[locale]}</span></button>)}
             </div>
-            {(!mobileLite || selectedIds.length > 0) && <button type="button" className="panel-visibility-toggle" onClick={() => { const next = !inspectorPanelOpen; setInspectorPanelOpen(next); if (compactPanels && next) setControlsPanelOpen(false); }} aria-label={inspectorPanelOpen ? t.hideDetails : t.showDetails} aria-controls="selection-details-panel" aria-expanded={inspectorPanelOpen} title={inspectorPanelOpen ? t.hideDetails : t.showDetails}>{compactPanels ? <Info /> : inspectorPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}<span className="mobile-toggle-label">{t.details}</span>{selectedIds.length > 0 && <b className="mobile-toggle-badge">{selectedIds.length}</b>}</button>}
+            {!mobileLite && <button type="button" className="panel-visibility-toggle" onClick={() => { const next = !inspectorPanelOpen; setInspectorPanelOpen(next); if (compactPanels && next) setControlsPanelOpen(false); }} aria-label={inspectorPanelOpen ? t.hideDetails : t.showDetails} aria-controls="selection-details-panel" aria-expanded={inspectorPanelOpen} title={inspectorPanelOpen ? t.hideDetails : t.showDetails}>{compactPanels ? <Info /> : inspectorPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}<span className="mobile-toggle-label">{t.details}</span>{selectedIds.length > 0 && <b className="mobile-toggle-badge">{selectedIds.length}</b>}</button>}
           </div>
+          {mobileLite && appView === 'network' && <div className="mobile-network-controls" aria-label={t.networkMotion}>
+            <button type="button" className="mobile-motion-toggle" aria-pressed={mobileMotionEnabled} aria-label={mobileMotionEnabled ? t.mobilePause : t.mobilePlay} title={mobileMotionEnabled ? t.mobilePause : t.mobilePlay} onClick={() => setMobileMotionEnabled((current) => !current)}>{mobileMotionEnabled ? <Pause /> : <Play />}</button>
+            <label className="mobile-orbit-speed"><span><Orbit aria-hidden="true" />{t.mobileOrbit}<output>{mobileOrbitSpeed}%</output></span><Slider min={30} max={180} step={10} value={[mobileOrbitSpeed]} onValueChange={(value) => setMobileOrbitSpeed(singleSliderValue(value))} aria-label={t.mobileSpeed} /></label>
+            <div className="mobile-palette-control">
+              <button type="button" className="mobile-palette-toggle" aria-label={t.mobileColors} aria-expanded={mobilePaletteOpen} aria-controls="mobile-palette-menu" onClick={() => setMobilePaletteOpen((current) => !current)}><Palette /><span className="mobile-current-color" style={{ backgroundColor: paletteOptions.find((option) => option.id === palette)?.colors[1] }} /></button>
+              {mobilePaletteOpen && <div id="mobile-palette-menu" className="mobile-palette-menu">{paletteOptions.map((option) => <button type="button" key={option.id} aria-pressed={palette === option.id} onClick={() => { setPalette(option.id); setMobilePaletteOpen(false); }}><span aria-hidden="true">{option.colors.slice(1, 4).map((color) => <i key={color} style={{ backgroundColor: color }} />)}</span><small>{option[locale]}</small></button>)}</div>}
+            </div>
+          </div>}
           {appView === 'network' && <>
           {!mobileLite && <div className="network-toolbar network-toolbar-secondary">
             <div className="toolbar-tools">
@@ -1201,7 +1235,7 @@ export default function Home() {
           {appView === 'dashboard' && <OverviewDashboard locale={locale} resultEvents={resultEvents} selectedIds={selectedIds} animationStyle={effectiveAnimationStyle} visualizationStyle={visualizationStyle} motionFrozen={effectiveMotionFrozen} onSelectPerson={(name) => { setSelectionLogic('any'); setSelectedIds([`person:${name}`]); }} onSelectPair={(left, right) => { setSelectionLogic('all'); setSelectedIds([`person:${left}`, `person:${right}`]); }} onSelectArtifact={(id) => setSelectedIds([`artifact:${id}`])} onSelectFormat={(name) => { setFormat(name); setSelectedIds([]); }} onClearSelection={() => setSelectedIds([])} />}
         </section>
 
-        <aside id="selection-details-panel" className="inspector-panel" aria-label={t.selection} hidden={!inspectorPanelOpen}>
+        <aside id="selection-details-panel" className={`inspector-panel ${mobileLite ? 'mobile-inline-inspector' : ''}`} aria-label={t.selection} hidden={!inspectorPanelOpen}>
           {compactPanels && <div className="mobile-inspector-heading"><strong>{t.details}</strong><button type="button" aria-label={t.hideDetails} onClick={() => setInspectorPanelOpen(false)}><X /></button></div>}
           {selectedNodes.length ? <SelectionInspector locale={locale} nodes={selectedNodes} resultEvents={resultEvents} logic={selectionLogic} setLogic={setSelectionLogic} removeNode={(id) => setSelectedIds((current) => current.filter((item) => item !== id))} /> : <EmptyInspector locale={locale} count={resultEvents.length} />}
         </aside>
