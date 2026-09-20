@@ -1237,7 +1237,7 @@ export default function Home() {
 
         <aside id="selection-details-panel" className={`inspector-panel ${mobileLite ? 'mobile-inline-inspector' : ''}`} aria-label={t.selection} hidden={!inspectorPanelOpen}>
           {compactPanels && <div className="mobile-inspector-heading"><strong>{t.details}</strong><button type="button" aria-label={t.hideDetails} onClick={() => setInspectorPanelOpen(false)}><X /></button></div>}
-          {selectedNodes.length ? <SelectionInspector locale={locale} nodes={selectedNodes} resultEvents={resultEvents} logic={selectionLogic} setLogic={setSelectionLogic} removeNode={(id) => setSelectedIds((current) => current.filter((item) => item !== id))} /> : <EmptyInspector locale={locale} count={resultEvents.length} />}
+          {selectedNodes.length ? <SelectionInspector locale={locale} nodes={selectedNodes} resultEvents={resultEvents} logic={selectionLogic} setLogic={setSelectionLogic} removeNode={(id) => setSelectedIds((current) => current.filter((item) => item !== id))} showRelated={mobileLite} /> : <EmptyInspector locale={locale} count={resultEvents.length} />}
         </aside>
       </div>
     </main>
@@ -1371,7 +1371,7 @@ function AnalyticsFooter({ locale, count, selected, onClearSelection }: { locale
   return <div className="analytics-footer"><strong>{t.currently}: {count} {t.artifacts}</strong>{selected && <button type="button" onClick={onClearSelection}>{t.clearSelection}</button>}</div>;
 }
 
-function SelectionInspector({ locale, nodes, resultEvents, logic, setLogic, removeNode }: { locale: Locale; nodes: GraphNode[]; resultEvents: EventRecord[]; logic: SelectionLogic; setLogic: (value: SelectionLogic) => void; removeNode: (id: string) => void }) {
+function SelectionInspector({ locale, nodes, resultEvents, logic, setLogic, removeNode, showRelated }: { locale: Locale; nodes: GraphNode[]; resultEvents: EventRecord[]; logic: SelectionLogic; setLogic: (value: SelectionLogic) => void; removeNode: (id: string) => void; showRelated: boolean }) {
   const [showAllRelated, setShowAllRelated] = useState(false);
   const t = ui[locale];
   const selectionKey = nodes.map((node) => node.id).join('|');
@@ -1396,14 +1396,14 @@ function SelectionInspector({ locale, nodes, resultEvents, logic, setLogic, remo
     {person && collaboratorCounts.length > 0 && <section className="inspector-section"><h3>{t.frequent}</h3>{collaboratorCounts.slice(0, 5).map(([name, count]) => <div className="data-row" key={name}><span>{displayPersonName(name)}</span><strong>{count}</strong></div>)}</section>}
     {artifact && <section className="inspector-section"><h3>{t.artifactInfo}</h3><div className="data-row"><span>{locale === 'lv' ? 'Gads' : 'Year'}</span><strong>{artifact.year}</strong></div><div className="data-row"><span>{t.format}</span><strong>{artifact.format}</strong></div><div className="data-row"><span>{t.place}</span><strong>{artifact.place || t.missing}</strong></div><div className="data-row"><span>{t.participants}</span><strong>{artifact.credits.length}</strong></div></section>}
     {!artifact && <section className="inspector-section"><h3>{t.formatDistribution}</h3>{formatCounts.slice(0, 5).map(([name, count]) => <div className="data-row" key={name}><span>{name}</span><strong>{count}</strong></div>)}</section>}
-    <section className="inspector-section"><h3>{t.related}</h3>{(showAllRelated ? resultEvents : resultEvents.slice(0, 7)).map((event) => <div className="mini-result" key={event.id}><span>{event.year}</span><strong>{event.title}</strong></div>)}{resultEvents.length > 7 && <button type="button" className="more-results more-results-button" onClick={() => setShowAllRelated((current) => !current)}>{showAllRelated ? t.showLess : `${t.more} ${resultEvents.length - 7}`}</button>}</section>
+    {showRelated && <section className="inspector-section"><h3>{t.related}</h3>{(showAllRelated ? resultEvents : resultEvents.slice(0, 7)).map((event) => <div className="mini-result" key={event.id}><span>{event.year}</span><strong>{event.title}</strong></div>)}{resultEvents.length > 7 && <button type="button" className="more-results more-results-button" onClick={() => setShowAllRelated((current) => !current)}>{showAllRelated ? t.showLess : `${t.more} ${resultEvents.length - 7}`}</button>}</section>}
   </div>;
 }
 
 function ResultList({ locale, resultEvents, selectedCount, onSelect }: { locale: Locale; resultEvents: EventRecord[]; selectedCount: number; onSelect: (event: EventRecord) => void }) {
   const [expanded, setExpanded] = useState(false);
   const t = ui[locale];
-  return <section className="result-list" aria-labelledby="result-title"><div className="result-heading"><div><p>{selectedCount ? t.selectionResults : t.filteredData}</p><h3 id="result-title">{typeLabels[locale].artifact} <span>{resultEvents.length}</span></h3></div></div>{resultEvents.length ? <div className="result-rows">{(expanded ? resultEvents : resultEvents.slice(0, 10)).map((event) => <button key={event.id} onClick={() => onSelect(event)}><time>{event.year}</time><span><strong>{event.title}</strong><small>{[event.format, event.artist, event.place].filter(Boolean).join(' · ')}</small></span><em>{event.credits.length} {t.personsShort}</em><ChevronRight /></button>)}</div> : <p className="no-results">{t.noArtifacts}</p>}{resultEvents.length > 10 && <button type="button" className="more-results more-results-button" onClick={() => setExpanded((current) => !current)}>{expanded ? t.showLess : `${t.more} ${resultEvents.length - 10}`}</button>}</section>;
+  return <section className="result-list" aria-labelledby="result-title"><div className="result-heading"><div><p>{selectedCount ? t.selectionResults : t.filteredData}</p><h3 id="result-title">{selectedCount ? t.related : typeLabels[locale].artifact} <span>{resultEvents.length}</span></h3></div></div>{resultEvents.length ? <div className="result-rows">{(expanded ? resultEvents : resultEvents.slice(0, 10)).map((event) => <button key={event.id} onClick={() => onSelect(event)}><time>{event.year}</time><span><strong>{event.title}</strong><small>{[event.format, event.artist, event.place].filter(Boolean).join(' · ')}</small></span><em>{event.credits.length} {t.personsShort}</em><ChevronRight /></button>)}</div> : <p className="no-results">{t.noArtifacts}</p>}{resultEvents.length > 10 && <button type="button" className="more-results more-results-button" onClick={() => setExpanded((current) => !current)}>{expanded ? t.showLess : `${t.more} ${resultEvents.length - 10}`}</button>}</section>;
 }
 
 function EmptyInspector({ locale, count }: { locale: Locale; count: number }) {
