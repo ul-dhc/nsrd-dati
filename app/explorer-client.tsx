@@ -388,7 +388,7 @@ function AboutContent({ locale }: { locale: Locale }) {
 
 export default function Home() {
   const [locale, setLocale] = useState<Locale>('lv');
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setTheme] = useState<Theme>('dark');
   const [textSize, setTextSize] = useState<TextSize>(16);
   const [palette, setPalette] = useState<PaletteId>('archive');
   const [paletteOptionsOpen, setPaletteOptionsOpen] = useState(false);
@@ -484,7 +484,7 @@ export default function Home() {
     const savedGraphLabelScale = Number(window.localStorage.getItem('nsrd-graph-label-scale'));
     const savedRainAnimation = window.localStorage.getItem('nsrd-rain-animation');
     const initialLocale = savedLocale === 'lv' || savedLocale === 'en' ? savedLocale : 'lv';
-    const initialTheme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const initialTheme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : 'dark';
     const initialTextSize: TextSize = savedTextSize === 18 || savedTextSize === 20 ? savedTextSize : 16;
     const initialPalette = paletteOptions.some((option) => option.id === savedPalette) ? savedPalette as PaletteId : 'archive';
     const initialAnimationStyle = savedAnimationStyle && savedAnimationStyle !== 'pencil'
