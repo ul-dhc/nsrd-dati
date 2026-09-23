@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 
 import dataset from '@/data/nsrd-seque.json';
+import { startAnimationLoop } from '@/lib/animation-loop';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -396,6 +397,7 @@ export default function Home() {
   const [inspectorPanelOpen, setInspectorPanelOpen] = useState(true);
   const [compactPanels, setCompactPanels] = useState(false);
   const [mobileLite, setMobileLite] = useState(false);
+  const [networkInView, setNetworkInView] = useState(true);
   const [mobileMotionEnabled, setMobileMotionEnabled] = useState(true);
   const [mobileOrbitSpeed, setMobileOrbitSpeed] = useState(80);
   const [mobileNetworkMotionStyle, setMobileNetworkMotionStyle] = useState<NetworkMotionStyle>('orbit');
@@ -432,8 +434,6 @@ export default function Home() {
   const [manualPositions, setManualPositions] = useState<Record<string, Point>>({});
   const svgRef = useRef<SVGSVGElement>(null);
   const hierarchicalInitialized = useRef(false);
-  const animationFrame = useRef<number | null>(null);
-  const lastFrame = useRef<number | null>(null);
   const panStart = useRef<{ clientX: number; clientY: number; x: number; y: number; moved: boolean } | null>(null);
   const nodePointerStart = useRef<{ id: string; clientX: number; clientY: number; additive: boolean; moved: boolean } | null>(null);
   const dragCluster = useRef<{ pointer: Point; positions: Record<string, Point>; strengths: Record<string, number> } | null>(null);
@@ -449,7 +449,8 @@ export default function Home() {
   const currentTypeLabels = typeLabels[locale];
   const effectiveLayoutMode: LayoutMode = mobileLite ? 'force' : layoutMode;
   const effectiveAnimationStyle: AnimationStyle = mobileLite ? 'none' : animationStyle;
-  const effectiveMotionFrozen = (mobileLite ? !mobileMotionEnabled || controlsPanelOpen || appView !== 'network' : motionFrozen) || !pageVisible;
+  const effectiveVisualizationStyle: VisualizationStyle = mobileLite ? 'standard' : visualizationStyle;
+  const effectiveMotionFrozen = (mobileLite ? !mobileMotionEnabled || controlsPanelOpen || settingsOpen || aboutOpen || !networkInView || appView !== 'network' : motionFrozen) || !pageVisible;
   const effectiveNetworkMotionStyle: NetworkMotionStyle = mobileLite ? mobileNetworkMotionStyle : networkMotionStyle;
   const effectiveNetworkMotionIntensity = mobileLite ? mobileOrbitSpeed : networkMotionIntensity;
   const effectiveNodeShapeMode = nodeShapeMode;
@@ -627,8 +628,15 @@ export default function Home() {
   }, []);
   useEffect(() => {
     const syncVisibility = () => setPageVisible(document.visibilityState === 'visible');
+    const suspend = () => setPageVisible(false);
     document.addEventListener('visibilitychange', syncVisibility);
-    return () => document.removeEventListener('visibilitychange', syncVisibility);
+    window.addEventListener('pagehide', suspend);
+    window.addEventListener('pageshow', syncVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', syncVisibility);
+      window.removeEventListener('pagehide', suspend);
+      window.removeEventListener('pageshow', syncVisibility);
+    };
   }, []);
   useEffect(() => {
     if (!compactPanels || !selectedIds.length) return;
@@ -713,22 +721,19 @@ export default function Home() {
     setDriftClock(0);
   }, [effectiveNetworkMotionStyle]);
   useEffect(() => {
-    if (effectiveMotionFrozen || effectiveLayoutMode !== 'force') { lastFrame.current = null; return; }
-    let lastPaint = 0;
-    const animate = (time: number) => {
-      if (lastFrame.current === null) lastFrame.current = time;
-      const frameInterval = mobileLite ? 66 : 32;
-      if (time - lastPaint >= frameInterval) {
-        const delta = Math.min(mobileLite ? 90 : 50, time - lastFrame.current);
-        setDriftClock((current) => current + delta);
-        lastFrame.current = time;
-        lastPaint = time;
-      }
-      animationFrame.current = requestAnimationFrame(animate);
-    };
-    animationFrame.current = requestAnimationFrame(animate);
-    return () => { if (animationFrame.current !== null) cancelAnimationFrame(animationFrame.current); lastFrame.current = null; };
+    if (effectiveMotionFrozen || effectiveLayoutMode !== 'force') return;
+    return startAnimationLoop((delta) => setDriftClock((current) => current + delta), mobileLite ? 80 : 32);
   }, [effectiveLayoutMode, effectiveMotionFrozen, mobileLite]);
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!mobileLite || !svg || typeof IntersectionObserver === 'undefined') {
+      setNetworkInView(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => setNetworkInView(entry.isIntersecting));
+    observer.observe(svg);
+    return () => observer.disconnect();
+  }, [mobileLite, appView, graph.nodes.length]);
   const positionedNodes = useMemo(() => graph.nodes.map((node) => {
     const base = manualPositions[node.id] ?? node;
     if (effectiveLayoutMode !== 'force' || draggingId === node.id) return { ...node, x: base.x, y: base.y };
@@ -782,9 +787,9 @@ export default function Home() {
     x: 450 + (node.x - 450) * zoom + pan.x,
     y: 285 + (node.y - 285) * zoom + pan.y,
   })), [pan, positionedNodes, zoom]);
-  const renderedNodes = useMemo(() => effectiveNetworkMotionStyle === 'orbit' && effectiveLayoutMode === 'force'
+  const renderedNodes = useMemo(() => !mobileLite && effectiveNetworkMotionStyle === 'orbit' && effectiveLayoutMode === 'force'
     ? [...displayNodes].sort((left, right) => (left.depthScale ?? 1) - (right.depthScale ?? 1))
-    : displayNodes, [displayNodes, effectiveLayoutMode, effectiveNetworkMotionStyle]);
+    : displayNodes, [displayNodes, effectiveLayoutMode, effectiveNetworkMotionStyle, mobileLite]);
   const labelPlacementById = useMemo(() => {
     const placements = new Map<string, { x: number; y: number; textAnchor: 'start' | 'middle' | 'end'; rotation?: number }>();
     if (effectiveLayoutMode === 'force') return placements;
@@ -820,7 +825,7 @@ export default function Home() {
     return placements;
   }, [displayNodes, effectiveLayoutMode, nodeScale]);
   const positionById = useMemo(() => new Map(displayNodes.map((node) => [node.id, node])), [displayNodes]);
-  const selectedNodes = selectedIds.map((id) => graph.nodes.find((node) => node.id === id)).filter(Boolean) as GraphNode[];
+  const selectedNodes = useMemo(() => selectedIds.map((id) => graph.nodes.find((node) => node.id === id)).filter(Boolean) as GraphNode[], [selectedIds, graph.nodes]);
   useEffect(() => setSelectedIds((current) => current.filter((id) => graph.nodes.some((node) => node.id === id))), [graph]);
 
   const selectedEventIds = useMemo(() => {
@@ -829,7 +834,7 @@ export default function Home() {
     if (selectionLogic === 'all') return new Set(Array.from(sets[0]).filter((id) => sets.every((set) => set.has(id))));
     return new Set(sets.flatMap((set) => Array.from(set)));
   }, [filteredEvents, selectedNodes, selectionLogic]);
-  const resultEvents = filteredEvents.filter((event) => selectedEventIds.has(event.id));
+  const resultEvents = useMemo(() => filteredEvents.filter((event) => selectedEventIds.has(event.id)), [filteredEvents, selectedEventIds]);
   const activeIds = useMemo(() => {
     const result = new Set(selectedIds);
     graph.edges.forEach((edge) => { if (selectedIds.includes(edge.source)) result.add(edge.target); if (selectedIds.includes(edge.target)) result.add(edge.source); });
@@ -1128,7 +1133,7 @@ export default function Home() {
 
   return (
     <main className={`prototype-shell ${effectiveNodeShapeMode === 'circle' ? 'node-shape-circles' : ''}`}>
-      <PencilFilterDefs />
+      {effectiveVisualizationStyle === 'pencil' && <PencilFilterDefs />}
       <header className="topbar">
         <a className="brand" href="#network" aria-label={`${t.brand} — ${t.product}`}><span className="brand-symbol" aria-hidden="true"><i /><i /><i /></span><span><strong>{t.brand}</strong><small>{t.product}</small></span></a>
         <div className="header-utilities">
@@ -1228,7 +1233,7 @@ export default function Home() {
           </div>}
           {graph.nodes.length ? <div className="network-stage">
             {presentationMode && <button type="button" className="exit-presentation-button" onClick={() => setPresentationMode(false)} aria-label={t.exitFullscreen} title={t.exitFullscreen}><X /><span>{t.exitFullscreen}</span></button>}
-            <svg ref={svgRef} className={`network-canvas ${effectiveLayoutMode !== 'force' ? 'is-structured' : ''} ${effectiveLayoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} animation-${effectiveAnimationStyle} style-${visualizationStyle} ${effectiveMotionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" preserveAspectRatio={mobileLite ? 'xMidYMid slice' : 'xMidYMid meet'} role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
+            <svg ref={svgRef} className={`network-canvas ${effectiveLayoutMode !== 'force' ? 'is-structured' : ''} ${effectiveLayoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} animation-${effectiveAnimationStyle} style-${effectiveVisualizationStyle} ${effectiveMotionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" preserveAspectRatio={mobileLite ? 'xMidYMid slice' : 'xMidYMid meet'} role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
               <rect className="network-hit-area" x="0" y="0" width="900" height="570" onPointerDown={startPanning} />
               <g>
                 <g className="network-edges">{graph.edges.map((edge, edgeIndex) => {
@@ -1252,7 +1257,7 @@ export default function Home() {
                   } as CSSProperties;
                   const baseStyle = { strokeWidth: baseWidth, '--wave-delay': `${-(((start.x + end.x) / 2) / 900) * 4.8}s` } as CSSProperties;
                   const flowKey = `${effectiveLayoutMode}-${effectiveAnimationStyle}-${selectedIds.join('|') || 'intro'}`;
-                  return <g key={`${edge.source}-${edge.target}`} className={`edge-${threadType} ${active ? 'is-active' : ''}`}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />{visualizationStyle === 'pencil' && <line className="network-edge-pencil" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />}{effectiveLayoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>;
+                  return <g key={`${edge.source}-${edge.target}`} className={`edge-${threadType} ${active ? 'is-active' : ''}`}><line className="network-edge-base" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />{effectiveVisualizationStyle === 'pencil' && <line className="network-edge-pencil" x1={start.x} y1={start.y} x2={end.x} y2={end.y} style={baseStyle} />}{effectiveLayoutMode !== 'force' && showFlow && <line key={flowKey} className="network-edge-flow" x1={start.x} y1={start.y} x2={end.x} y2={end.y} pathLength="100" style={flowStyle} />}</g>;
                 })}</g>
                 <g className="network-nodes">{renderedNodes.map((node) => {
                   const selected = selectedIds.includes(node.id);
@@ -1271,7 +1276,7 @@ export default function Home() {
                     '--echo-delay': `${Math.min(echoDistance ?? 0, 6) * .14}s`,
                     opacity: selected ? Math.max(.82, node.depthOpacity ?? 1) : active && selectedIds.length ? Math.max(.65, node.depthOpacity ?? 1) : node.depthOpacity ?? 1,
                   } as CSSProperties;
-                  return <g key={`${node.id}-${effectiveAnimationStyle === 'echo' ? selectedIds.join('|') : ''}`} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass} ${echoDistance !== undefined ? 'has-echo-path' : ''}`} style={nodeAnimationStyle} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><circle className="node-hit-target" r={Math.max(radius, 7)} /><NodeShape type={node.type} radius={radius} mode={effectiveNodeShapeMode} />{visualizationStyle === 'pencil' && <NodeShape type={node.type} radius={radius} mode={effectiveNodeShapeMode} className="pencil-node-outline" />}{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>;
+                  return <g key={`${node.id}-${effectiveAnimationStyle === 'echo' ? selectedIds.join('|') : ''}`} className={`graph-node ${node.type} ${selected ? 'is-selected' : ''} ${emphasisClass} ${echoDistance !== undefined ? 'has-echo-path' : ''}`} style={nodeAnimationStyle} transform={`translate(${node.x} ${node.y})`} onPointerDown={(event) => startDrag(node, event)} role="button" tabIndex={0} aria-label={`${currentTypeLabels[node.type]}: ${node.label}; ${node.degree} ${t.links}`} aria-pressed={selected} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') selectNode(node, event.shiftKey); }}><circle className="node-hit-target" r={Math.max(radius, 7)} /><NodeShape type={node.type} radius={radius} mode={effectiveNodeShapeMode} />{effectiveVisualizationStyle === 'pencil' && <NodeShape type={node.type} radius={radius} mode={effectiveNodeShapeMode} className="pencil-node-outline" />}{showLabel && <text x={labelX} y={labelY} textAnchor={labelAnchor} dominantBaseline={structuredLabel ? 'middle' : undefined} transform={labelTransform}>{node.label}</text>}</g>;
                 })}</g>
               </g>
             </svg>
@@ -1280,7 +1285,7 @@ export default function Home() {
           {!mobileLite && <div className="network-hint"><div><strong>{graph.nodes.length} {t.nodes} · {graph.edges.length} {t.links} · {filteredEvents.length} {t.artifacts}</strong><span>{t.dragHelp}</span></div>{selectedIds.length > 0 && <button onClick={() => setSelectedIds([])}>{t.clearSelection}</button>}</div>}
           {!mobileLite && <ResultList locale={locale} resultEvents={resultEvents} selectedCount={selectedIds.length} onSelect={(event) => setSelectedIds([`artifact:${event.id}`])} />}
           </>}
-          {appView === 'dashboard' && <OverviewDashboard locale={locale} resultEvents={resultEvents} selectedIds={selectedIds} animationStyle={effectiveAnimationStyle} visualizationStyle={visualizationStyle} motionFrozen={effectiveMotionFrozen} onSelectPerson={(name) => { setSelectionLogic('any'); setSelectedIds([`person:${name}`]); }} onSelectPair={(left, right) => { setSelectionLogic('all'); setSelectedIds([`person:${left}`, `person:${right}`]); }} onSelectArtifact={(id) => setSelectedIds([`artifact:${id}`])} onSelectFormat={(name) => { setFormat(name); setSelectedIds([]); }} onClearSelection={() => setSelectedIds([])} />}
+          {appView === 'dashboard' && <OverviewDashboard locale={locale} resultEvents={resultEvents} selectedIds={selectedIds} animationStyle={effectiveAnimationStyle} visualizationStyle={effectiveVisualizationStyle} motionFrozen={effectiveMotionFrozen} onSelectPerson={(name) => { setSelectionLogic('any'); setSelectedIds([`person:${name}`]); }} onSelectPair={(left, right) => { setSelectionLogic('all'); setSelectedIds([`person:${left}`, `person:${right}`]); }} onSelectArtifact={(id) => setSelectedIds([`artifact:${id}`])} onSelectFormat={(name) => { setFormat(name); setSelectedIds([]); }} onClearSelection={() => setSelectedIds([])} />}
         </section>
 
         <aside id="selection-details-panel" className={`inspector-panel ${mobileLite ? 'mobile-inline-inspector' : ''}`} aria-label={t.selection} hidden={!inspectorPanelOpen}>

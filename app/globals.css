@@ -553,6 +553,9 @@ body {
 }
 
 @media (max-width: 720px) {
+  .network-canvas .graph-node, .network-canvas .graph-node .node-shape { transition: none; }
+  .settings-scrim, .panel-scrim, .about-heading, .nsrd-select-content { backdrop-filter: none; }
+
   .topbar { position: sticky; top: 0; z-index: 30; min-height: 68px; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 0 10px; }
   .brand small { display: none; }
   .brand { gap: 8px; }
