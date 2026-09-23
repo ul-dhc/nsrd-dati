@@ -288,9 +288,9 @@ body {
 .network-controls button svg { width: 14px; height: 14px; }
 .network-controls output { min-width: 36px; color: var(--muted-foreground); font-size: .5625rem; text-align: center; font-variant-numeric: tabular-nums; }
 .network-controls .label-mode-button { margin-inline: 3px; border-inline: 1px solid var(--border); }
-.network-controls .label-mode-button.is-none { color: var(--muted-foreground); background: transparent; }
-.network-controls .label-mode-button.is-active { color: var(--palette-amber); background: color-mix(in srgb, var(--palette-amber) 14%, var(--card)); }
-.network-controls .label-mode-button.is-all { color: var(--primary); background: color-mix(in oklch, var(--primary) 12%, var(--card)); }
+.network-controls .label-mode-button.is-none, .mobile-view-actions .label-mode-button.is-none { color: var(--muted-foreground); background: transparent; }
+.network-controls .label-mode-button.is-active, .mobile-view-actions .label-mode-button.is-active { color: var(--palette-amber); background: color-mix(in srgb, var(--palette-amber) 14%, var(--card)); }
+.network-controls .label-mode-button.is-all, .mobile-view-actions .label-mode-button.is-all { color: var(--primary); background: color-mix(in oklch, var(--primary) 12%, var(--card)); }
 .network-controls .graph-text-size-button { font-weight: 700; }
 .graph-scale-control { position: relative; display: flex; }
 .graph-scale-control > button[aria-expanded="true"] { color: var(--primary); background: color-mix(in oklch, var(--primary) 12%, var(--card)); }
@@ -635,7 +635,6 @@ body {
   .workspace.is-mobile-lite .result-list { display: none; }
   .workspace.is-mobile-lite .network-stage { height: clamp(390px, 48dvh, 440px); min-height: 390px; }
   .workspace.is-mobile-lite .network-canvas { height: 100%; touch-action: pan-y; }
-  .workspace.is-mobile-lite .graph-node:not(.is-selected):not(.is-active) text { display: none; }
   .settings-scrim { inset: 68px 0 0; }
   .settings-panel { top: 76px; right: 10px; width: calc(100vw - 20px); max-height: calc(100dvh - 86px); padding: 16px; overscroll-behavior: contain; }
   .settings-panel .settings-heading { position: sticky; top: -16px; z-index: 2; margin: -16px -16px 0; padding: 16px; background: var(--card); }

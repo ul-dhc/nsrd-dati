@@ -454,7 +454,7 @@ export default function Home() {
   const effectiveNetworkMotionStyle: NetworkMotionStyle = mobileLite ? mobileNetworkMotionStyle : networkMotionStyle;
   const effectiveNetworkMotionIntensity = mobileLite ? mobileOrbitSpeed : networkMotionIntensity;
   const effectiveNodeShapeMode = nodeShapeMode;
-  const effectiveLabelMode: LabelMode = mobileLite ? 'active' : labelMode;
+  const effectiveLabelMode = labelMode;
   const animationHelp = {
     none: t.animationHelpNone,
     rain: t.animationHelpRain,
@@ -1196,6 +1196,7 @@ export default function Home() {
               {appViewOptions.map((option) => <button type="button" role="tab" aria-selected={appView === option.id} key={option.id} onClick={() => setAppView(option.id)}>{option.id === 'network' ? <Network aria-hidden="true" /> : <BarChart3 aria-hidden="true" />}<span>{option[locale]}</span></button>)}
             </div>
             {mobileLite && <div className="mobile-view-actions">
+              {appView === 'network' && <button type="button" className={`panel-visibility-toggle label-mode-button is-${labelMode}`} onClick={() => setLabelMode((current) => nextLabelMode[current])} aria-label={`${t.labels}: ${labelModeNames[locale][labelMode]}. ${t.labelClick}`} title={`${t.labels}: ${labelModeNames[locale][labelMode]}`}>{labelMode === 'none' ? <EyeOff /> : <Eye />}</button>}
               <button type="button" className="panel-visibility-toggle" onClick={() => { setAboutOpen(false); setControlsPanelOpen(false); setPaletteOptionsOpen(false); setSettingsOpen((current) => !current); }} aria-label={t.settings} title={t.settings} aria-expanded={settingsOpen} aria-controls="settings-panel"><Settings2 /></button>
               {appView === 'network' && <button type="button" className="panel-visibility-toggle" onClick={enterPresentationMode} aria-label={t.fullscreen} title={t.fullscreen}><Maximize2 /></button>}
             </div>}
@@ -1263,7 +1264,7 @@ export default function Home() {
                   const selected = selectedIds.includes(node.id);
                   const active = !selectedIds.length || activeIds.has(node.id);
                   const radius = nodeRadius(node, effectiveLayoutMode) * nodeScale * (node.depthScale ?? 1);
-                  const showLabel = mobileLite ? selected : effectiveLabelMode === 'all' || (effectiveLabelMode === 'active' && selectedIds.length > 0 && active);
+                  const showLabel = effectiveLabelMode === 'all' || (effectiveLabelMode === 'active' && selectedIds.length > 0 && active);
                   const emphasisClass = selectedIds.length ? (active ? 'is-active' : 'is-dimmed') : 'is-ambient';
                   const structuredLabel = labelPlacementById.get(node.id);
                   const labelX = structuredLabel?.x ?? (node.x < 450 ? radius + 7 : -radius - 7);
