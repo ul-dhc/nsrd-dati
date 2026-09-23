@@ -1232,7 +1232,7 @@ export default function Home() {
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>
           </div>}
           {graph.nodes.length ? <div className="network-stage">
-            {presentationMode && <button type="button" className="exit-presentation-button" onClick={() => setPresentationMode(false)} aria-label={t.exitFullscreen} title={t.exitFullscreen}><X /><span>{t.exitFullscreen}</span></button>}
+            {presentationMode && <button type="button" className="exit-presentation-button" onClick={() => setPresentationMode(false)} aria-label={t.exitFullscreen} title={t.exitFullscreen}><X /></button>}
             <svg ref={svgRef} className={`network-canvas ${effectiveLayoutMode !== 'force' ? 'is-structured' : ''} ${effectiveLayoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} animation-${effectiveAnimationStyle} style-${effectiveVisualizationStyle} ${effectiveMotionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" preserveAspectRatio={mobileLite ? 'xMidYMid slice' : 'xMidYMid meet'} role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
               <rect className="network-hit-area" x="0" y="0" width="900" height="570" onPointerDown={startPanning} />
               <g>
