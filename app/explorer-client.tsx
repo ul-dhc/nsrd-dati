@@ -114,7 +114,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'NSRD un Seque ierakstu un personu tīkla vizualizācija', explore: 'Saikņu izpēte', networkLayers: 'Tīkla slāņi', showInNetwork: 'Rādīt tīklā',
     searchPerson: 'Meklēt personu', personPlaceholder: 'Sāc rakstīt vārdu…', clearPerson: 'Notīrīt personas meklējumu', searchArtifact: 'Meklēt artefaktu', artifactPlaceholder: 'Sāc rakstīt nosaukumu…', clearArtifact: 'Notīrīt artefakta meklējumu',
     years: 'Laika diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', clearFilters: 'Notīrīt filtrus',
-    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', fullscreen: 'Rādīt tikai tīklu pilnekrānā', exitFullscreen: 'Aizvērt pilnekrānu', touchHelp: 'Ar diviem pirkstiem pārvieto un mērogo tīklu', distance: 'Tīkla mērogs', legend: 'Leģenda',
+    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', fullscreen: 'Rādīt tikai tīklu pilnekrānā', exitFullscreen: 'Aizvērt pilnekrānu', distance: 'Tīkla mērogs', legend: 'Leģenda',
     labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', graphTextSize: 'Tīkla nosaukumu izmērs', nodeSize: 'Mezglu izmērs', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
@@ -127,7 +127,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
     searchPerson: 'Search for a person', personPlaceholder: 'Start typing a name…', clearPerson: 'Clear person search', searchArtifact: 'Search for an artifact', artifactPlaceholder: 'Start typing a title…', clearArtifact: 'Clear artifact search',
     years: 'Year range', format: 'Format', allFormats: 'All formats', multi: 'Select multiple nodes', clearFilters: 'Clear filters',
-    view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', fullscreen: 'Show only the network in fullscreen', exitFullscreen: 'Exit fullscreen', touchHelp: 'Use two fingers to move and zoom the network', distance: 'Network scale', legend: 'Legend',
+    view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', fullscreen: 'Show only the network in fullscreen', exitFullscreen: 'Exit fullscreen', distance: 'Network scale', legend: 'Legend',
     labels: 'Labels', labelClick: 'Click to change mode.', graphTextSize: 'Network label size', nodeSize: 'Node size', networkAria: 'NSRD and Seque multilayer network', links: 'links', nodes: 'nodes', artifacts: 'artifacts',
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
@@ -1280,7 +1280,6 @@ export default function Home() {
                 })}</g>
               </g>
             </svg>
-            {mobileLite && <p className="network-touch-hint">{t.touchHelp}</p>}
           </div> : <div className="graph-empty"><FilterX /><h3>{t.noData}</h3><p>{t.noDataHelp}</p><Button variant="outline" onClick={clearFilters}>{t.clearFilters}</Button></div>}
           {!mobileLite && <div className="network-hint"><div><strong>{graph.nodes.length} {t.nodes} · {graph.edges.length} {t.links} · {filteredEvents.length} {t.artifacts}</strong><span>{t.dragHelp}</span></div>{selectedIds.length > 0 && <button onClick={() => setSelectedIds([])}>{t.clearSelection}</button>}</div>}
           {!mobileLite && <ResultList locale={locale} resultEvents={resultEvents} selectedCount={selectedIds.length} onSelect={(event) => setSelectedIds([`artifact:${event.id}`])} />}
