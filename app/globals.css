@@ -526,7 +526,9 @@ body {
 .result-rows svg { width: 13px; color: var(--muted-foreground); }
 .no-results { padding: 18px 0; color: var(--muted-foreground); font-size: .6875rem; }
 .mobile-lite-note { margin: -8px 0 18px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; color: var(--muted-foreground); background: var(--muted); font-size: .625rem; line-height: 1.45; }
-.mobile-network-controls { display: none; }
+.mobile-view-actions { display: flex; gap: 2px; }
+.exit-presentation-button { position: absolute; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); z-index: 2; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; color: var(--foreground); background: var(--card); font-size: .75rem; }
+.exit-presentation-button svg { width: 18px; height: 18px; }
 
 @media (max-width: 1100px) {
   .workspace, .workspace.is-controls-collapsed, .workspace.is-inspector-collapsed, .workspace.is-controls-collapsed.is-inspector-collapsed { display: block; min-height: calc(100vh - 76px); }
@@ -618,32 +620,24 @@ body {
   .mobile-collaboration-list i b { display: block; height: 100%; background: var(--node-person); opacity: .58; }
   .mobile-collaboration-list em { color: var(--foreground); font-size: .625rem; font-style: normal; font-weight: 650; text-align: right; }
   .mobile-collaboration-list button:hover i b, .mobile-collaboration-list button.is-active i b { opacity: .95; }
-  .view-mode-bar.is-mobile-lite { grid-template-columns: auto minmax(0, 1fr); margin-bottom: 0; }
+  .view-mode-bar.is-mobile-lite { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 4px; margin-bottom: 0; }
   .workspace.is-mobile-lite .network-panel { padding-bottom: 0; }
   .workspace.is-mobile-lite .network-toolbar-secondary,
   .workspace.is-mobile-lite .network-hint,
   .workspace.is-mobile-lite .result-list { display: none; }
   .workspace.is-mobile-lite .network-stage { height: clamp(390px, 48dvh, 440px); min-height: 390px; }
-  .workspace.is-mobile-lite .network-canvas { height: 100%; touch-action: none; }
+  .workspace.is-mobile-lite .network-canvas { height: 100%; touch-action: pan-y; }
+  .network-touch-hint { position: absolute; bottom: max(10px, env(safe-area-inset-bottom)); left: 10px; right: 10px; width: fit-content; margin-inline: auto; padding: 5px 9px; border-radius: 6px; color: var(--muted-foreground); background: color-mix(in srgb, var(--background) 90%, transparent); font-size: .625rem; text-align: center; pointer-events: none; }
   .workspace.is-mobile-lite .graph-node:not(.is-selected):not(.is-active) text { display: none; }
-  .mobile-network-controls { position: relative; z-index: 18; display: grid; min-height: 58px; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; gap: 10px; margin: 0 -10px; padding: 7px 10px; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--background) 96%, transparent); }
-  .mobile-motion-toggle, .mobile-palette-toggle { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--border); color: var(--muted-foreground); background: var(--card); }
-  .mobile-motion-toggle[aria-pressed="true"] { color: var(--primary); border-color: color-mix(in srgb, var(--primary) 65%, var(--border)); background: color-mix(in srgb, var(--primary) 11%, var(--card)); }
-  .mobile-motion-toggle svg, .mobile-palette-toggle svg { width: 16px; }
-  .mobile-orbit-speed { display: grid; min-width: 0; gap: 5px; }
-  .mobile-orbit-speed > span { display: flex; align-items: center; gap: 5px; color: var(--muted-foreground); font-size: .5625rem; font-weight: 650; }
-  .mobile-orbit-speed > span svg { width: 13px; }
-  .mobile-orbit-speed output { margin-left: auto; color: var(--foreground); font-variant-numeric: tabular-nums; }
-  .mobile-palette-control { position: relative; }
-  .mobile-palette-toggle { position: relative; }
-  .mobile-current-color { position: absolute; right: 8px; bottom: 7px; width: 8px; height: 8px; border: 1px solid var(--card); border-radius: 50%; }
-  .mobile-palette-menu { position: absolute; top: 51px; right: 0; z-index: 24; display: grid; width: calc(100vw - 20px); grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 5px; padding: 8px; border: 1px solid var(--border); border-radius: 10px; background: color-mix(in srgb, var(--card) 97%, transparent); box-shadow: 0 14px 38px color-mix(in srgb, #000 26%, transparent); }
-  .mobile-palette-menu button { display: grid; min-width: 0; gap: 5px; padding: 7px 3px 6px; border: 1px solid transparent; border-radius: 7px; color: var(--muted-foreground); }
-  .mobile-palette-menu button[aria-pressed="true"] { border-color: var(--primary); color: var(--foreground); background: var(--muted); }
-  .mobile-palette-menu button > span { display: flex; justify-content: center; }
-  .mobile-palette-menu i { width: 11px; height: 11px; margin-left: -2px; border: 1px solid color-mix(in srgb, var(--card) 70%, transparent); border-radius: 50%; }
-  .mobile-palette-menu i:first-child { margin-left: 0; }
-  .mobile-palette-menu small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .5rem; }
+  .settings-scrim { inset: 68px 0 0; }
+  .settings-panel { top: 76px; right: 10px; width: calc(100vw - 20px); max-height: calc(100dvh - 86px); padding: 16px; overscroll-behavior: contain; }
+  .settings-panel .settings-heading { position: sticky; top: -16px; z-index: 2; margin: -16px -16px 0; padding: 16px; background: var(--card); }
+  .settings-heading button { width: 44px; height: 44px; }
+  .settings-section legend { font-size: .75rem; }
+  .settings-section > p { font-size: .6875rem; }
+  .settings-panel .motion-options button, .settings-panel .node-shape-options button, .settings-panel [data-slot="select-trigger"], .settings-panel .palette-option { min-height: 44px; }
+  .settings-panel .motion-intensity-control { gap: 12px; padding-block: 8px; }
+  .workspace.is-mobile-lite .network-panel.is-presentation .network-stage { height: 100dvh; min-height: 0; }
   .workspace.is-mobile-lite .inspector-panel.mobile-inline-inspector { position: static; width: 100%; min-height: 0; max-height: none; overflow: visible; padding: 18px 20px 28px; border: 0; border-top: 1px solid var(--border); border-radius: 0; box-shadow: none; }
   .workspace.is-mobile-lite .mobile-inline-inspector .mobile-inspector-heading { margin-top: -8px; }
 }

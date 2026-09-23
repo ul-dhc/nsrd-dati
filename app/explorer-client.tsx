@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type TouchEvent as ReactTouchEvent, type WheelEvent as ReactWheelEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from 'react';
 import {
   BarChart3,
   ChevronDown,
@@ -16,8 +16,6 @@ import {
   Maximize2,
   Moon,
   Network,
-  Orbit,
-  Palette,
   PanelLeftClose,
   PanelLeftOpen,
   PanelRightClose,
@@ -115,7 +113,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'NSRD un Seque ierakstu un personu tīkla vizualizācija', explore: 'Saikņu izpēte', networkLayers: 'Tīkla slāņi', showInNetwork: 'Rādīt tīklā',
     searchPerson: 'Meklēt personu', personPlaceholder: 'Sāc rakstīt vārdu…', clearPerson: 'Notīrīt personas meklējumu', searchArtifact: 'Meklēt artefaktu', artifactPlaceholder: 'Sāc rakstīt nosaukumu…', clearArtifact: 'Notīrīt artefakta meklējumu',
     years: 'Laika diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', clearFilters: 'Notīrīt filtrus',
-    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', fullscreen: 'Rādīt tikai tīklu pilnekrānā', distance: 'Tīkla mērogs', legend: 'Leģenda',
+    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', fullscreen: 'Rādīt tikai tīklu pilnekrānā', exitFullscreen: 'Aizvērt pilnekrānu', touchHelp: 'Ar diviem pirkstiem pārvieto un mērogo tīklu', distance: 'Tīkla mērogs', legend: 'Leģenda',
     labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', graphTextSize: 'Tīkla nosaukumu izmērs', nodeSize: 'Mezglu izmērs', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
@@ -128,7 +126,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
     searchPerson: 'Search for a person', personPlaceholder: 'Start typing a name…', clearPerson: 'Clear person search', searchArtifact: 'Search for an artifact', artifactPlaceholder: 'Start typing a title…', clearArtifact: 'Clear artifact search',
     years: 'Year range', format: 'Format', allFormats: 'All formats', multi: 'Select multiple nodes', clearFilters: 'Clear filters',
-    view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', fullscreen: 'Show only the network in fullscreen', distance: 'Network scale', legend: 'Legend',
+    view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', fullscreen: 'Show only the network in fullscreen', exitFullscreen: 'Exit fullscreen', touchHelp: 'Use two fingers to move and zoom the network', distance: 'Network scale', legend: 'Legend',
     labels: 'Labels', labelClick: 'Click to change mode.', graphTextSize: 'Network label size', nodeSize: 'Node size', networkAria: 'NSRD and Seque multilayer network', links: 'links', nodes: 'nodes', artifacts: 'artifacts',
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
@@ -151,7 +149,7 @@ const artifactSuggestions = events
 
 const normalize = (value: string) => value.toLocaleLowerCase('lv-LV').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const hash = (value: string) => Array.from(value).reduce((result, char) => ((result << 5) - result + char.charCodeAt(0)) | 0, 0);
-const singleSliderValue = (value: number | number[]) => Array.isArray(value) ? value[0] : value;
+const singleSliderValue = (value: number | readonly number[]) => typeof value === 'number' ? value : value[0];
 
 function buildGraph(sourceEvents: EventRecord[], visibleTypes: Set<NodeType>): Graph {
   const nodes = new Map<string, Omit<GraphNode, 'degree' | 'x' | 'y'>>();
@@ -400,7 +398,7 @@ export default function Home() {
   const [mobileLite, setMobileLite] = useState(false);
   const [mobileMotionEnabled, setMobileMotionEnabled] = useState(true);
   const [mobileOrbitSpeed, setMobileOrbitSpeed] = useState(80);
-  const [mobilePaletteOpen, setMobilePaletteOpen] = useState(false);
+  const [mobileNetworkMotionStyle, setMobileNetworkMotionStyle] = useState<NetworkMotionStyle>('orbit');
   const [pageVisible, setPageVisible] = useState(() => typeof document === 'undefined' || document.visibilityState === 'visible');
   const [preferencesReady, setPreferencesReady] = useState(false);
   const [personQuery, setPersonQuery] = useState('');
@@ -442,7 +440,9 @@ export default function Home() {
   const elasticTargets = useRef<Record<string, Point>>({});
   const elasticVelocities = useRef<Record<string, Point>>({});
   const elasticFrame = useRef<number | null>(null);
-  const pinchStart = useRef<{ distance: number; zoom: number } | null>(null);
+  const pinchStart = useRef<{ distance: number; zoom: number; pan: Point; midpoint: Point } | null>(null);
+  const cameraRef = useRef({ zoom, pan });
+  useEffect(() => { cameraRef.current = { zoom, pan }; }, [zoom, pan]);
   const compactPanelsRef = useRef<boolean | null>(null);
   const t = ui[locale];
   const selectedPalette = paletteOptions.find((option) => option.id === palette) ?? paletteOptions[0];
@@ -450,9 +450,9 @@ export default function Home() {
   const effectiveLayoutMode: LayoutMode = mobileLite ? 'force' : layoutMode;
   const effectiveAnimationStyle: AnimationStyle = mobileLite ? 'none' : animationStyle;
   const effectiveMotionFrozen = (mobileLite ? !mobileMotionEnabled || controlsPanelOpen || appView !== 'network' : motionFrozen) || !pageVisible;
-  const effectiveNetworkMotionStyle: NetworkMotionStyle = mobileLite ? 'orbit' : networkMotionStyle;
+  const effectiveNetworkMotionStyle: NetworkMotionStyle = mobileLite ? mobileNetworkMotionStyle : networkMotionStyle;
   const effectiveNetworkMotionIntensity = mobileLite ? mobileOrbitSpeed : networkMotionIntensity;
-  const effectiveNodeShapeMode: NodeShapeMode = mobileLite ? 'circle' : nodeShapeMode;
+  const effectiveNodeShapeMode = nodeShapeMode;
   const effectiveLabelMode: LabelMode = mobileLite ? 'active' : labelMode;
   const animationHelp = {
     none: t.animationHelpNone,
@@ -465,7 +465,7 @@ export default function Home() {
     drift: t.movementHelpDrift,
     orbit: t.movementHelpOrbit,
     chaos: t.movementHelpChaos,
-  }[networkMotionStyle];
+  }[effectiveNetworkMotionStyle];
 
   useEffect(() => {
     const savedLocale = window.localStorage.getItem('nsrd-locale');
@@ -475,6 +475,7 @@ export default function Home() {
     const savedMotion = window.localStorage.getItem('nsrd-motion');
     const savedNetworkMotionStyle = window.localStorage.getItem('nsrd-network-motion-style');
     const savedNetworkMotionIntensity = Number(window.localStorage.getItem('nsrd-network-motion-intensity'));
+    const savedMobileNetworkMotionStyle = window.localStorage.getItem('nsrd-mobile-network-motion-style');
     const savedMobileMotion = window.localStorage.getItem('nsrd-mobile-motion');
     const savedMobileOrbitSpeed = Number(window.localStorage.getItem('nsrd-mobile-orbit-speed'));
     const savedAnimationStyle = window.localStorage.getItem('nsrd-animation-style');
@@ -499,7 +500,8 @@ export default function Home() {
     setNetworkMotionStyle(networkMotionStyleOptions.some((option) => option.id === savedNetworkMotionStyle) ? savedNetworkMotionStyle as NetworkMotionStyle : 'drift');
     setNetworkMotionIntensity(savedNetworkMotionIntensity >= 10 && savedNetworkMotionIntensity <= 200 ? savedNetworkMotionIntensity : 100);
     setMobileMotionEnabled(savedMobileMotion !== 'paused');
-    setMobileOrbitSpeed(savedMobileOrbitSpeed >= 30 && savedMobileOrbitSpeed <= 180 ? savedMobileOrbitSpeed : 80);
+    setMobileNetworkMotionStyle(networkMotionStyleOptions.some((option) => option.id === savedMobileNetworkMotionStyle) ? savedMobileNetworkMotionStyle as NetworkMotionStyle : 'orbit');
+    setMobileOrbitSpeed(savedMobileOrbitSpeed >= 10 && savedMobileOrbitSpeed <= 200 ? savedMobileOrbitSpeed : 80);
     setAnimationStyle(initialAnimationStyle);
     setVisualizationStyle(initialVisualizationStyle);
     setNodeShapeMode(savedNodeShapeMode === 'category' ? 'category' : 'circle');
@@ -547,9 +549,10 @@ export default function Home() {
   }, [networkMotionIntensity, preferencesReady]);
   useEffect(() => {
     if (!preferencesReady) return;
+    window.localStorage.setItem('nsrd-mobile-network-motion-style', mobileNetworkMotionStyle);
     window.localStorage.setItem('nsrd-mobile-motion', mobileMotionEnabled ? 'playing' : 'paused');
     window.localStorage.setItem('nsrd-mobile-orbit-speed', String(mobileOrbitSpeed));
-  }, [mobileMotionEnabled, mobileOrbitSpeed, preferencesReady]);
+  }, [mobileMotionEnabled, mobileOrbitSpeed, mobileNetworkMotionStyle, preferencesReady]);
   useEffect(() => {
     if (!preferencesReady) return;
     window.localStorage.setItem('nsrd-animation-style', animationStyle);
@@ -586,15 +589,6 @@ export default function Home() {
       window.removeEventListener('keydown', closeScaleControlWithKeyboard);
     };
   }, [activeScaleControl]);
-  useEffect(() => {
-    if (!mobilePaletteOpen) return;
-    const closePalette = (event: PointerEvent) => {
-      if (event.target instanceof Element && event.target.closest('.mobile-palette-control')) return;
-      setMobilePaletteOpen(false);
-    };
-    document.addEventListener('pointerdown', closePalette);
-    return () => document.removeEventListener('pointerdown', closePalette);
-  }, [mobilePaletteOpen]);
   useEffect(() => {
     if (!settingsOpen && !aboutOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -894,6 +888,10 @@ export default function Home() {
     return { x: 450 + (graphPoint.x - pan.x - 450) / zoom, y: 285 + (graphPoint.y - pan.y - 285) / zoom };
   };
   const startDrag = (node: GraphNode, event: ReactPointerEvent<SVGGElement>) => {
+    if (mobileLite && event.pointerType === 'touch') {
+      if (!pinchStart.current) nodePointerStart.current = { id: node.id, clientX: event.clientX, clientY: event.clientY, additive: false, moved: false };
+      return;
+    }
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     const current = driftPositionById.get(node.id) ?? node;
@@ -917,6 +915,11 @@ export default function Home() {
   };
   const moveDraggedNode = (event: ReactPointerEvent<SVGSVGElement>) => {
     if (pinchStart.current) return;
+    if (mobileLite && event.pointerType === 'touch') {
+      const start = nodePointerStart.current;
+      if (start && Math.hypot(event.clientX - start.clientX, event.clientY - start.clientY) > 8) start.moved = true;
+      return;
+    }
     if (panning && panStart.current && svgRef.current) {
       const rect = svgRef.current.getBoundingClientRect();
       if (Math.hypot(event.clientX - panStart.current.clientX, event.clientY - panStart.current.clientY) > 4) panStart.current.moved = true;
@@ -949,13 +952,14 @@ export default function Home() {
     });
   };
   const startPanning = (event: ReactPointerEvent<SVGRectElement>) => {
+    if (mobileLite && event.pointerType === 'touch') return;
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     panStart.current = { clientX: event.clientX, clientY: event.clientY, x: pan.x, y: pan.y, moved: false };
     setPanning(true);
   };
   const stopDragging = () => {
-    if (draggingId && nodePointerStart.current && !nodePointerStart.current.moved) {
+    if (nodePointerStart.current && !nodePointerStart.current.moved && !pinchStart.current) {
       const node = graph.nodes.find((item) => item.id === nodePointerStart.current?.id);
       if (node) selectNode(node, nodePointerStart.current.additive);
     }
@@ -1049,34 +1053,74 @@ export default function Home() {
     }
   };
   const zoomWithWheel = (event: ReactWheelEvent<SVGSVGElement>) => {
+    if (mobileLite) return;
     event.preventDefault();
     changeZoom(zoom * (event.deltaY > 0 ? .86 : 1.16));
   };
-  const startPinch = (event: ReactTouchEvent<SVGSVGElement>) => {
-    if (event.touches.length !== 2) return;
-    const first = event.touches[0];
-    const second = event.touches[1];
-    pinchStart.current = {
-      distance: Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY),
-      zoom,
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg || appView !== 'network') return;
+    const midpointInGraph = (first: Touch, second: Touch): Point | null => {
+      const matrix = svg.getScreenCTM();
+      if (!matrix) return null;
+      const point = svg.createSVGPoint();
+      point.x = (first.clientX + second.clientX) / 2;
+      point.y = (first.clientY + second.clientY) / 2;
+      const transformed = point.matrixTransform(matrix.inverse());
+      return { x: transformed.x, y: transformed.y };
     };
-    setDraggingId(null);
-    setPanning(false);
-    panStart.current = null;
-    nodePointerStart.current = null;
-    dragCluster.current = null;
-  };
-  const movePinch = (event: ReactTouchEvent<SVGSVGElement>) => {
-    if (!pinchStart.current || event.touches.length !== 2) return;
-    event.preventDefault();
-    const first = event.touches[0];
-    const second = event.touches[1];
-    const distance = Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
-    changeZoom(pinchStart.current.zoom * distance / Math.max(1, pinchStart.current.distance));
-  };
-  const stopPinch = (event: ReactTouchEvent<SVGSVGElement>) => {
-    if (event.touches.length < 2) pinchStart.current = null;
-  };
+    const start = (event: TouchEvent) => {
+      if (event.touches.length !== 2) return;
+      if (event.cancelable) event.preventDefault();
+      const [first, second] = Array.from(event.touches);
+      const midpoint = midpointInGraph(first, second);
+      if (!midpoint) return;
+      pinchStart.current = {
+        distance: Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY),
+        ...cameraRef.current,
+        midpoint,
+      };
+      setDraggingId(null);
+      setPanning(false);
+      panStart.current = null;
+      nodePointerStart.current = null;
+      dragCluster.current = null;
+    };
+    const move = (event: TouchEvent) => {
+      const gesture = pinchStart.current;
+      if (!gesture) return;
+      // Keep the remainder of a two-finger gesture from scrolling the page.
+      if (event.cancelable) event.preventDefault();
+      if (event.touches.length !== 2) return;
+      const [first, second] = Array.from(event.touches);
+      const midpoint = midpointInGraph(first, second);
+      if (!midpoint) return;
+      const distance = Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+      const nextZoom = Math.max(.35, Math.min(8, gesture.zoom * distance / Math.max(1, gesture.distance)));
+      const ratio = nextZoom / gesture.zoom;
+      setZoom(nextZoom);
+      setPan({
+        x: midpoint.x - 450 - (gesture.midpoint.x - 450 - gesture.pan.x) * ratio,
+        y: midpoint.y - 285 - (gesture.midpoint.y - 285 - gesture.pan.y) * ratio,
+      });
+    };
+    const end = (event: TouchEvent) => {
+      if (event.touches.length === 0) pinchStart.current = null;
+    };
+    const cancel = () => { pinchStart.current = null; };
+    // React touch listeners are passive; cancel native scrolling only for two fingers.
+    svg.addEventListener('touchstart', start, { passive: false });
+    svg.addEventListener('touchmove', move, { passive: false });
+    svg.addEventListener('touchend', end);
+    svg.addEventListener('touchcancel', cancel);
+    return () => {
+      svg.removeEventListener('touchstart', start);
+      svg.removeEventListener('touchmove', move);
+      svg.removeEventListener('touchend', end);
+      svg.removeEventListener('touchcancel', cancel);
+      pinchStart.current = null;
+    };
+  }, [appView, mobileLite, graph.nodes.length]);
   const enterPresentationMode = () => {
     setActiveScaleControl(null);
     setPresentationMode(true);
@@ -1113,10 +1157,10 @@ export default function Home() {
               {paletteOptions.filter((option) => option.id !== palette).map((option) => <button type="button" className="palette-option" key={option.id} onClick={() => { setPalette(option.id); setPaletteOptionsOpen(false); }}><span className="palette-swatches" aria-hidden="true">{option.colors.map((color) => <i key={color} style={{ backgroundColor: color }} />)}</span><span><strong>{option[locale]}</strong><small>{option[locale === 'lv' ? 'en' : 'lv']}</small></span></button>)}
             </div>}
           </div></fieldset>
-          <fieldset className="settings-section"><legend>{t.graphMotion}</legend><div className="motion-options"><button type="button" aria-pressed={!motionFrozen} onClick={() => setMotionFrozen(false)}><Play />{t.dynamic}</button><button type="button" aria-pressed={motionFrozen} onClick={() => setMotionFrozen(true)}><Pause />{t.static}</button></div><p>{t.motionHelp}</p></fieldset>
-          <fieldset className="settings-section"><legend>{t.networkMotion}</legend><div className="network-motion-field"><Select value={networkMotionStyle} onValueChange={(value) => setNetworkMotionStyle(value as NetworkMotionStyle)}><SelectTrigger aria-label={t.networkMotion}><SelectValue>{networkMotionStyleOptions.find((option) => option.id === networkMotionStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{networkMotionStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select><label className="motion-intensity-control"><span>{t.movementIntensity}<output>{networkMotionIntensity}%</output></span><Slider min={10} max={200} step={5} value={[networkMotionIntensity]} onValueChange={(value) => setNetworkMotionIntensity(singleSliderValue(value))} aria-label={t.movementIntensity} /></label></div><p>{networkMovementHelp} {t.movementFreeOnly}</p></fieldset>
-          <fieldset className="settings-section"><legend>{t.animationStyle}</legend><div className="animation-style-field"><Select value={animationStyle} onValueChange={(value) => setAnimationStyle(value as AnimationStyle)}><SelectTrigger aria-label={t.animationStyle}><SelectValue>{animationStyleOptions.find((option) => option.id === animationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{animationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{animationHelp}</p></fieldset>
-          <fieldset className="settings-section"><legend>{t.visualizationStyle}</legend><div className="visualization-style-field"><Select value={visualizationStyle} onValueChange={(value) => { const nextStyle = value as VisualizationStyle; setVisualizationStyle(nextStyle); if (nextStyle === 'pencil') setMotionFrozen(true); }}><SelectTrigger aria-label={t.visualizationStyle}><SelectValue>{visualizationStyleOptions.find((option) => option.id === visualizationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{visualizationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{visualizationHelp}</p></fieldset>
+          <fieldset className="settings-section"><legend>{t.graphMotion}</legend><div className="motion-options"><button type="button" aria-pressed={mobileLite ? mobileMotionEnabled : !motionFrozen} onClick={() => mobileLite ? setMobileMotionEnabled(true) : setMotionFrozen(false)}><Play />{t.dynamic}</button><button type="button" aria-pressed={mobileLite ? !mobileMotionEnabled : motionFrozen} onClick={() => mobileLite ? setMobileMotionEnabled(false) : setMotionFrozen(true)}><Pause />{t.static}</button></div>{!mobileLite && <p>{t.motionHelp}</p>}</fieldset>
+          <fieldset className="settings-section"><legend>{t.networkMotion}</legend><div className="network-motion-field"><Select value={effectiveNetworkMotionStyle} onValueChange={(value) => mobileLite ? setMobileNetworkMotionStyle(value as NetworkMotionStyle) : setNetworkMotionStyle(value as NetworkMotionStyle)}><SelectTrigger aria-label={t.networkMotion}><SelectValue>{networkMotionStyleOptions.find((option) => option.id === effectiveNetworkMotionStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{networkMotionStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select><label className="motion-intensity-control"><span>{t.movementIntensity}<output>{effectiveNetworkMotionIntensity}%</output></span><Slider min={10} max={200} step={5} value={[effectiveNetworkMotionIntensity]} onValueChange={(value) => mobileLite ? setMobileOrbitSpeed(singleSliderValue(value)) : setNetworkMotionIntensity(singleSliderValue(value))} aria-label={t.movementIntensity} /></label></div><p>{networkMovementHelp} {!mobileLite && t.movementFreeOnly}</p></fieldset>
+          {!mobileLite && <fieldset className="settings-section"><legend>{t.animationStyle}</legend><div className="animation-style-field"><Select value={animationStyle} onValueChange={(value) => setAnimationStyle(value as AnimationStyle)}><SelectTrigger aria-label={t.animationStyle}><SelectValue>{animationStyleOptions.find((option) => option.id === animationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{animationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{animationHelp}</p></fieldset>}
+          {!mobileLite && <fieldset className="settings-section"><legend>{t.visualizationStyle}</legend><div className="visualization-style-field"><Select value={visualizationStyle} onValueChange={(value) => { const nextStyle = value as VisualizationStyle; setVisualizationStyle(nextStyle); if (nextStyle === 'pencil') setMotionFrozen(true); }}><SelectTrigger aria-label={t.visualizationStyle}><SelectValue>{visualizationStyleOptions.find((option) => option.id === visualizationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{visualizationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{visualizationHelp}</p></fieldset>}
           <fieldset className="settings-section"><legend>{t.nodeShape}</legend><div className="node-shape-options"><button type="button" aria-pressed={nodeShapeMode === 'category'} onClick={() => setNodeShapeMode('category')}>{t.categoryShapes}</button><button type="button" aria-pressed={nodeShapeMode === 'circle'} onClick={() => setNodeShapeMode('circle')}>{t.circleShapes}</button></div><p>{t.nodeShapeHelp}</p></fieldset>
         </section>
       </>}
@@ -1146,16 +1190,12 @@ export default function Home() {
             <div className="app-view-switcher" role="tablist" aria-label={t.visualization}>
               {appViewOptions.map((option) => <button type="button" role="tab" aria-selected={appView === option.id} key={option.id} onClick={() => setAppView(option.id)}>{option.id === 'network' ? <Network aria-hidden="true" /> : <BarChart3 aria-hidden="true" />}<span>{option[locale]}</span></button>)}
             </div>
+            {mobileLite && <div className="mobile-view-actions">
+              <button type="button" className="panel-visibility-toggle" onClick={() => { setAboutOpen(false); setControlsPanelOpen(false); setPaletteOptionsOpen(false); setSettingsOpen((current) => !current); }} aria-label={t.settings} title={t.settings} aria-expanded={settingsOpen} aria-controls="settings-panel"><Settings2 /></button>
+              {appView === 'network' && <button type="button" className="panel-visibility-toggle" onClick={enterPresentationMode} aria-label={t.fullscreen} title={t.fullscreen}><Maximize2 /></button>}
+            </div>}
             {!mobileLite && <button type="button" className="panel-visibility-toggle" onClick={() => { const next = !inspectorPanelOpen; setInspectorPanelOpen(next); if (compactPanels && next) setControlsPanelOpen(false); }} aria-label={inspectorPanelOpen ? t.hideDetails : t.showDetails} aria-controls="selection-details-panel" aria-expanded={inspectorPanelOpen} title={inspectorPanelOpen ? t.hideDetails : t.showDetails}>{compactPanels ? <Info /> : inspectorPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}<span className="mobile-toggle-label">{t.details}</span>{selectedIds.length > 0 && <b className="mobile-toggle-badge">{selectedIds.length}</b>}</button>}
           </div>
-          {mobileLite && appView === 'network' && <div className="mobile-network-controls" aria-label={t.networkMotion}>
-            <button type="button" className="mobile-motion-toggle" aria-pressed={mobileMotionEnabled} aria-label={mobileMotionEnabled ? t.mobilePause : t.mobilePlay} title={mobileMotionEnabled ? t.mobilePause : t.mobilePlay} onClick={() => setMobileMotionEnabled((current) => !current)}>{mobileMotionEnabled ? <Pause /> : <Play />}</button>
-            <label className="mobile-orbit-speed"><span><Orbit aria-hidden="true" />{t.mobileOrbit}<output>{mobileOrbitSpeed}%</output></span><Slider min={30} max={180} step={10} value={[mobileOrbitSpeed]} onValueChange={(value) => setMobileOrbitSpeed(singleSliderValue(value))} aria-label={t.mobileSpeed} /></label>
-            <div className="mobile-palette-control">
-              <button type="button" className="mobile-palette-toggle" aria-label={t.mobileColors} aria-expanded={mobilePaletteOpen} aria-controls="mobile-palette-menu" onClick={() => setMobilePaletteOpen((current) => !current)}><Palette /><span className="mobile-current-color" style={{ backgroundColor: paletteOptions.find((option) => option.id === palette)?.colors[palette === 'bolderaja' ? 0 : 1] }} /></button>
-              {mobilePaletteOpen && <div id="mobile-palette-menu" className="mobile-palette-menu">{paletteOptions.map((option) => <button type="button" key={option.id} aria-pressed={palette === option.id} onClick={() => { setPalette(option.id); setMobilePaletteOpen(false); }}><span aria-hidden="true">{(option.id === 'bolderaja' ? option.colors : option.colors.slice(1, 4)).map((color) => <i key={color} style={{ backgroundColor: color }} />)}</span><small>{option[locale]}</small></button>)}</div>}
-            </div>
-          </div>}
           {appView === 'network' && <>
           {!mobileLite && <div className="network-toolbar network-toolbar-secondary">
             <div className="toolbar-tools">
@@ -1187,7 +1227,8 @@ export default function Home() {
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>
           </div>}
           {graph.nodes.length ? <div className="network-stage">
-            <svg ref={svgRef} className={`network-canvas ${effectiveLayoutMode !== 'force' ? 'is-structured' : ''} ${effectiveLayoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} animation-${effectiveAnimationStyle} style-${visualizationStyle} ${effectiveMotionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" preserveAspectRatio={mobileLite ? 'xMidYMid slice' : 'xMidYMid meet'} role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel} onTouchStart={startPinch} onTouchMove={movePinch} onTouchEnd={stopPinch} onTouchCancel={stopPinch}>
+            {presentationMode && <button type="button" className="exit-presentation-button" onClick={() => setPresentationMode(false)} aria-label={t.exitFullscreen} title={t.exitFullscreen}><X /><span>{t.exitFullscreen}</span></button>}
+            <svg ref={svgRef} className={`network-canvas ${effectiveLayoutMode !== 'force' ? 'is-structured' : ''} ${effectiveLayoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} animation-${effectiveAnimationStyle} style-${visualizationStyle} ${effectiveMotionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" preserveAspectRatio={mobileLite ? 'xMidYMid slice' : 'xMidYMid meet'} role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
               <rect className="network-hit-area" x="0" y="0" width="900" height="570" onPointerDown={startPanning} />
               <g>
                 <g className="network-edges">{graph.edges.map((edge, edgeIndex) => {
@@ -1234,6 +1275,7 @@ export default function Home() {
                 })}</g>
               </g>
             </svg>
+            {mobileLite && <p className="network-touch-hint">{t.touchHelp}</p>}
           </div> : <div className="graph-empty"><FilterX /><h3>{t.noData}</h3><p>{t.noDataHelp}</p><Button variant="outline" onClick={clearFilters}>{t.clearFilters}</Button></div>}
           {!mobileLite && <div className="network-hint"><div><strong>{graph.nodes.length} {t.nodes} · {graph.edges.length} {t.links} · {filteredEvents.length} {t.artifacts}</strong><span>{t.dragHelp}</span></div>{selectedIds.length > 0 && <button onClick={() => setSelectedIds([])}>{t.clearSelection}</button>}</div>}
           {!mobileLite && <ResultList locale={locale} resultEvents={resultEvents} selectedCount={selectedIds.length} onSelect={(event) => setSelectedIds([`artifact:${event.id}`])} />}
