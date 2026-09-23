@@ -636,12 +636,6 @@ body {
   .workspace.is-mobile-lite .network-stage { height: clamp(390px, 48dvh, 440px); min-height: 390px; }
   .workspace.is-mobile-lite .network-canvas { height: 100%; touch-action: pan-y; }
   .workspace.is-mobile-lite .graph-node text { font-size: calc(1.125rem * var(--graph-label-scale, 1)); }
-  .mobile-graph-text-control { position: absolute; top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left)); z-index: 3; }
-  .mobile-graph-text-control > button { width: 44px; height: 44px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); }
-  .mobile-graph-text-control .graph-scale-popover { left: 0; right: auto; width: min(250px, calc(100vw - 44px)); background: var(--card); backdrop-filter: none; }
-  .mobile-graph-text-control .graph-scale-popover > span, .mobile-graph-text-control .graph-scale-popover > output { font-size: .75rem; }
-  .mobile-graph-text-control .graph-scale-popover [data-slot="slider"] { min-height: 36px; }
-  .mobile-graph-text-control .graph-scale-popover [data-slot="slider-thumb"] { width: 22px; height: 22px; }
   .settings-scrim { inset: 68px 0 0; }
   .settings-panel { top: 76px; right: 10px; width: calc(100vw - 20px); max-height: calc(100dvh - 86px); padding: 16px; overscroll-behavior: contain; }
   .settings-panel .settings-heading { position: sticky; top: -16px; z-index: 2; margin: -16px -16px 0; padding: 16px; background: var(--card); }
@@ -649,6 +643,8 @@ body {
   .settings-section legend { font-size: .75rem; }
   .settings-section > p { font-size: .6875rem; }
   .settings-panel .motion-options button, .settings-panel .node-shape-options button, .settings-panel [data-slot="select-trigger"], .settings-panel .palette-option { min-height: 44px; }
+  .mobile-text-size-setting [data-slot="slider"] { min-height: 36px; }
+  .mobile-text-size-setting [data-slot="slider-thumb"] { width: 22px; height: 22px; }
   .settings-panel .motion-intensity-control { gap: 12px; padding-block: 8px; }
   .workspace.is-mobile-lite .network-panel.is-presentation .network-stage { height: 100dvh; min-height: 0; }
   .workspace.is-mobile-lite .inspector-panel.mobile-inline-inspector { position: static; width: 100%; min-height: 0; max-height: none; overflow: visible; padding: 18px 20px 28px; border: 0; border-top: 1px solid var(--border); border-radius: 0; box-shadow: none; }
