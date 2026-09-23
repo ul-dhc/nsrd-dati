@@ -1293,8 +1293,16 @@ export default function Home() {
           {selectedNodes.length ? <SelectionInspector locale={locale} nodes={selectedNodes} resultEvents={resultEvents} logic={selectionLogic} setLogic={setSelectionLogic} removeNode={(id) => setSelectedIds((current) => current.filter((item) => item !== id))} showRelated={mobileLite} /> : <EmptyInspector locale={locale} count={resultEvents.length} />}
         </aside>
       </div>
+      <SiteFooter />
     </main>
   );
+}
+
+function SiteFooter() {
+  const [year, setYear] = useState(2026);
+  useEffect(() => { setYear(new Date().getFullYear()); }, []);
+
+  return <footer className="site-footer"><small>© {year} <a href="https://dhc.lu.lv/">LU Digitālo humanitāro zinātņu centrs</a></small></footer>;
 }
 
 function OverviewDashboard({ locale, resultEvents, selectedIds, animationStyle, visualizationStyle, motionFrozen, onSelectPerson, onSelectPair, onSelectArtifact, onSelectFormat, onClearSelection }: {
