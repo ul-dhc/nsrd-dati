@@ -635,6 +635,13 @@ body {
   .workspace.is-mobile-lite .result-list { display: none; }
   .workspace.is-mobile-lite .network-stage { height: clamp(390px, 48dvh, 440px); min-height: 390px; }
   .workspace.is-mobile-lite .network-canvas { height: 100%; touch-action: pan-y; }
+  .workspace.is-mobile-lite .graph-node text { font-size: calc(1.125rem * var(--graph-label-scale, 1)); }
+  .mobile-graph-text-control { position: absolute; top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left)); z-index: 3; }
+  .mobile-graph-text-control > button { width: 44px; height: 44px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); }
+  .mobile-graph-text-control .graph-scale-popover { left: 0; right: auto; width: min(250px, calc(100vw - 44px)); background: var(--card); backdrop-filter: none; }
+  .mobile-graph-text-control .graph-scale-popover > span, .mobile-graph-text-control .graph-scale-popover > output { font-size: .75rem; }
+  .mobile-graph-text-control .graph-scale-popover [data-slot="slider"] { min-height: 36px; }
+  .mobile-graph-text-control .graph-scale-popover [data-slot="slider-thumb"] { width: 22px; height: 22px; }
   .settings-scrim { inset: 68px 0 0; }
   .settings-panel { top: 76px; right: 10px; width: calc(100vw - 20px); max-height: calc(100dvh - 86px); padding: 16px; overscroll-behavior: contain; }
   .settings-panel .settings-heading { position: sticky; top: -16px; z-index: 2; margin: -16px -16px 0; padding: 16px; background: var(--card); }
