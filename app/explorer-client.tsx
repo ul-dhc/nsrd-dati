@@ -13,6 +13,8 @@ import {
   FilterX,
   Info,
   ListFilter,
+  Link,
+  Check,
   Maximize2,
   Moon,
   Network,
@@ -35,6 +37,7 @@ import {
 
 import dataset from '@/data/nsrd-seque.json';
 import { startAnimationLoop } from '@/lib/animation-loop';
+import { encodeSharedView, decodeSharedView, SHARE_PREFIX, type SharedView } from '@/lib/shared-view';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -114,7 +117,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'NSRD un Seque ierakstu un personu tīkla vizualizācija', explore: 'Saikņu izpēte', networkLayers: 'Tīkla slāņi', showInNetwork: 'Rādīt tīklā',
     searchPerson: 'Meklēt personu', personPlaceholder: 'Sāc rakstīt vārdu…', clearPerson: 'Notīrīt personas meklējumu', searchArtifact: 'Meklēt artefaktu', artifactPlaceholder: 'Sāc rakstīt nosaukumu…', clearArtifact: 'Notīrīt artefakta meklējumu',
     years: 'Laika diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', clearFilters: 'Notīrīt filtrus',
-    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', fullscreen: 'Rādīt tikai tīklu pilnekrānā', exitFullscreen: 'Aizvērt pilnekrānu', distance: 'Tīkla mērogs', legend: 'Leģenda',
+    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', fullscreen: 'Rādīt tikai tīklu pilnekrānā', exitFullscreen: 'Aizvērt pilnekrānu', copyView: 'Kopēt saiti uz šo skatu', viewCopied: 'Saite nokopēta', copyFailed: 'Nokopē saiti no šī lauka', invalidView: 'Šo saiti neizdevās atvērt. Parādīts noklusējuma skats.', distance: 'Tīkla mērogs', legend: 'Leģenda',
     labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', graphTextSize: 'Tīkla teksta lielums', nodeSize: 'Mezglu izmērs', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
@@ -127,7 +130,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
     searchPerson: 'Search for a person', personPlaceholder: 'Start typing a name…', clearPerson: 'Clear person search', searchArtifact: 'Search for an artifact', artifactPlaceholder: 'Start typing a title…', clearArtifact: 'Clear artifact search',
     years: 'Year range', format: 'Format', allFormats: 'All formats', multi: 'Select multiple nodes', clearFilters: 'Clear filters',
-    view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', fullscreen: 'Show only the network in fullscreen', exitFullscreen: 'Exit fullscreen', distance: 'Network scale', legend: 'Legend',
+    view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', fullscreen: 'Show only the network in fullscreen', exitFullscreen: 'Exit fullscreen', copyView: 'Copy link to this view', viewCopied: 'Link copied', copyFailed: 'Copy the link from this field', invalidView: 'This link could not be opened. Showing the default view.', distance: 'Network scale', legend: 'Legend',
     labels: 'Labels', labelClick: 'Click to change mode.', graphTextSize: 'Network label size', nodeSize: 'Node size', networkAria: 'NSRD and Seque multilayer network', links: 'links', nodes: 'nodes', artifacts: 'artifacts',
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
@@ -403,6 +406,9 @@ export default function Home() {
   const [mobileNetworkMotionStyle, setMobileNetworkMotionStyle] = useState<NetworkMotionStyle>('orbit');
   const [pageVisible, setPageVisible] = useState(() => typeof document === 'undefined' || document.visibilityState === 'visible');
   const [preferencesReady, setPreferencesReady] = useState(false);
+  const [restoringView, setRestoringView] = useState<SharedView | null>(null);
+  const [shareStatus, setShareStatus] = useState<'copied' | 'manual' | 'invalid' | null>(null);
+  const [shareLink, setShareLink] = useState('');
   const [personQuery, setPersonQuery] = useState('');
   const [artifactQuery, setArtifactQuery] = useState('');
   const [format, setFormat] = useState('all');
@@ -1126,6 +1132,100 @@ export default function Home() {
       pinchStart.current = null;
     };
   }, [appView, mobileLite, graph.nodes.length]);
+  useEffect(() => {
+    const restore = () => {
+      if (!window.location.hash.startsWith(SHARE_PREFIX)) return;
+      const view = decodeSharedView(window.location.hash);
+      if (!view) { setShareStatus('invalid'); return; }
+      setShareStatus(null);
+      setLocale(view.locale);
+      setTheme(view.theme);
+      setTextSize(view.textSize);
+      setPalette(view.palette);
+      setPersonQuery(view.personQuery);
+      setArtifactQuery(view.artifactQuery);
+      setFormat(view.format);
+      setYearRange(view.yearRange);
+      setMultiSelect(view.multiSelect);
+      setSelectionLogic(view.selectionLogic);
+      setLayoutMode(view.layoutMode);
+      setLeftType(view.leftType);
+      setRightType(view.rightType);
+      setMotionFrozen(view.motionFrozen);
+      setNetworkMotionStyle(view.networkMotionStyle);
+      setNetworkMotionIntensity(view.networkMotionIntensity);
+      setAnimationStyle(view.animationStyle);
+      setVisualizationStyle(view.visualizationStyle);
+      setNodeShapeMode(view.nodeShapeMode);
+      setAppView(view.appView);
+      setLabelMode(view.labelMode);
+      setGraphLabelScale(view.graphLabelScale);
+      setNodeScale(view.nodeScale);
+      setVisibleTypes(new Set(view.visibleTypes));
+      setMobileMotionEnabled(!view.motionFrozen);
+      setMobileNetworkMotionStyle(view.networkMotionStyle);
+      setMobileOrbitSpeed(view.networkMotionIntensity);
+      hierarchicalInitialized.current = view.layoutMode === 'hierarchical';
+      setRestoringView(view);
+      setPresentationMode(false);
+      setSettingsOpen(false);
+      setAboutOpen(false);
+    };
+    restore();
+    window.addEventListener('hashchange', restore);
+    return () => window.removeEventListener('hashchange', restore);
+  }, []);
+  useEffect(() => {
+    if (!restoringView) return;
+    const ids = new Set(graph.nodes.map((node) => node.id));
+    setSelectedIds(restoringView.selectedIds.filter((id) => ids.has(id)));
+    setManualPositions(Object.fromEntries(Object.entries(restoringView.manualPositions).filter(([id]) => ids.has(id))));
+    setPan(restoringView.pan);
+    setZoom(restoringView.zoom);
+    setDriftClock(restoringView.driftClock);
+    if (!compactPanels) {
+      setControlsPanelOpen(restoringView.controlsPanelOpen);
+      setInspectorPanelOpen(restoringView.inspectorPanelOpen);
+    }
+    elasticTargets.current = {};
+    elasticVelocities.current = {};
+    setRestoringView(null);
+  }, [restoringView, graph, compactPanels]);
+  useEffect(() => {
+    if (shareStatus !== 'copied') return;
+    const timer = window.setTimeout(() => setShareStatus(null), 3000);
+    return () => window.clearTimeout(timer);
+  }, [shareStatus]);
+  const copyViewLink = async () => {
+    const snapshot: SharedView = {
+      locale, theme, textSize, palette, personQuery, artifactQuery, format, yearRange,
+      visibleTypes: [...visibleTypes], multiSelect, selectionLogic, selectedIds,
+      layoutMode, leftType, rightType, motionFrozen, networkMotionStyle, networkMotionIntensity,
+      animationStyle, visualizationStyle, nodeShapeMode, appView, labelMode,
+      graphLabelScale, nodeScale, zoom, pan, manualPositions, driftClock, controlsPanelOpen, inspectorPanelOpen,
+    };
+    const url = new URL(window.location.href);
+    url.hash = encodeSharedView(snapshot);
+    const link = url.toString();
+    setShareLink(link);
+    window.history.replaceState(window.history.state, '', url);
+    try {
+      await navigator.clipboard.writeText(link);
+      setShareStatus('copied');
+    } catch {
+      const input = document.createElement('textarea');
+      input.value = link;
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      document.body.appendChild(input);
+      input.select();
+      let copied = false;
+      try { copied = document.execCommand('copy'); } catch { /* Show a selectable URL below. */ }
+      input.remove();
+      setShareStatus(copied ? 'copied' : 'manual');
+    }
+  };
+  const shareButton = <button type="button" className="share-view-button" onClick={copyViewLink} aria-label={t.copyView} title={t.copyView}>{shareStatus === 'copied' ? <Check /> : <Link />}</button>;
   const enterPresentationMode = () => {
     setActiveScaleControl(null);
     setPresentationMode(true);
@@ -1138,6 +1238,7 @@ export default function Home() {
         <a className="brand" href="#network" aria-label={`${t.brand} — ${t.product}`}><span className="brand-symbol" aria-hidden="true"><i /><i /><i /></span><span><strong>{t.brand}</strong><small>{t.product}</small></span></a>
         <div className="header-utilities">
           <button type="button" className="language-switch" onClick={() => setLocale((current) => current === 'lv' ? 'en' : 'lv')} aria-label={t.language}>{locale === 'lv' ? 'EN' : 'LV'}</button>
+          {!mobileLite && appView === 'dashboard' && shareButton}
           {!mobileLite && <button type="button" className="text-size-switch" onClick={() => setTextSize((current) => nextTextSize[current])} aria-label={t.textSize} aria-pressed={textSize !== 16} title={`${t.textSize}: ${textSize}px`}>A+</button>}
           {!mobileLite && <span className="utility-divider" aria-hidden="true" />}
           <button type="button" className="theme-switch" onClick={() => setTheme((current) => current === 'light' ? 'dark' : 'light')} aria-label={theme === 'dark' ? t.light : t.dark} title={theme === 'dark' ? t.light : t.dark}>{theme === 'dark' ? <Sun /> : <Moon />}</button>
@@ -1228,6 +1329,7 @@ export default function Home() {
                 <button type="button" onClick={() => changeZoom(zoom / 1.35)} aria-label={t.compact} title={t.compact}><ZoomOut /></button>
                 <output aria-label={t.distance}>{Math.round(zoom * 100)}%</output>
                 <button type="button" onClick={() => changeZoom(zoom * 1.35)} aria-label={t.spread} title={t.spread}><ZoomIn /></button>
+                {shareButton}
                 <button type="button" className="fullscreen-network-button" onClick={enterPresentationMode} aria-label={t.fullscreen} title={t.fullscreen}><Maximize2 /></button>
               </div>
             </div>
@@ -1294,6 +1396,7 @@ export default function Home() {
           {selectedNodes.length ? <SelectionInspector locale={locale} nodes={selectedNodes} resultEvents={resultEvents} logic={selectionLogic} setLogic={setSelectionLogic} removeNode={(id) => setSelectedIds((current) => current.filter((item) => item !== id))} showRelated={mobileLite} /> : <EmptyInspector locale={locale} count={resultEvents.length} />}
         </aside>
       </div>
+      {!mobileLite && shareStatus && <div className="share-view-feedback" role="status"><span>{shareStatus === 'copied' ? t.viewCopied : shareStatus === 'manual' ? t.copyFailed : t.invalidView}</span>{shareStatus === 'manual' && <input aria-label={t.copyView} value={shareLink} readOnly onFocus={(event) => event.currentTarget.select()} />}</div>}
       <SiteFooter />
     </main>
   );
