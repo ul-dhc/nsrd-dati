@@ -117,7 +117,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'NSRD un Seque ierakstu un personu tīkla vizualizācija', explore: 'Saikņu izpēte', networkLayers: 'Tīkla slāņi', showInNetwork: 'Rādīt tīklā',
     searchPerson: 'Meklēt personu', personPlaceholder: 'Sāc rakstīt vārdu…', clearPerson: 'Notīrīt personas meklējumu', searchArtifact: 'Meklēt artefaktu', artifactPlaceholder: 'Sāc rakstīt nosaukumu…', clearArtifact: 'Notīrīt artefakta meklējumu',
     years: 'Laika diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', clearFilters: 'Notīrīt filtrus',
-    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', fullscreen: 'Rādīt tikai tīklu pilnekrānā', exitFullscreen: 'Aizvērt pilnekrānu', copyView: 'Kopēt saiti uz šo skatu', viewCopied: 'Saite nokopēta', copyFailed: 'Nokopē saiti no šī lauka', invalidView: 'Šo saiti neizdevās atvērt. Parādīts noklusējuma skats.', distance: 'Tīkla mērogs', legend: 'Leģenda',
+    view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', fullscreen: 'Rādīt tikai tīklu pilnekrānā', exitFullscreen: 'Aizvērt pilnekrānu', resetDefaults: 'Atjaunot noklusējuma iestatījumus', copyView: 'Kopēt saiti uz šo skatu', viewCopied: 'Saite nokopēta', copyFailed: 'Nokopē saiti no šī lauka', invalidView: 'Šo saiti neizdevās atvērt. Parādīts noklusējuma skats.', distance: 'Tīkla mērogs', legend: 'Leģenda',
     labels: 'Nosaukumi', labelClick: 'Klikšķini, lai pārslēgtu režīmu.', graphTextSize: 'Tīkla teksta lielums', nodeSize: 'Mezglu izmērs', networkAria: 'NSRD un Seque daudzslāņu saikņu tīkls', links: 'saites', nodes: 'mezgli', artifacts: 'artefakti',
     noData: 'Šai filtru kombinācijai datu nav', noDataHelp: 'Maini periodu, formātu vai meklējumu.', dragHelp: 'Velc mezglu, lai to pārvietotu; velc tukšā vietā, lai pārbīdītu visu tīklu.', clearSelection: 'Notīrīt atlasi',
     selectionResults: 'Atlases rezultāti', filteredData: 'Filtrētie dati', personsShort: 'pers.', noArtifacts: 'Atlasē nav artefaktu.', showLess: 'Rādīt mazāk', more: '+ vēl',
@@ -130,7 +130,7 @@ const ui = {
     brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
     searchPerson: 'Search for a person', personPlaceholder: 'Start typing a name…', clearPerson: 'Clear person search', searchArtifact: 'Search for an artifact', artifactPlaceholder: 'Start typing a title…', clearArtifact: 'Clear artifact search',
     years: 'Year range', format: 'Format', allFormats: 'All formats', multi: 'Select multiple nodes', clearFilters: 'Clear filters',
-    view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', fullscreen: 'Show only the network in fullscreen', exitFullscreen: 'Exit fullscreen', copyView: 'Copy link to this view', viewCopied: 'Link copied', copyFailed: 'Copy the link from this field', invalidView: 'This link could not be opened. Showing the default view.', distance: 'Network scale', legend: 'Legend',
+    view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', fullscreen: 'Show only the network in fullscreen', exitFullscreen: 'Exit fullscreen', resetDefaults: 'Restore default settings', copyView: 'Copy link to this view', viewCopied: 'Link copied', copyFailed: 'Copy the link from this field', invalidView: 'This link could not be opened. Showing the default view.', distance: 'Network scale', legend: 'Legend',
     labels: 'Labels', labelClick: 'Click to change mode.', graphTextSize: 'Network label size', nodeSize: 'Node size', networkAria: 'NSRD and Seque multilayer network', links: 'links', nodes: 'nodes', artifacts: 'artifacts',
     noData: 'No data for this filter combination', noDataHelp: 'Change the period, format, or search.', dragHelp: 'Drag a node to move it; drag empty space to pan the whole network.', clearSelection: 'Clear selection',
     selectionResults: 'Selection results', filteredData: 'Filtered data', personsShort: 'people', noArtifacts: 'No artifacts in this selection.', showLess: 'Show less', more: '+ more',
@@ -1226,6 +1226,19 @@ export default function Home() {
     }
   };
   const shareButton = <button type="button" className="share-view-button" onClick={copyViewLink} aria-label={t.copyView} title={t.copyView}>{shareStatus === 'copied' ? <Check /> : <Link />}</button>;
+  const resetDefaults = () => {
+    // Remove only this app's preferences, including legacy settings.
+    for (const key of Object.keys(window.localStorage)) {
+      if (key.startsWith('nsrd-')) window.localStorage.removeItem(key);
+    }
+    const url = new URL(window.location.href);
+    if (url.hash.startsWith(SHARE_PREFIX)) {
+      url.hash = '';
+      window.history.replaceState(window.history.state, '', url);
+    }
+    // Restart all transient state using the same defaults as a first visit.
+    window.location.reload();
+  };
   const enterPresentationMode = () => {
     setActiveScaleControl(null);
     setPresentationMode(true);
@@ -1269,6 +1282,7 @@ export default function Home() {
           {!mobileLite && <fieldset className="settings-section"><legend>{t.animationStyle}</legend><div className="animation-style-field"><Select value={animationStyle} onValueChange={(value) => setAnimationStyle(value as AnimationStyle)}><SelectTrigger aria-label={t.animationStyle}><SelectValue>{animationStyleOptions.find((option) => option.id === animationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{animationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{animationHelp}</p></fieldset>}
           {!mobileLite && <fieldset className="settings-section"><legend>{t.visualizationStyle}</legend><div className="visualization-style-field"><Select value={visualizationStyle} onValueChange={(value) => { const nextStyle = value as VisualizationStyle; setVisualizationStyle(nextStyle); if (nextStyle === 'pencil') setMotionFrozen(true); }}><SelectTrigger aria-label={t.visualizationStyle}><SelectValue>{visualizationStyleOptions.find((option) => option.id === visualizationStyle)?.[locale]}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start">{visualizationStyleOptions.map((option) => <SelectItem key={option.id} value={option.id}>{option[locale]}</SelectItem>)}</SelectContent></Select></div><p>{visualizationHelp}</p></fieldset>}
           <fieldset className="settings-section"><legend>{t.nodeShape}</legend><div className="node-shape-options"><button type="button" aria-pressed={nodeShapeMode === 'category'} onClick={() => setNodeShapeMode('category')}>{t.categoryShapes}</button><button type="button" aria-pressed={nodeShapeMode === 'circle'} onClick={() => setNodeShapeMode('circle')}>{t.circleShapes}</button></div><p>{t.nodeShapeHelp}</p></fieldset>
+          <div className="settings-reset"><Button type="button" variant="outline" onClick={resetDefaults}><RotateCcw aria-hidden="true" />{t.resetDefaults}</Button></div>
         </section>
       </>}
       <div className={`workspace ${compactPanels ? 'is-compact' : ''} ${mobileLite ? 'is-mobile-lite' : ''} ${controlsPanelOpen ? '' : 'is-controls-collapsed'} ${inspectorPanelOpen ? '' : 'is-inspector-collapsed'}`}>
