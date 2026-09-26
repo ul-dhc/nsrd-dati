@@ -25,7 +25,6 @@ import {
   Pause,
   Play,
   RotateCcw,
-  Search,
   Settings2,
   Sun,
   Type,
@@ -40,7 +39,7 @@ import { startAnimationLoop } from '@/lib/animation-loop';
 import { encodeSharedView, decodeSharedView, SHARE_PREFIX, type SharedView } from '@/lib/shared-view';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
+import { SearchSuggestions } from '@/components/search-suggestions';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 
@@ -1294,10 +1293,8 @@ export default function Home() {
             <span className="layer-chip is-fixed"><i className="node-swatch artifact" />{currentTypeLabels.artifact}</span>
             {optionalTypes.map((type) => <button type="button" className="layer-chip" aria-pressed={visibleTypes.has(type)} key={type} onClick={() => toggleType(type, !visibleTypes.has(type))}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</button>)}
           </fieldset>}
-          <label className="field-label search-label">{t.searchPerson}<span className="input-with-icon"><Search aria-hidden="true" /><Input list="person-suggestions" value={personQuery} onChange={(event) => choosePersonSuggestion(event.target.value)} placeholder={t.personPlaceholder} />{personQuery && <button aria-label={t.clearPerson} onClick={() => { setPersonQuery(''); setSelectedIds([]); }}><X /></button>}</span></label>
-          <datalist id="person-suggestions">{personSuggestions.map((item) => <option key={item.id} value={item.value} />)}</datalist>
-          <label className="field-label search-label">{t.searchArtifact}<span className="input-with-icon"><Search aria-hidden="true" /><Input list="artifact-suggestions" value={artifactQuery} onChange={(event) => chooseArtifactSuggestion(event.target.value)} placeholder={t.artifactPlaceholder} />{artifactQuery && <button aria-label={t.clearArtifact} onClick={() => { setArtifactQuery(''); setSelectedIds([]); }}><X /></button>}</span></label>
-          <datalist id="artifact-suggestions">{artifactSuggestions.map((item) => <option key={item.id} value={item.value} />)}</datalist>
+          <SearchSuggestions label={t.searchPerson} placeholder={t.personPlaceholder} clearLabel={t.clearPerson} emptyLabel={locale === 'lv' ? 'Nav rezultātu' : 'No results'} suggestions={personSuggestions} value={personQuery} onChange={choosePersonSuggestion} onClear={() => { setPersonQuery(''); setSelectedIds([]); }} />
+          <SearchSuggestions label={t.searchArtifact} placeholder={t.artifactPlaceholder} clearLabel={t.clearArtifact} emptyLabel={locale === 'lv' ? 'Nav rezultātu' : 'No results'} suggestions={artifactSuggestions} value={artifactQuery} onChange={chooseArtifactSuggestion} onClear={() => { setArtifactQuery(''); setSelectedIds([]); }} />
           <label className="field-label">{t.years} <b>{yearRange[0]}–{yearRange[1]}</b><Slider min={dataset.meta.yearStart} max={dataset.meta.yearEnd} value={yearRange} onValueChange={(value) => setYearRange(value as number[])} /></label>
           <div className="field-label format-label"><span>{t.format}</span><Select value={format} onValueChange={(value) => setFormat(value ?? 'all')}><SelectTrigger aria-label={t.format}><SelectValue>{format === 'all' ? t.allFormats : format}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start"><SelectItem value="all">{t.allFormats}</SelectItem>{formats.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div>
           {appView === 'network' && !mobileLite && <label className="selection-toggle"><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong></span></label>}
