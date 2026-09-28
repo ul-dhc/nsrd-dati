@@ -978,6 +978,13 @@ export default function Home() {
   };
   const cancelInteraction = () => { setDraggingId(null); setPanning(false); panStart.current = null; nodePointerStart.current = null; dragCluster.current = null; elasticTargets.current = {}; elasticVelocities.current = {}; };
   const changeZoom = (next: number) => setZoom(Math.max(.35, Math.min(8, next)));
+  const restoreLayout = () => {
+    cancelInteraction();
+    setManualPositions({});
+    setDriftClock(0);
+    setPan({ x: 0, y: 0 });
+    setZoom(effectiveLayoutMode === 'force' ? .84 : 1);
+  };
   const scatterNodes = () => {
     setManualPositions((current) => {
       const positions = graph.nodes.map((node) => {
@@ -1297,7 +1304,7 @@ export default function Home() {
           <SearchSuggestions label={t.searchArtifact} placeholder={t.artifactPlaceholder} clearLabel={t.clearArtifact} emptyLabel={locale === 'lv' ? 'Nav rezultātu' : 'No results'} suggestions={artifactSuggestions} value={artifactQuery} onChange={chooseArtifactSuggestion} onClear={() => { setArtifactQuery(''); setSelectedIds([]); }} />
           <label className="field-label">{t.years} <b>{yearRange[0]}–{yearRange[1]}</b><Slider min={dataset.meta.yearStart} max={dataset.meta.yearEnd} value={yearRange} onValueChange={(value) => setYearRange(value as number[])} /></label>
           <div className="field-label format-label"><span>{t.format}</span><Select value={format} onValueChange={(value) => setFormat(value ?? 'all')}><SelectTrigger aria-label={t.format}><SelectValue>{format === 'all' ? t.allFormats : format}</SelectValue></SelectTrigger><SelectContent className="nsrd-select-content" align="start"><SelectItem value="all">{t.allFormats}</SelectItem>{formats.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div>
-          {appView === 'network' && !mobileLite && <label className="selection-toggle"><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong></span></label>}
+          {appView === 'network' && !mobileLite && <label className={`selection-toggle ${multiSelect ? 'is-active' : ''}`}><Checkbox checked={multiSelect} onCheckedChange={(checked) => setMultiSelect(Boolean(checked))} /><span><strong>{t.multi}</strong><span role="status">{multiSelect ? (locale === 'lv' ? `Ieslēgta · Atlasīti mezgli: ${selectedIds.length}` : `On · Selected nodes: ${selectedIds.length}`) : (locale === 'lv' ? 'Izslēgta' : 'Off')}</span></span></label>}
           <Button variant="outline" className="clear-filters-button w-full" onClick={clearFilters}><RotateCcw aria-hidden="true" /> {t.clearFilters}</Button>
           {compactPanels && <div className="mobile-panel-actions"><Button className="w-full" onClick={() => setControlsPanelOpen(false)}>{mobileLite ? t.showNetwork : `${t.showRecords} · ${resultEvents.length}`}</Button></div>}
         </aside>
@@ -1337,6 +1344,7 @@ export default function Home() {
                   {activeScaleControl === 'label' && <div id="graph-text-size-control" className="graph-scale-popover"><span>{t.graphTextSize}</span><Slider min={.5} max={3} step={.1} value={[graphLabelScale]} onValueChange={(value) => setGraphLabelScale(singleSliderValue(value))} aria-label={t.graphTextSize} /><output>{Math.round(graphLabelScale * 100)}%</output></div>}
                 </div>
                 {layoutMode === 'force' && <button type="button" className="node-scatter-button" onClick={scatterNodes} aria-label={t.scatter} title={t.scatter}><ChartScatter /></button>}
+                <button type="button" onClick={restoreLayout} aria-label={locale === 'lv' ? 'Atjaunot tīkla izkārtojumu' : 'Restore network layout'} title={locale === 'lv' ? 'Atjaunot tīkla izkārtojumu' : 'Restore network layout'}><RotateCcw /></button>
                 <button type="button" onClick={() => changeZoom(zoom / 1.35)} aria-label={t.compact} title={t.compact}><ZoomOut /></button>
                 <output aria-label={t.distance}>{Math.round(zoom * 100)}%</output>
                 <button type="button" onClick={() => changeZoom(zoom * 1.35)} aria-label={t.spread} title={t.spread}><ZoomIn /></button>
@@ -1347,6 +1355,7 @@ export default function Home() {
             <div className="legend" aria-label={t.legend}>{graph.types.map((type) => <span key={type}><i className={`node-swatch ${type}`} />{currentTypeLabels[type]}</span>)}</div>
           </div>}
           {graph.nodes.length ? <div className="network-stage">
+            {presentationMode && <div className="presentation-heading"><strong>{t.brand}</strong><span>{t.product}</span></div>}
             {presentationMode && <button type="button" className="exit-presentation-button" onClick={() => setPresentationMode(false)} aria-label={t.exitFullscreen} title={t.exitFullscreen}><X /></button>}
             <svg ref={svgRef} className={`network-canvas ${effectiveLayoutMode !== 'force' ? 'is-structured' : ''} ${effectiveLayoutMode === 'bipartite' ? 'is-bipartite' : ''} ${selectedIds.length ? 'has-selection' : ''} animation-${effectiveAnimationStyle} style-${effectiveVisualizationStyle} ${effectiveMotionFrozen ? 'is-motion-paused' : ''} ${draggingId ? 'is-dragging' : ''} ${panning ? 'is-panning' : ''}`} style={{ '--graph-label-scale': graphLabelScale } as CSSProperties} viewBox="0 0 900 570" preserveAspectRatio={mobileLite ? 'xMidYMid slice' : 'xMidYMid meet'} role="img" aria-label={t.networkAria} onPointerMove={moveDraggedNode} onPointerUp={stopDragging} onPointerCancel={cancelInteraction} onWheel={zoomWithWheel}>
               <rect className="network-hit-area" x="0" y="0" width="900" height="570" onPointerDown={startPanning} />
