@@ -113,7 +113,7 @@ const labelModeNames: Record<Locale, Record<LabelMode, string>> = {
 };
 const ui = {
   lv: {
-    brand: 'NSRD / SEQUE', product: 'NSRD un Seque ierakstu un personu tīkla vizualizācija', explore: 'Saikņu izpēte', networkLayers: 'Tīkla slāņi', showInNetwork: 'Rādīt tīklā',
+    brand: 'NSRD / SEQUE', product: 'NSRD un Seque ierakstu un personu tīkla vizualizācija (prototips) – izstrādē', explore: 'Saikņu izpēte', networkLayers: 'Tīkla slāņi', showInNetwork: 'Rādīt tīklā',
     searchPerson: 'Meklēt personu', personPlaceholder: 'Sāc rakstīt vārdu…', clearPerson: 'Notīrīt personas meklējumu', searchArtifact: 'Meklēt artefaktu', artifactPlaceholder: 'Sāc rakstīt nosaukumu…', clearArtifact: 'Notīrīt artefakta meklējumu',
     years: 'Laika diapazons', format: 'Formāts', allFormats: 'Visi formāti', multi: 'Vairāku mezglu atlase', clearFilters: 'Notīrīt filtrus',
     view: 'Skats', left: 'Pa kreisi', right: 'Pa labi', move: 'Atsākt mezglu kustību', freeze: 'Apturēt mezglu kustību', compact: 'Attālināt tīklu', spread: 'Pietuvināt tīklu', scatter: 'Izkliedēt mezglus', fullscreen: 'Rādīt tikai tīklu pilnekrānā', exitFullscreen: 'Aizvērt pilnekrānu', resetDefaults: 'Atjaunot noklusējuma iestatījumus', copyView: 'Kopēt saiti uz šo skatu', viewCopied: 'Saite nokopēta', copyFailed: 'Nokopē saiti no šī lauka', invalidView: 'Šo saiti neizdevās atvērt. Parādīts noklusējuma skats.', distance: 'Tīkla mērogs', legend: 'Leģenda',
@@ -126,7 +126,7 @@ const ui = {
     records: 'Ieraksti', documentedPeople: 'Personas', relatedPeople: 'Līdzdalībnieki', visibleFormats: 'Formāti', formatChart: 'Ieraksti pēc formāta', peopleChart: 'Personas pēc ierakstu skaita', artifactChart: 'Ieraksti pēc dalībnieku skaita', collaborationMatrix: 'Kopīgo ierakstu matrica', collaborationMobile: 'Personu sadarbības', collaborationHelp: 'Klikšķini šūnā, lai atlasītu personu pāri un apskatītu kopīgos ierakstus.', topCollaborations: 'Biežākie sadarbību pāri', sharedRecords: 'kopīgi ieraksti', noCollaborations: 'Šai atlasei nav pietiekami daudz personu sadarbību.',
   },
   en: {
-    brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
+    brand: 'NSRD / SEQUE', product: 'Network visualization of NSRD and Seque recordings and people (prototype) – in development', explore: 'Explore connections', networkLayers: 'Network layers', showInNetwork: 'Show in network',
     searchPerson: 'Search for a person', personPlaceholder: 'Start typing a name…', clearPerson: 'Clear person search', searchArtifact: 'Search for an artifact', artifactPlaceholder: 'Start typing a title…', clearArtifact: 'Clear artifact search',
     years: 'Year range', format: 'Format', allFormats: 'All formats', multi: 'Select multiple nodes', clearFilters: 'Clear filters',
     view: 'View', left: 'Left column', right: 'Right column', move: 'Resume node motion', freeze: 'Pause node motion', compact: 'Zoom out from network', spread: 'Zoom in to network', scatter: 'Spread nodes apart', fullscreen: 'Show only the network in fullscreen', exitFullscreen: 'Exit fullscreen', resetDefaults: 'Restore default settings', copyView: 'Copy link to this view', viewCopied: 'Link copied', copyFailed: 'Copy the link from this field', invalidView: 'This link could not be opened. Showing the default view.', distance: 'Network scale', legend: 'Legend',
